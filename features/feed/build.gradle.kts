@@ -4,6 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrainsCompose)
 //    alias(libs.plugins.kotlin.serialization)
 //    id("com.google.devtools.ksp") version "2.0.21-1.0.27"
 //    id("de.jensklingenberg.ktorfit") version "2.2.0"
@@ -35,12 +37,18 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-//            implementation(libs.bundles.ktor.common)
-//            implementation(libs.bundles.ktorfit.common)
+            api(libs.bundles.ktor.common)
+            api(libs.bundles.ktorfit.common)
 //            api(project.dependencies.platform(libs.koin.bom))
 //            api(libs.koin.core)
             implementation(projects.core.network)
-
+            implementation(libs.androidx.navigation.compose)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.core)
+            implementation(libs.coil.kt)
+            implementation(libs.coil.network.ktor)
+            implementation(libs.koin.compose.viewmodel)
+            implementation(libs.compose.material3)
         }
 
         androidMain.dependencies {
