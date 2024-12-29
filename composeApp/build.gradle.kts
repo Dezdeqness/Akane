@@ -17,7 +17,7 @@ kotlin {
         }
     }
     
-    jvm("desktop")
+//    jvm("desktop")
     
     listOf(
         iosX64(),
@@ -31,13 +31,20 @@ kotlin {
     }
     
     sourceSets {
-        val desktopMain by getting
+//        val desktopMain by getting
         
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.koin.android)
+            implementation(libs.bundles.ktorfit.common)
+            implementation(libs.bundles.ktor.common)
+            implementation(libs.ktor.okhttp)
+
         }
         commonMain.dependencies {
+            implementation(projects.core.network)
+            implementation(projects.features.feed)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
@@ -49,11 +56,14 @@ kotlin {
 
             implementation(project.dependencies.platform(libs.koin.bom))
             implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            api(libs.androidx.navigation.compose)
         }
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
-            implementation(libs.kotlinx.coroutines.swing)
-        }
+//        desktopMain.dependencies {
+//            implementation(compose.desktop.currentOs)
+//            implementation(libs.kotlinx.coroutines.swing)
+//        }
     }
 }
 
