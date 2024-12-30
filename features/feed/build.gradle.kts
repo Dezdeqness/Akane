@@ -42,6 +42,7 @@ kotlin {
 //            api(project.dependencies.platform(libs.koin.bom))
 //            api(libs.koin.core)
             implementation(projects.core.network)
+            implementation(projects.core.designsystem)
             implementation(libs.androidx.navigation.compose)
             implementation(libs.coil.compose)
             implementation(libs.coil.core)

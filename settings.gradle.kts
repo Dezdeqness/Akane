@@ -32,4 +32,5 @@ dependencyResolutionManagement {
 
 include(":composeApp")
 include(":core:network")
+include(":core:designsystem")
 include(":features:feed")
