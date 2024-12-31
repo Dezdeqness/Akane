@@ -1,4 +1,4 @@
-package com.dezdeqness.network
+package com.dezdeqness.designsystem
 
 import androidx.compose.ui.graphics.Color
 
