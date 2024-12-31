@@ -60,6 +60,7 @@ kotlin {
             implementation(libs.koin.compose)
 
             api(libs.androidx.navigation.compose)
+            api(libs.compose.material3)
         }
 //        desktopMain.dependencies {
 //            implementation(compose.desktop.currentOs)
