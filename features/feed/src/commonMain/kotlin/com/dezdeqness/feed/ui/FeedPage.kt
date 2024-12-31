@@ -91,13 +91,13 @@ fun FeedPage(
                                 .padding(start = 8.dp, top = 8.dp, bottom = 8.dp)
                         ) {
                             Text(
-                                item.title + " (${item.episodes})",
+                                item.title,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
                             )
 
                             Text(
-                                item.title + " (${item.episodes})",
+                                item.summary,
                                 fontSize = 14.sp,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,

@@ -3,22 +3,24 @@ package com.dezdeqness.feed.data.datasource.impl
 import com.dezdeqness.feed.data.datasource.FeedApiDatasource
 import com.dezdeqness.feed.data.mapper.FeedMapper
 import com.dezdeqness.feed.domain.model.FeedEntity
-import com.dezdeqness.network.constants.ApiParams
-import com.dezdeqness.network.services.FeedService
+import com.dezdeqness.network.services.CatalogService
 
 class FeedApiDatasourceImpl(
-    private val feedService: FeedService,
+    private val catalogService: CatalogService,
     private val feedMapper: FeedMapper,
 ) : FeedApiDatasource {
     override suspend fun getFeed(page: Int) = tryWithCatch {
-        val response = feedService.getFeed(ApiParams.FeedParams.createFeedParams(page = page))
+        val response = catalogService.getReleases(
+            page = page,
+            limit = LIMIT,
+        )
 
         if (response.isSuccessful) {
             val items = response
                 .body()
                 ?.data
                 .orEmpty()
-                .mapNotNull(feedMapper::map)
+                .map(feedMapper::map)
             Result.success(
                 FeedEntity(
                     items = items,
@@ -36,6 +38,10 @@ class FeedApiDatasourceImpl(
         block()
     } catch (throwable: Throwable) {
         Result.failure(throwable)
+    }
+
+    companion object {
+        private const val LIMIT = 15
     }
 
 }

@@ -5,5 +5,4 @@ data class FeedAnimeUiModel(
     val title: String,
     val summary: String,
     val imageUrl: String,
-    val episodes: String,
 )

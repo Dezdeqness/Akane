@@ -1,5 +1,6 @@
 package com.dezdeqness.network.constants
 
 object ApiEndPoints {
-    const val INDEX = "index.php"
+    private const val ANIME = "anime/"
+    const val CATALOG_RELEASES = "${ANIME}catalog/releases"
 }

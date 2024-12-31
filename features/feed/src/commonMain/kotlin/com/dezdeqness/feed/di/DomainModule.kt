@@ -13,7 +13,7 @@ val domainModule = module {
     single { FeedMapper() }
     single<FeedApiDatasource> {
         FeedApiDatasourceImpl(
-            feedService = get(),
+            catalogService = get(),
             feedMapper = get(),
         )
     }

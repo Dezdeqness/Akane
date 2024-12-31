@@ -9,10 +9,9 @@ class FeedUiMapper {
 
     fun map(item: ReleaseEntity) = FeedAnimeUiModel(
         id = item.id,
-        title = if (item.names.isEmpty()) "" else item.names[0],
+        title = item.name,
         summary = item.description,
-        imageUrl = BaseUrl.BASE_URL + item.poster,
-        episodes = item.series,
+        imageUrl = BaseUrl.BASE_URL_IMAGES + item.poster,
     )
 
 }

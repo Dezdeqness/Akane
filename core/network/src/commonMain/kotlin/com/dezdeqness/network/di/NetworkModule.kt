@@ -1,8 +1,8 @@
 package com.dezdeqness.network.di
 
 import com.dezdeqness.network.constants.BaseUrl
-import com.dezdeqness.network.services.FeedService
-import com.dezdeqness.network.services.createFeedService
+import com.dezdeqness.network.services.CatalogService
+import com.dezdeqness.network.services.createCatalogService
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
@@ -50,7 +50,7 @@ val networkModule = module {
             .build()
     }
 
-    single<FeedService> {
-        get<Ktorfit>().createFeedService()
+    single<CatalogService> {
+        get<Ktorfit>().createCatalogService()
     }
 }

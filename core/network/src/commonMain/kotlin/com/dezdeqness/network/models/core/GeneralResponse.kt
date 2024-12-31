@@ -1,17 +1,27 @@
 package com.dezdeqness.network.models.core
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class GeneralResponse<T>(
-    val status: Boolean,
     val data: T?,
-    val error: ErrorResponse? = null,
+    val meta: Meta,
 )
 
 @Serializable
-data class ErrorResponse(
-    val code: Int,
-    val message: String,
-    val description: String? = null,
+data class Meta(
+    val pagination: Pagination,
+)
+
+@Serializable
+data class Pagination(
+    val total: Long,
+    val count: Long,
+    @SerialName("per_page")
+    val perPage: Long,
+    @SerialName("current_page")
+    val currentPage: Long,
+    @SerialName("total_pages")
+    val totalPages: Long,
 )
