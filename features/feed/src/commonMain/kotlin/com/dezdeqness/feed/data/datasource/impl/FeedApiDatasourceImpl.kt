@@ -16,16 +16,20 @@ class FeedApiDatasourceImpl(
         )
 
         if (response.isSuccessful) {
-            val items = response
-                .body()
+            val body = response.body()
+
+            val items = body
                 ?.data
                 .orEmpty()
                 .map(feedMapper::map)
+
+            val nextPage = (body?.meta?.pagination?.currentPage ?: 0) + 1
+            val totalPages = body?.meta?.pagination?.totalPages ?: 0
             Result.success(
                 FeedEntity(
                     items = items,
-                    page = page,
-                    hasNextPage = false,
+                    page = nextPage,
+                    hasNextPage = nextPage < totalPages,
                 )
             )
         } else {

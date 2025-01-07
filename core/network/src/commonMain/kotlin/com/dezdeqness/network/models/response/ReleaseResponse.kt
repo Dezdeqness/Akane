@@ -15,7 +15,7 @@ data class ReleaseResponse(
     @SerialName("fresh_at")
     val freshAt: String,
     @SerialName("created_at")
-    val createdAt: String,
+    val createdAt: String?,
     @SerialName("updated_at")
     val updatedAt: String,
     @SerialName("is_ongoing")

@@ -8,14 +8,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -30,11 +34,17 @@ import coil3.request.ImageRequest
 import coil3.util.DebugLogger
 import org.koin.compose.viewmodel.koinViewModel
 
+private const val PAGINATION_LOAD_FACTOR = 0.75
+
 @Composable
 fun FeedPage(
     modifier: Modifier = Modifier,
     viewModel: FeedViewModel = koinViewModel()
 ) {
+    var isPageLoading by remember {
+        mutableStateOf(false)
+    }
+
     val context = LocalPlatformContext.current
     val loader = remember {
         ImageLoader.Builder(context)
@@ -48,6 +58,13 @@ fun FeedPage(
 
     val state by viewModel.feedStateFlow.collectAsStateWithLifecycle()
 
+    LaunchedEffect(state.items) {
+        isPageLoading = false
+    }
+
+    val hasNextPage = state.hasNextPage
+
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
@@ -60,7 +77,26 @@ fun FeedPage(
                 CircularProgressIndicator()
             }
         } else {
-            LazyColumn {
+            val lazyListState = rememberLazyListState()
+
+            val shouldStartPaginate = remember {
+                derivedStateOf {
+                    hasNextPage && (lazyListState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                        ?: -1) >= (lazyListState.layoutInfo.totalItemsCount * PAGINATION_LOAD_FACTOR)
+                }
+            }
+
+            LaunchedEffect(isPageLoading, shouldStartPaginate.value) {
+                if (shouldStartPaginate.value && isPageLoading.not()) {
+                    viewModel.onLoadMore()
+                    isPageLoading = true
+                }
+            }
+
+            LazyColumn(
+                state = lazyListState,
+                modifier = Modifier.fillMaxSize(),
+            ) {
                 items(
                     count = state.items.size,
                     key = { index ->
@@ -104,6 +140,16 @@ fun FeedPage(
                             )
 
                         }
+                    }
+                }
+
+                if (hasNextPage) {
+                    item {
+                        CircularProgressIndicator(
+                            modifier = Modifier
+                                .padding(start = 8.dp, end = 4.dp)
+                                .padding(vertical = 8.dp),
+                        )
                     }
                 }
             }

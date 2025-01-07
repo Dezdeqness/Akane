@@ -5,4 +5,5 @@ import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 data class FeedState(
     val items: List<FeedAnimeUiModel> = listOf(),
     val isLoading: Boolean = true,
+    val hasNextPage: Boolean = false,
 )

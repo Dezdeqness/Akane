@@ -16,12 +16,12 @@ data class Meta(
 
 @Serializable
 data class Pagination(
-    val total: Long,
-    val count: Long,
+    val total: Int,
+    val count: Int,
     @SerialName("per_page")
     val perPage: Long,
     @SerialName("current_page")
-    val currentPage: Long,
+    val currentPage: Int,
     @SerialName("total_pages")
-    val totalPages: Long,
+    val totalPages: Int,
 )

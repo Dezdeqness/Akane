@@ -18,28 +18,68 @@ class FeedViewModel(
     private val _feedStateFlow: MutableStateFlow<FeedState> = MutableStateFlow(FeedState())
     val feedStateFlow: StateFlow<FeedState> = _feedStateFlow
 
+    private var currentPage = INITIAL_PAGE
+
     fun onInitialLoad() {
         viewModelScope.launch(Dispatchers.IO) {
             _feedStateFlow.update {
                 it.copy(isLoading = true)
             }
             feedRepository
-                .getFeed(page = 1)
+                .getFeed(page = currentPage)
                 .onSuccess { feed ->
+                    currentPage = feed.page
                     _feedStateFlow.update {
                         it.copy(
                             isLoading = false,
                             items = feed.items.map(feedUiMapper::map),
+                            hasNextPage = feed.hasNextPage,
                         )
                     }
                 }
                 .onFailure { throwable ->
                     _feedStateFlow.update {
-                        it.copy(isLoading = true)
+                        it.copy(
+                            isLoading = false,
+                            hasNextPage = false,
+                        )
                     }
                     // TODO: logger for each platform
                     println("Error: $throwable")
                 }
         }
+    }
+
+    fun onLoadMore() {
+        viewModelScope.launch(Dispatchers.IO) {
+            feedRepository
+                .getFeed(page = currentPage)
+                .onSuccess { feed ->
+                    currentPage = feed.page
+                    val paginatedData = feed.items.map(feedUiMapper::map)
+
+                    _feedStateFlow.update {
+                        it.copy(
+                            isLoading = false,
+                            items = it.items + paginatedData,
+                            hasNextPage = feed.hasNextPage,
+                        )
+                    }
+                }
+                .onFailure { throwable ->
+                    _feedStateFlow.update {
+                        it.copy(
+                            isLoading = false,
+                            hasNextPage = false,
+                        )
+                    }
+                    // TODO: logger for each platform
+                    println("Error: $throwable")
+                }
+        }
+    }
+
+    companion object {
+        private const val INITIAL_PAGE = 1
     }
 }
