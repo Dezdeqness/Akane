@@ -25,6 +25,10 @@ data class ReleaseResponse(
     @SerialName("publish_day")
     val publishDay: PublishDay,
     val description: String?,
+    @SerialName("episodes_total")
+    val episodesTotal: Long,
+    val genres: List<Genre>,
+    val episodes: List<Episode>,
 )
 
 @Serializable
@@ -94,4 +98,51 @@ data class Image(
 data class Optimized2(
     val preview: String,
     val thumbnail: String,
+)
+
+// TODO: make map of hls
+@Serializable
+data class Episode(
+    val id: String,
+    val name: String,
+    val ordinal: Long,
+    val opening: Opening,
+    val ending: Ending,
+    val preview: Preview,
+    @SerialName("hls_480")
+    val hls480: String?,
+    @SerialName("hls_720")
+    val hls720: String?,
+    @SerialName("hls_1080")
+    val hls1080: String?,
+    val duration: Long,
+    @SerialName("rutube_id")
+    val rutubeId: String?,
+    @SerialName("youtube_id")
+    val youtubeId: String?,
+    @SerialName("updated_at")
+    val updatedAt: String,
+    @SerialName("sort_order")
+    val sortOrder: Long,
+    @SerialName("name_english")
+    val nameEnglish: String?,
+)
+
+@Serializable
+data class Opening(
+    val stop: Long?,
+    val start: Long?,
+)
+
+@Serializable
+data class Ending(
+    val stop: Long?,
+    val start: Long?,
+)
+
+@Serializable
+data class Preview(
+    val src: String,
+    val thumbnail: String,
+    val optimized: Optimized2,
 )
