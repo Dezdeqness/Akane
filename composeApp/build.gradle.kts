@@ -46,6 +46,7 @@ kotlin {
             implementation(projects.core.designsystem)
             implementation(projects.core.network)
             implementation(projects.features.feed)
+            implementation(projects.features.details)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material)
