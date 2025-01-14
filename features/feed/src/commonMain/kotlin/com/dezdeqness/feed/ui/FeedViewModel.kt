@@ -20,7 +20,11 @@ class FeedViewModel(
 
     private var currentPage = INITIAL_PAGE
 
-    fun onInitialLoad() {
+    init {
+        onInitialLoad()
+    }
+
+    private fun onInitialLoad() {
         viewModelScope.launch(Dispatchers.IO) {
             _feedStateFlow.update {
                 it.copy(isLoading = true)

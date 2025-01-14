@@ -54,10 +54,6 @@ fun FeedPage(
             .build()
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.onInitialLoad()
-    }
-
     val state by viewModel.feedStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.items) {
@@ -137,6 +133,7 @@ fun FeedPage(
                                 item.title,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onPrimary,
                             )
 
                             Text(
@@ -144,6 +141,7 @@ fun FeedPage(
                                 fontSize = 14.sp,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
                             )
 
                         }
