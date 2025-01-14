@@ -17,7 +17,8 @@ import androidx.navigation.compose.rememberNavController
 import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.designsystem.AkaneTheme
-
+import com.dezdeqness.details.navigation.detailsScreen
+import com.dezdeqness.details.navigation.navigateToDetailsScreen
 
 @Composable
 @Preview
@@ -53,12 +54,12 @@ fun App() {
             }
         ) { padding ->
             NavHost(
-                route = "/",
                 navController = navController,
                 startDestination = FEED_ROUTE,
                 modifier = Modifier.fillMaxSize().padding(padding)
             ) {
-                feedScreen()
+                feedScreen(navController::navigateToDetailsScreen)
+                detailsScreen(navController::navigateUp)
             }
         }
     }

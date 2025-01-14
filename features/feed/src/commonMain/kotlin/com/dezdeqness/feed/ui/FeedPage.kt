@@ -1,5 +1,6 @@
 package com.dezdeqness.feed.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,8 @@ private const val PAGINATION_LOAD_FACTOR = 0.75
 @Composable
 fun FeedPage(
     modifier: Modifier = Modifier,
-    viewModel: FeedViewModel = koinViewModel()
+    viewModel: FeedViewModel = koinViewModel(),
+    onReleaseClicked: (Long) -> Unit,
 ) {
     var isPageLoading by remember {
         mutableStateOf(false)
@@ -108,6 +110,11 @@ fun FeedPage(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .clickable(
+                                onClick = {
+                                    onReleaseClicked.invoke(item.id)
+                                }
+                            )
                             .padding(horizontal = 16.dp)
                     ) {
                         Row(modifier = Modifier.weight(1f)) {
