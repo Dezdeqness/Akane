@@ -1,6 +1,7 @@
 package com.dezdeqness.akane
 
 import android.app.Application
+import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.feed.di.feedModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.GlobalContext.startKoin
@@ -12,6 +13,7 @@ class AkaneApplication : Application() {
         startKoin {
             androidContext(this@AkaneApplication)
             modules(feedModule)
+            modules(detailsModule)
         }
     }
 }
