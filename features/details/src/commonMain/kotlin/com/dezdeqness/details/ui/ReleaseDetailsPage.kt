@@ -8,14 +8,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
@@ -23,12 +25,15 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,6 +62,14 @@ fun DetailsPage(
         viewModel.onInitialLoad()
     }
 
+    val listState = rememberLazyListState()
+
+    val isToolbarTransparent by remember {
+        derivedStateOf {
+            listState.firstVisibleItemIndex <= 0
+        }
+    }
+
     val state by viewModel.releaseDetailsStateFlow.collectAsStateWithLifecycle()
 
     Scaffold(
@@ -64,7 +77,16 @@ fun DetailsPage(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
         topBar = {
             TopAppBar(
-                title = {},
+                title = {
+                    if (!isToolbarTransparent && state.status == Status.Loaded) {
+                        Text(
+                            state.details?.title.orEmpty(),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(
                         onClick = {
@@ -76,8 +98,15 @@ fun DetailsPage(
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors()
-                    .copy(containerColor = Color.Transparent)
+                colors = TopAppBarDefaults
+                    .topAppBarColors()
+                    .copy(
+                        containerColor = if (isToolbarTransparent) {
+                            Color.Transparent
+                        } else {
+                            MaterialTheme.colorScheme.primary
+                        }
+                    )
             )
         }
     ) {
@@ -103,7 +132,9 @@ fun DetailsPage(
 
             Status.Loaded -> {
                 val details = state.details ?: return@Scaffold
+
                 LazyColumn(
+                    state = listState,
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
@@ -126,7 +157,9 @@ fun DetailsPage(
                             details.title,
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            textAlign = TextAlign.Center,
                         )
                     }
 
@@ -146,21 +179,30 @@ fun DetailsPage(
                                         Text(
                                             item,
                                             fontSize = 14.sp,
+                                            color = MaterialTheme.colorScheme.onPrimary,
                                         )
-                                    }
+                                    },
+                                    modifier = Modifier.padding(end = 8.dp)
                                 )
                             }
                         }
                     }
 
                     item {
-                        Card(
+                        OutlinedCard(
                             onClick = {},
                             enabled = false,
+                            colors = CardDefaults.outlinedCardColors().copy(
+                                disabledContentColor = Color.Transparent,
+                                disabledContainerColor = Color.Transparent,
+                            ),
+                            modifier = Modifier.padding(horizontal = 16.dp).padding(bottom = 40.dp)
                         ) {
                             Text(
                                 details.summary,
                                 fontSize = 16.sp,
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
                             )
                         }
                     }
