@@ -14,9 +14,9 @@ class ReleaseMapper(
             poster = response.poster.src,
             type = response.type.value,
             description = response.description.orEmpty(),
-            episodesTotal = response.episodesTotal,
+            episodesTotal = response.episodesTotal ?: 0,
             genres = response.genres.map { it.name },
-            episodes = response.episodes.map(episodesManager::map),
+            episodes = response.episodes?.map(episodesManager::map).orEmpty(),
         )
 
 }

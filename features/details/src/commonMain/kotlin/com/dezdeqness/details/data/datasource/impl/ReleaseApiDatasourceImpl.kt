@@ -9,7 +9,7 @@ class ReleaseApiDatasourceImpl(
     private val releaseMapper: ReleaseMapper,
 ) : ReleaseApiDatasource {
 
-    override suspend fun getRelease(id: Int) = tryWithCatch {
+    override suspend fun getRelease(id: Long) = tryWithCatch {
         val response = catalogService.getReleaseById(id = id)
 
         if (response.isSuccessful) {

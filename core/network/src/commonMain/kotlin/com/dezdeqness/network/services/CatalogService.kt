@@ -17,6 +17,6 @@ interface CatalogService {
     ): Response<GeneralResponse<List<ReleaseResponse>>>
 
     @GET(RELEASE)
-    suspend fun getReleaseById(@Path id: Int): Response<ReleaseResponse>
+    suspend fun getReleaseById(@Path id: Long): Response<ReleaseResponse>
 
 }

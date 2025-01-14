@@ -26,9 +26,9 @@ data class ReleaseResponse(
     val publishDay: PublishDay,
     val description: String?,
     @SerialName("episodes_total")
-    val episodesTotal: Long,
+    val episodesTotal: Long?,
     val genres: List<Genre>,
-    val episodes: List<Episode>,
+    val episodes: List<Episode>?,
 )
 
 @Serializable

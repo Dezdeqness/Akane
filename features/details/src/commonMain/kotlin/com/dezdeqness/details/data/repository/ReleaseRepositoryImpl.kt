@@ -7,6 +7,6 @@ class ReleaseRepositoryImpl(
     private val releaseApiDatasource: ReleaseApiDatasource,
 ) : ReleaseRepository {
 
-    override suspend fun getReleaseById(id: Int) = releaseApiDatasource.getRelease(id = id)
+    override suspend fun getReleaseById(id: Long) = releaseApiDatasource.getRelease(id = id)
 
 }
