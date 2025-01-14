@@ -8,7 +8,7 @@ class EpisodesManager {
     fun map(response: Episode) =
         EpisodeEntity(
             id = response.id,
-            name = response.name,
+            name = response.name.orEmpty(),
             ordinal = response.ordinal,
             hls480 = response.hls480,
             hls720 = response.hls720,

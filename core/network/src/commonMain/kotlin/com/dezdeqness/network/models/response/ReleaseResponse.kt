@@ -96,7 +96,7 @@ data class Image(
 
 @Serializable
 data class Optimized2(
-    val preview: String,
+    val preview: String?,
     val thumbnail: String,
 )
 
@@ -104,7 +104,7 @@ data class Optimized2(
 @Serializable
 data class Episode(
     val id: String,
-    val name: String,
+    val name: String?,
     val ordinal: Long,
     val opening: Opening,
     val ending: Ending,
