@@ -1,16 +1,21 @@
 package com.dezdeqness.details.ui
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +35,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.BlurredEdgeTreatment
+import androidx.compose.ui.draw.blur
+import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -140,9 +150,11 @@ fun DetailsPage(
                 ) {
                     item {
                         AsyncImage(
-                            model = ImageRequest.Builder(context)
-                                .data(details.imageUrl)
-                                .build(),
+                            model = remember {
+                                ImageRequest.Builder(context)
+                                    .data(details.imageUrl)
+                                    .build()
+                            },
                             contentDescription = null,
                             imageLoader = loader,
                             modifier = Modifier
@@ -204,6 +216,71 @@ fun DetailsPage(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                                 color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
                             )
+                        }
+                    }
+
+                    item {
+                        Text(
+                            "Вышедшие эпизоды",
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.fillMaxWidth()
+                                .padding(vertical = 8.dp, horizontal = 16.dp),
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            textAlign = TextAlign.Start,
+                        )
+                    }
+
+                    items(details.episodes.size) { index ->
+                        val item = details.episodes[index]
+
+                        Card(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp, vertical = 8.dp)
+                                .fillMaxWidth()
+                        ) {
+                            Box {
+                                AsyncImage(
+                                    model = remember {
+                                        ImageRequest.Builder(context)
+                                            .data(item.previewUrl)
+                                            .build()
+                                    },
+                                    contentScale = ContentScale.FillWidth,
+                                    contentDescription = null,
+                                    imageLoader = loader,
+                                    colorFilter = ColorFilter.tint(Color.Gray, blendMode = BlendMode.Darken),
+                                    modifier = Modifier
+                                        .height(200.dp)
+                                        .blur(
+                                            radiusX = 10.dp,
+                                            radiusY = 10.dp,
+                                            edgeTreatment = BlurredEdgeTreatment(
+                                                RoundedCornerShape(8.dp)
+                                            )
+                                        )
+                                )
+
+                                Column(modifier = Modifier.align(alignment = Alignment.BottomStart)) {
+                                    Text(
+                                        item.name,
+                                        fontSize = 16.sp,
+                                        modifier = Modifier.padding(horizontal = 16.dp),
+                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
+                                    )
+
+                                    Text(
+                                        "${item.ordinal} эпизод",
+                                        fontSize = 18.sp,
+                                        modifier = Modifier.padding(
+                                            horizontal = 16.dp,
+                                            vertical = 8.dp
+                                        ),
+                                        fontWeight = FontWeight.Bold,
+                                        color = MaterialTheme.colorScheme.onPrimary
+                                    )
+                                }
+                            }
                         }
                     }
                 }
