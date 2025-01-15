@@ -2,6 +2,7 @@ package com.dezdeqness.feed.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.dezdeqness.feed.domain.repository.FeedRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -40,6 +41,13 @@ class FeedViewModel(
                             hasNextPage = feed.hasNextPage,
                         )
                     }
+                    Logger.i(
+                        tag = TAG,
+                        messageString = """
+                            Initial load current position: $currentPage
+                            $feed
+                        """.trimIndent(),
+                    )
                 }
                 .onFailure { throwable ->
                     _feedStateFlow.update {
@@ -48,8 +56,10 @@ class FeedViewModel(
                             hasNextPage = false,
                         )
                     }
-                    // TODO: logger for each platform
-                    println("Error: $throwable")
+                    Logger.e(
+                        tag = TAG,
+                        messageString = "Initial load: ${throwable.message.orEmpty()}",
+                    )
                 }
         }
     }
@@ -69,6 +79,13 @@ class FeedViewModel(
                             hasNextPage = feed.hasNextPage,
                         )
                     }
+                    Logger.i(
+                        tag = TAG,
+                        messageString = """
+                            Load more current position: $currentPage
+                            $feed
+                        """.trimIndent(),
+                    )
                 }
                 .onFailure { throwable ->
                     _feedStateFlow.update {
@@ -77,13 +94,16 @@ class FeedViewModel(
                             hasNextPage = false,
                         )
                     }
-                    // TODO: logger for each platform
-                    println("Error: $throwable")
+                    Logger.e(
+                        tag = TAG,
+                        messageString = "Load more: ${throwable.message.orEmpty()}",
+                    )
                 }
         }
     }
 
     companion object {
+        private const val TAG = "FeedViewModel"
         private const val INITIAL_PAGE = 1
     }
 }

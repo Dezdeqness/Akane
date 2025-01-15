@@ -45,6 +45,7 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.compose.material3)
+            implementation(libs.kermit)
         }
 
     }

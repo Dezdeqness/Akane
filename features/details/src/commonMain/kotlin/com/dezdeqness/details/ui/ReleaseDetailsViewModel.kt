@@ -3,6 +3,7 @@ package com.dezdeqness.details.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import co.touchlab.kermit.Logger
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.details.navigation.RELEASE_ID
 import kotlinx.coroutines.Dispatchers
@@ -20,7 +21,8 @@ class ReleaseDetailsViewModel(
 
     private var releaseId = savedStateHandle.get<Long>(RELEASE_ID) ?: -1
 
-    private val _releaseDetailsStateFlow: MutableStateFlow<ReleaseDetailsState> = MutableStateFlow(ReleaseDetailsState())
+    private val _releaseDetailsStateFlow: MutableStateFlow<ReleaseDetailsState> =
+        MutableStateFlow(ReleaseDetailsState())
     val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = _releaseDetailsStateFlow
 
     fun onInitialLoad() {
@@ -37,16 +39,25 @@ class ReleaseDetailsViewModel(
                             details = releaseDetailsUiMapper.map(details)
                         )
                     }
-                    println("Loaded: $details")
+                    Logger.i(
+                        tag = TAG,
+                        messageString = "Loaded $details",
+                    )
                 }
                 .onFailure { throwable ->
                     _releaseDetailsStateFlow.update {
                         it.copy(status = Status.Error)
                     }
-                    // TODO: logger for each platform
-                    println("Error: $throwable")
+                    Logger.e(
+                        tag = TAG,
+                        messageString = throwable.message.orEmpty(),
+                    )
                 }
         }
+    }
+
+    companion object {
+        private const val TAG = "ReleaseDetailsViewModel"
     }
 
 }
