@@ -3,6 +3,7 @@ package com.dezdeqness.details.domain.model
 data class EpisodeEntity(
     val id: String,
     val name: String,
+    val previewUrl: String,
     val ordinal: Long,
     val hls480: String?,
     val hls720: String?,
