@@ -17,7 +17,7 @@ kotlin {
         }
     }
     
-//    jvm("desktop")
+    jvm("desktop")
     
     listOf(
         iosX64(),
@@ -31,8 +31,7 @@ kotlin {
     }
     
     sourceSets {
-//        val desktopMain by getting
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
@@ -63,10 +62,13 @@ kotlin {
             api(libs.androidx.navigation.compose)
             api(libs.compose.material3)
         }
-//        desktopMain.dependencies {
-//            implementation(compose.desktop.currentOs)
-//            implementation(libs.kotlinx.coroutines.swing)
-//        }
+
+        val desktopMain by getting
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
+        }
     }
 }
 
@@ -109,6 +111,14 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "com.dezdeqness.akane"
             packageVersion = "1.0.0"
+            includeAllModules = true
+
+            windows {
+                menuGroup = "com.dezdeqness.akane"
+                shortcut = true
+                dirChooser = true
+                perUserInstall = true
+            }
         }
     }
 }

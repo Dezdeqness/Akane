@@ -1,3 +1,4 @@
+import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -18,8 +19,6 @@ android {
     }
 }
 
-//val ktorfitVersion = "2.2.0"
-
 kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
@@ -27,6 +26,7 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_21)
         }
     }
+    jvm("desktop")
 
     iosX64()
     iosArm64()
@@ -43,9 +43,17 @@ kotlin {
             implementation(libs.coil.core)
             implementation(libs.coil.kt)
             implementation(libs.coil.network.ktor)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
+        }
+        val desktopMain by getting
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
         }
 
     }

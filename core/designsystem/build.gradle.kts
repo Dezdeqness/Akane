@@ -19,6 +19,7 @@ android {
 }
 
 kotlin {
+    jvm("desktop")
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -39,6 +40,12 @@ kotlin {
         }
 
         iosMain.dependencies {
+        }
+
+        val desktopMain by getting
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
         }
     }
 

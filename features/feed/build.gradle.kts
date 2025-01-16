@@ -24,6 +24,7 @@ android {
 //val ktorfitVersion = "2.2.0"
 
 kotlin {
+    jvm("desktop")
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -51,6 +52,8 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
         }
 
         androidMain.dependencies {
@@ -60,14 +63,12 @@ kotlin {
         iosMain.dependencies {
 //            implementation(libs.ktor.client.darwin)
         }
+        val desktopMain by getting
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+            implementation(libs.kotlinx.coroutines.swing)
+        }
     }
 
 }
-
-//dependencies {
-//    add("kspCommonMainMetadata", libs.ktorfit.ksp)
-//    add("kspAndroid", libs.ktorfit.ksp)
-//    add("kspIosX64", libs.ktorfit.ksp)
-//    add("kspIosArm64", libs.ktorfit.ksp)
-//    add("kspIosSimulatorArm64", libs.ktorfit.ksp)
-//}
