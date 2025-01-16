@@ -119,6 +119,10 @@ compose.desktop {
                 dirChooser = true
                 perUserInstall = true
             }
+            macOS {
+                bundleID = "com.dezdeqness.akane"
+                dockName = "Akane"
+            }
         }
     }
 }
