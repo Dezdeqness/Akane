@@ -1,4 +1,4 @@
-package com.dezdeqness.feed.ui
+package com.dezdeqness.videoplayer.ui
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -23,3 +23,4 @@ fun VideoPlayerPage(
 
     }
 }
+

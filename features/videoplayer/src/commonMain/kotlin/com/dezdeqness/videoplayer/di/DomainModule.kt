@@ -1,4 +1,4 @@
-package com.dezdeqness.feed.di
+package com.dezdeqness.videoplayer.di
 
 import org.koin.dsl.module
 

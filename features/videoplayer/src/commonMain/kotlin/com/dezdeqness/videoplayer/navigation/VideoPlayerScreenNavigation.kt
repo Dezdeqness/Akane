@@ -1,8 +1,8 @@
-package com.dezdeqness.feed.navigation
+package com.dezdeqness.videoplayer.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.dezdeqness.feed.ui.VideoPlayerPage
+import com.dezdeqness.videoplayer.ui.VideoPlayerPage
 
 const val VIDEO_PLAYER_ROUTE = "video_player_route"
 
