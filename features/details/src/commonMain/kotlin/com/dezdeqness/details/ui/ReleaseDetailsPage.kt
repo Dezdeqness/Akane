@@ -1,5 +1,6 @@
 package com.dezdeqness.details.ui
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -59,6 +59,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DetailsPage(
     modifier: Modifier = Modifier,
     viewModel: ReleaseDetailsViewModel = koinViewModel(),
+    onEpisodeClick: (String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val context = LocalPlatformContext.current
@@ -238,6 +239,11 @@ fun DetailsPage(
                             modifier = Modifier
                                 .padding(horizontal = 16.dp, vertical = 8.dp)
                                 .fillMaxWidth()
+                                .clickable(
+                                    onClick = {
+                                        onEpisodeClick.invoke(item.hls720.orEmpty())
+                                    }
+                                )
                         ) {
                             Box {
                                 AsyncImage(

@@ -12,6 +12,7 @@ const val DETAILS_ROUTE = "details_route/{$RELEASE_ID}"
 
 fun NavGraphBuilder.detailsScreen(
     onBackPressed: () -> Unit,
+    onEpisodeClick: (String) -> Unit,
 ) {
     composable(
         DETAILS_ROUTE,
@@ -19,7 +20,10 @@ fun NavGraphBuilder.detailsScreen(
             navArgument(RELEASE_ID) { type = NavType.LongType },
         ),
     ) {
-        DetailsPage(onBackPressed = onBackPressed)
+        DetailsPage(
+            onBackPressed = onBackPressed,
+            onEpisodeClick = onEpisodeClick,
+        )
     }
 }
 
