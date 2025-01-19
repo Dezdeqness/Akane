@@ -50,7 +50,10 @@ kotlin {
         }
 
         androidMain.dependencies {
-//            implementation(libs.ktor.okhttp)
+            implementation(libs.media3.ui)
+            implementation(libs.media3.common)
+            implementation(libs.media3.exoplayer)
+            implementation(libs.media3.hls)
         }
 
         iosMain.dependencies {
