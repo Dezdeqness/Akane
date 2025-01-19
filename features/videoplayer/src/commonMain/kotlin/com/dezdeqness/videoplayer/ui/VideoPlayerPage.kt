@@ -7,20 +7,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dezdeqness.videoplayer.VideoPlayerScreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun VideoPlayerPage(
+    url: String,
     modifier: Modifier = Modifier,
-    viewModel: VideoPlayerViewModel = koinViewModel(),
+    onBackPressed: () -> Unit,
+//    viewModel: VideoPlayerViewModel = koinViewModel(),
 ) {
-    val state by viewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
+//    val state by viewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-
+        VideoPlayerScreen(videoUrl = url)
     }
 }
 
