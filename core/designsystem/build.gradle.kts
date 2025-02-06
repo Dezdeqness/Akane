@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.dezdeqness.kmp.library)
@@ -9,36 +7,12 @@ plugins {
 
 android {
     namespace = "com.dezdeqness.designsystem"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
 }
 
 kotlin {
-    jvm("desktop")
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
     sourceSets {
         commonMain.dependencies {
             implementation(libs.compose.material3)
-        }
-
-        androidMain.dependencies {
-        }
-
-        iosMain.dependencies {
         }
 
         val desktopMain by getting

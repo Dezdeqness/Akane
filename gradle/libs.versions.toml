@@ -1,5 +1,6 @@
 [versions]
 agp = "8.7.2"
+androidTools = "31.8.0"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
@@ -85,6 +86,11 @@ media3-common = { group = "androidx.media3", name = "media3-common-ktx", version
 media3-hls = { group = "androidx.media3", name = "media3-exoplayer-hls", version.ref = "media3_version" }
 vlcj = { module = "uk.co.caprica:vlcj", version.ref = "vlcj" }
 
+android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
+android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }
+
+kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
 [bundles]
 ktor-common = ["ktor-core", "ktor-logging", "ktor-kotlinx-json", "ktor-content-negotiation"]
 ktorfit-common = ["ktorfit-lib", "ktorfit-converters-flow", "ktorfit-converters-response"]
@@ -102,3 +108,4 @@ ktrofit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 
 dezdeqness-kmp-library = { id = "com.dezdeqness.kmp.library", version = "unspecified"}
+dezdeqness-cmp-feature = { id = "com.dezdeqness.cmp.feature", version = "unspecified"}

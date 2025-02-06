@@ -17,11 +17,21 @@ kotlin {
     }
 }
 
+dependencies {
+    compileOnly(libs.android.gradlePlugin)
+    compileOnly(libs.android.tools.common)
+    compileOnly(libs.kotlin.gradlePlugin)
+}
+
 gradlePlugin {
     plugins {
         register("kmpLibrary") {
             id = "com.dezdeqness.kmp.library"
             implementationClass = "KMPLibraryConventionPlugin"
+        }
+        register("cmpFeature") {
+            id = "com.dezdeqness.cmp.feature"
+            implementationClass = "CMPFeatureConventionPlugin"
         }
     }
 }

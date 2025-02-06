@@ -1,36 +1,12 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.dezdeqness.cmp.feature)
 }
 
 android {
     namespace = "com.dezdeqness.videoplayer"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_21
-        targetCompatibility = JavaVersion.VERSION_21
-    }
 }
 
 kotlin {
-    jvm("desktop")
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_21)
-        }
-    }
-
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-
     sourceSets {
         commonMain.dependencies {
             api(libs.bundles.ktor.common)
@@ -56,9 +32,6 @@ kotlin {
             implementation(libs.media3.hls)
         }
 
-        iosMain.dependencies {
-//            implementation(libs.ktor.client.darwin)
-        }
         val desktopMain by getting
 
         desktopMain.dependencies {
