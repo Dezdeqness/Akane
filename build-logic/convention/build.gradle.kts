@@ -33,5 +33,9 @@ gradlePlugin {
             id = "com.dezdeqness.cmp.feature"
             implementationClass = "CMPFeatureConventionPlugin"
         }
+        register("kmpKoin") {
+            id = "com.dezdeqness.kmp.koin"
+            implementationClass = "KMPKoinConventionPlugin"
+        }
     }
 }

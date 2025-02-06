@@ -18,8 +18,6 @@ kotlin {
             implementation(libs.coil.core)
             implementation(libs.coil.kt)
             implementation(libs.coil.network.ktor)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.compose.material3)
             implementation(libs.kermit)

@@ -12,6 +12,7 @@ class KMPLibraryConventionPlugin : Plugin<Project> {
             with(pluginManager) {
                 apply(libs.findPlugin("androidLibrary").get().get().pluginId)
                 apply(libs.findPlugin("kotlinMultiplatform").get().get().pluginId)
+                apply(libs.findPlugin("dezdeqness-kmp-koin").get().get().pluginId)
             }
 
             configureKmp()

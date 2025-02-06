@@ -21,8 +21,6 @@ kotlin {
             implementation(libs.koin.compose.viewmodel)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
         }
 
         androidMain.dependencies {

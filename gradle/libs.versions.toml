@@ -18,7 +18,7 @@ kotlin = "2.0.21"
 kotlinx-coroutines = "1.9.0"
 kotlinStdlib = "2.1.0"
 kotlinxSerializationJson = "1.7.3"
-ksp = "2.0.21-1.0.27"
+kspVersion = "2.0.21-1.0.27"
 
 composeBom = "2024.11.00"
 
@@ -51,7 +51,7 @@ androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
 kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
 
-ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devtools.ksp.gradle.plugin", version.ref = "kspVersion" }
 
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 =  { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material" }
@@ -103,9 +103,10 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 android-kotlin-multiplatform-library = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 ktrofit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 
 dezdeqness-kmp-library = { id = "com.dezdeqness.kmp.library", version = "unspecified"}
 dezdeqness-cmp-feature = { id = "com.dezdeqness.cmp.feature", version = "unspecified"}
+dezdeqness-kmp-koin = { id = "com.dezdeqness.kmp.koin", version = "unspecified"}
