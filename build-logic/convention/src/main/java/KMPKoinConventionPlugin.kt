@@ -14,6 +14,7 @@ class KMPKoinConventionPlugin : Plugin<Project> {
                 val bom = libs.findLibrary("koin-bom").get()
                 add("commonMainImplementation", platform(bom))
                 add("commonMainImplementation", libs.findLibrary("koin-core").get())
+                add("commonMainImplementation", libs.findLibrary("koin-compose-viewmodel").get())
             }
         }
     }
