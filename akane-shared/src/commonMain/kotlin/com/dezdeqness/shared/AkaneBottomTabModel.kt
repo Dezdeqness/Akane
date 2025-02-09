@@ -1,4 +1,4 @@
-package com.dezdeqness.akane
+package com.dezdeqness.shared
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dezdeqness.designsystem.icons.AkaneIcons
