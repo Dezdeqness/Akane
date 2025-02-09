@@ -110,3 +110,4 @@ jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrai
 dezdeqness-kmp-library = { id = "com.dezdeqness.kmp.library", version = "unspecified"}
 dezdeqness-cmp-feature = { id = "com.dezdeqness.cmp.feature", version = "unspecified"}
 dezdeqness-kmp-koin = { id = "com.dezdeqness.kmp.koin", version = "unspecified"}
+kotlin-android = { id = "org.jetbrains.kotlin.android", version = "2.1.10" }

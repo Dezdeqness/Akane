@@ -31,9 +31,13 @@ dependencyResolutionManagement {
     }
 }
 
-include(":composeApp")
+include(":akane-android")
+include(":akane-desktop")
+include(":akane-shared")
+
 include(":core:network")
 include(":core:designsystem")
+
 include(":features:feed")
 include(":features:details")
 include(":features:videoplayer")
