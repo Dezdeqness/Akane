@@ -72,7 +72,9 @@ fun App() {
                         feedScreen(navController::navigateToDetailsScreen)
                         detailsScreen(
                             onBackPressed = navController::navigateUp,
-                            onEpisodeClick = rootController::navigateToVideoPlayerScreen,
+                            onEpisodeClick = {
+                                rootController.navigateToVideoPlayerScreen(it)
+                            },
                         )
                     }
                 }
