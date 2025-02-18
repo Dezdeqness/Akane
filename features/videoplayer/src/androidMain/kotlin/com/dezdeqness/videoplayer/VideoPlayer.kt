@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.uri.Uri
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.core.net.toUri
 
 @Composable
 actual fun VideoPlayerScreen(videoUrl: String) {
@@ -24,9 +24,7 @@ actual fun VideoPlayerScreen(videoUrl: String) {
 
     val exoPlayer = remember {
         ExoPlayer.Builder(context).build().apply {
-            val mediaItem = MediaItem.fromUri(
-                Uri.parse(videoUrl)
-            )
+            val mediaItem = MediaItem.fromUri(videoUrl.toUri())
             setMediaItem(mediaItem)
             prepare()
             playWhenReady = true

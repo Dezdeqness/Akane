@@ -32,3 +32,9 @@ fun NavHostController.navigateToVideoPlayerScreen(videoUrl: String) {
     val encodedUrl = videoUrl.encodeURLParameter()
     navigate("video_player_route/$encodedUrl")
 }
+
+class VideoPlayerNavigationControllerImpl : VideoPlayerNavigationController {
+    override fun navigateToPlayer(controller: NavHostController, url: String) {
+        controller.navigateToVideoPlayerScreen(url)
+    }
+}

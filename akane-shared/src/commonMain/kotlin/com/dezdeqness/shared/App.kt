@@ -20,12 +20,14 @@ import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.details.navigation.detailsScreen
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
-import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
+import com.dezdeqness.videoplayer.core.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
 
 @Composable
 @Preview
 fun App() {
+    val controller = remember { videoController() }
+
     AkaneTheme {
         val rootController = rememberNavController()
 
@@ -73,7 +75,7 @@ fun App() {
                         detailsScreen(
                             onBackPressed = navController::navigateUp,
                             onEpisodeClick = {
-                                rootController.navigateToVideoPlayerScreen(it)
+                                controller.navigateToPlayer(navController, it)
                             },
                         )
                     }
