@@ -16,7 +16,10 @@ class ReleaseMapper(
             description = response.description.orEmpty(),
             episodesTotal = response.episodesTotal ?: 0,
             genres = response.genres.map { it.name },
-            episodes = response.episodes?.map(episodesManager::map).orEmpty(),
+            episodes = response.episodes
+                ?.map(episodesManager::map)
+                ?.sortedByDescending { it.ordinal }
+                .orEmpty(),
         )
 
 }
