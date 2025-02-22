@@ -4,11 +4,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.videoplayer.VideoPlayerScreen
-import org.koin.compose.viewmodel.koinViewModel
+import com.dezdeqness.videoplayer.core.rememberFullScreenState
 
 @Composable
 fun VideoPlayerPage(
@@ -18,12 +16,11 @@ fun VideoPlayerPage(
 //    viewModel: VideoPlayerViewModel = koinViewModel(),
 ) {
 //    val state by viewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
-
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-        VideoPlayerScreen(videoUrl = url)
+        VideoPlayerScreen(videoUrl = url, systemBarsControllerState = rememberFullScreenState())
     }
 }
 

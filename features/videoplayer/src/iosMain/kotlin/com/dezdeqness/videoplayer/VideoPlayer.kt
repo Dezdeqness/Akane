@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.interop.UIKitView
 import androidx.compose.ui.viewinterop.UIKitInteropProperties
 import androidx.compose.ui.viewinterop.UIKitView
+import com.dezdeqness.videoplayer.core.FullScreenState
 import kotlinx.cinterop.CValue
 import kotlinx.cinterop.ExperimentalForeignApi
 import platform.AVFoundation.AVPlayer
@@ -27,7 +28,7 @@ import platform.UIKit.UIView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun VideoPlayerScreen(videoUrl: String) {
+actual fun VideoPlayerScreen(videoUrl: String, systemBarsControllerState: FullScreenState) {
     Surface(
         contentColor = Color.Black,
         modifier = Modifier.fillMaxSize()

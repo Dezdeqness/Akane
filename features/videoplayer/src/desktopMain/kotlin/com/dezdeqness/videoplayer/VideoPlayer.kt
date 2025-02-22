@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.SwingPanel
 import androidx.compose.ui.graphics.Color
+import com.dezdeqness.videoplayer.core.FullScreenState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import uk.co.caprica.vlcj.factory.discovery.NativeDiscovery
@@ -31,7 +32,7 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-actual fun VideoPlayerScreen(videoUrl: String) {
+actual fun VideoPlayerScreen(videoUrl: String, systemBarsControllerState: FullScreenState) {
     Box(modifier = Modifier.fillMaxSize().background(Color.Red))
     val state = rememberVideoPlayerState()
     VideoPlayerImpl(
