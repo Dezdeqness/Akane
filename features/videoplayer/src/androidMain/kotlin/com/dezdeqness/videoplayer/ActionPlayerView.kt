@@ -12,22 +12,33 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import kotlin.math.roundToInt
+import kotlin.math.roundToLong
 
 @Composable
 fun ActionPlayerView(
     modifier: Modifier = Modifier,
-    totalDuration: Int = 300,
-    onSeekTo: (Int) -> Unit = {},
+    totalDuration: Long,
+    currentTime: Long,
+    onSeekTo: (Long) -> Unit = {},
     onOptionsClick: () -> Unit = {},
 ) {
-    var currentTime by remember { mutableStateOf(0) }
+    var localCurrentTime by remember { mutableLongStateOf(currentTime) }
+    var isUserSliding by remember { mutableStateOf(false) }
+
+    LaunchedEffect(currentTime) {
+        if (!isUserSliding) {
+            localCurrentTime = currentTime
+        }
+    }
 
     Column(
         modifier = modifier
@@ -39,15 +50,25 @@ fun ActionPlayerView(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = formatTime(currentTime))
-            Text(text = formatTime(totalDuration))
+            Text(
+                text = formatTime(localCurrentTime / 1000),
+                color = Color.White,
+            )
+            Text(
+                text = formatTime(totalDuration / 1000),
+                color = Color.White,
+            )
         }
 
         Slider(
-            value = currentTime.toFloat(),
+            value = localCurrentTime.toFloat(),
             onValueChange = {
-                currentTime = it.roundToInt()
-                onSeekTo(currentTime)
+                isUserSliding = true
+                localCurrentTime = it.roundToLong()
+            },
+            onValueChangeFinished = {
+                isUserSliding = false
+                onSeekTo(localCurrentTime)
             },
             valueRange = 0f..totalDuration.toFloat(),
             modifier = Modifier.fillMaxWidth()
@@ -66,7 +87,7 @@ fun ActionPlayerView(
     }
 }
 
-private fun formatTime(seconds: Int): String {
+private fun formatTime(seconds: Long): String {
     val minutes = seconds / 60
     val secs = seconds % 60
     return "%02d:%02d".format(minutes, secs)
