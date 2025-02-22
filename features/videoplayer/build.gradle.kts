@@ -16,6 +16,8 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
+            implementation(compose.components.resources)
+            implementation(compose.components.uiToolingPreview)
         }
 
         androidMain.dependencies {
