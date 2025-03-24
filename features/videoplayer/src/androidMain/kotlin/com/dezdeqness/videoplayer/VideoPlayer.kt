@@ -105,9 +105,10 @@ actual fun VideoPlayerScreen(
                 ControlPlayerView(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(Color.Black.copy(0.5f))
+                        .background(Color.Black.copy(0.2f))
                         .align(Alignment.Center),
                     isPlaying = playerState.isPlaying,
+                    isLoading = false,
                     onSeekForward = {
                         playerState.seekForward()
                     },
