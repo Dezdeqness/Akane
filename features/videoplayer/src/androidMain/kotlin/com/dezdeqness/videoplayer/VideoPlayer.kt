@@ -180,7 +180,7 @@ class VideoPlayerState(
         private set
     var isBuffering by mutableStateOf(false)
         private set
-    var bufferedPercentage by mutableFloatStateOf(0f)
+    var bufferedDuration by mutableLongStateOf(0L)
         private set
     private var playbackStateJob: Job? = null
 
@@ -210,7 +210,7 @@ class VideoPlayerState(
         playbackStateJob = scope.launch {
             while (true) {
                 this@VideoPlayerState.currentPositionPlayer = getCurrentPosition()
-                this@VideoPlayerState.bufferedPercentage = getBufferedPercentage().toFloat()
+                this@VideoPlayerState.bufferedDuration = getTotalBufferedDuration()
                 delay(updatePlaybackStateInterval)
             }
         }
