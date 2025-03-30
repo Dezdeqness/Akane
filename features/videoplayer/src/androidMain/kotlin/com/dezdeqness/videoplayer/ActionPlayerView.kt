@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
@@ -140,10 +141,11 @@ private fun formatTime(seconds: Long): String {
     return "%02d:%02d".format(minutes, secs)
 }
 
+@Composable
 fun Modifier.pulsatingEffect(
     currentPercentage: Float,
     cachedPercentage: Float,
-    color: Color = Color.Red,
+    color: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
 ): Modifier = composed {
     var trackWidth by remember { mutableFloatStateOf(0f) }
     val thumbX by remember(currentPercentage) {

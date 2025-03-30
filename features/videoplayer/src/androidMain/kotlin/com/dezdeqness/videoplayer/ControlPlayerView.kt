@@ -59,32 +59,33 @@ fun ControlPlayerView(
             )
         }
 
-        if (isLoading) {
-            CircularProgressIndicator(
-                modifier = Modifier.size(40.dp),
-                color = Color.Gray,
-                trackColor = Color.Transparent,
-            )
-        } else {
-            AnimatedContent(
-                targetState = isPlaying,
-                transitionSpec = {
-                    fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
-                },
-                label = "IconTransition"
-            ) { playing ->
-                Box(
-                    modifier = Modifier
-                        .size(40.dp)
-                        .clip(CircleShape)
-                        .background(Color.Black.copy(0.5f))
-                        .clickable {
-                            onPlayPauseToggle(playing)
-                        },
-                    contentAlignment = Alignment.Center,
-                ) {
+        AnimatedContent(
+            targetState = isLoading,
+            transitionSpec = {
+                fadeIn(animationSpec = tween(300)) togetherWith fadeOut(animationSpec = tween(300))
+            },
+            label = "IconTransition"
+        ) { loading ->
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .background(Color.Black.copy(0.5f))
+                    .clickable {
+                        onPlayPauseToggle(isPlaying)
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (loading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(32.dp),
+                        color = Color.White,
+                        trackColor = Color.Transparent,
+                        strokeWidth = 3.dp
+                    )
+                } else {
                     Icon(
-                        painter = painterResource(if (playing) Res.drawable.ic_pause else Res.drawable.ic_play),
+                        painter = painterResource(if (isPlaying) Res.drawable.ic_pause else Res.drawable.ic_play),
                         contentDescription = "Play/Pause",
                         tint = Color.White,
                         modifier = Modifier.size(24.dp)
@@ -92,6 +93,7 @@ fun ControlPlayerView(
                 }
             }
         }
+
 
         Box(
             modifier = Modifier

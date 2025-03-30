@@ -108,7 +108,7 @@ actual fun VideoPlayerScreen(
                         .background(Color.Black.copy(0.2f))
                         .align(Alignment.Center),
                     isPlaying = playerState.isPlaying,
-                    isLoading = false,
+                    isLoading = playerState.isBuffering,
                     onSeekForward = {
                         playerState.seekForward()
                     },
