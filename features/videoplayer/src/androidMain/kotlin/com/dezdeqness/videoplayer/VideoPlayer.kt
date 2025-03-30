@@ -141,6 +141,7 @@ actual fun VideoPlayerScreen(
                     modifier = Modifier.align(Alignment.BottomCenter),
                     totalDuration = playerState.durationPlayer,
                     currentTime = playerState.currentPositionPlayer,
+                    cachedTime = playerState.bufferedDuration,
                     onSeekTo = {
                         playerState.seekByTimestamp(it)
                     }
