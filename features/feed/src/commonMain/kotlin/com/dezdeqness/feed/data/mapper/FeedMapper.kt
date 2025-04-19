@@ -10,7 +10,7 @@ class FeedMapper {
             id = response.id,
             name = response.name.main,
             poster = response.poster.src,
-            type = response.type.value,
+            type = response.type.value.orEmpty(),
             description = response.description.orEmpty(),
         )
 

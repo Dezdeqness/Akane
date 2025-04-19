@@ -12,7 +12,7 @@ class ReleaseMapper(
             id = response.id,
             name = response.name.main,
             poster = response.poster.src,
-            type = response.type.value,
+            type = response.type.value.orEmpty(),
             description = response.description.orEmpty(),
             episodesTotal = response.episodesTotal ?: 0,
             genres = response.genres.map { it.name },

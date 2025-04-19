@@ -33,8 +33,8 @@ data class ReleaseResponse(
 
 @Serializable
 data class Type(
-    val value: String,
-    val description: String,
+    val value: String?,
+    val description: String?,
 )
 
 @Serializable
