@@ -3,13 +3,10 @@ package com.dezdeqness.videoplayer
 import android.view.TextureView
 import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -45,6 +42,22 @@ import kotlinx.coroutines.launch
 import kotlin.math.roundToLong
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
+
+private val standardEnter = fadeIn(
+    tween(
+        durationMillis = 250,
+        delayMillis = 0,
+        easing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f),
+    )
+)
+
+private val standardExit = fadeOut(
+    tween(
+        durationMillis = 200,
+        delayMillis = 0,
+        easing = CubicBezierEasing(0.3f, 0.0f, 1f, 1f),
+    )
+)
 
 @OptIn(UnstableApi::class)
 @Composable
@@ -98,8 +111,8 @@ actual fun VideoPlayerScreen(
         )
         AnimatedVisibility(
             visible = systemBarsControllerState.isSystemBarVisible,
-            enter = fadeIn(animationSpec = tween(durationMillis = 300, easing = LinearEasing)),
-            exit = fadeOut(animationSpec = tween(durationMillis = 300)),
+            enter = standardEnter,
+            exit = standardExit,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 ControlPlayerView(
@@ -128,13 +141,8 @@ actual fun VideoPlayerScreen(
 
         AnimatedVisibility(
             visible = systemBarsControllerState.isSystemBarVisible,
-            enter = slideInVertically(
-                animationSpec = tween(
-                    durationMillis = 300,
-                    easing = FastOutSlowInEasing
-                )
-            ) { it },
-            exit = slideOutVertically(animationSpec = tween(durationMillis = 300)) { it }
+            enter = standardEnter,
+            exit = standardExit,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
                 ActionPlayerView(
