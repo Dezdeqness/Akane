@@ -79,6 +79,9 @@ class VideoPlayerActivity : ComponentActivity() {
                 VideoPlayerScreen(
                     videoUrl = url,
                     systemBarsControllerState = systemBarsControllerState,
+                    onBackButtonClicked = {
+                        finish()
+                    }
                 )
             }
         }

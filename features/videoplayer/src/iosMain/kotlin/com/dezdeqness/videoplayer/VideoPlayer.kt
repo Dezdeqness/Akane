@@ -28,7 +28,11 @@ import platform.UIKit.UIView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun VideoPlayerScreen(videoUrl: String, systemBarsControllerState: FullScreenState) {
+actual fun VideoPlayerScreen(
+    videoUrl: String,
+    systemBarsControllerState: FullScreenState,
+    onBackButtonClicked: () -> Unit
+) {
     Surface(
         contentColor = Color.Black,
         modifier = Modifier.fillMaxSize()

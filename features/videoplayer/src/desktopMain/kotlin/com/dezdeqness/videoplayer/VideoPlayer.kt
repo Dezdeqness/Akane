@@ -32,7 +32,11 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-actual fun VideoPlayerScreen(videoUrl: String, systemBarsControllerState: FullScreenState) {
+actual fun VideoPlayerScreen(
+    videoUrl: String,
+    systemBarsControllerState: FullScreenState,
+    onBackButtonClicked: () -> Unit,
+) {
     Box(modifier = Modifier.fillMaxSize().background(Color.Red))
     val state = rememberVideoPlayerState()
     VideoPlayerImpl(

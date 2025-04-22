@@ -9,8 +9,20 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.derivedStateOf
@@ -25,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -64,6 +77,7 @@ private val standardExit = fadeOut(
 actual fun VideoPlayerScreen(
     videoUrl: String,
     systemBarsControllerState: FullScreenState,
+    onBackButtonClicked: () -> Unit,
 ) {
     val context = LocalContext.current
 
@@ -109,6 +123,36 @@ actual fun VideoPlayerScreen(
                 }
             }
         )
+        AnimatedVisibility(
+            visible = systemBarsControllerState.isSystemBarVisible,
+            enter = standardEnter,
+            exit = standardExit,
+        ) {
+            Box(modifier = Modifier.fillMaxSize()) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.TopCenter)
+                        .padding(
+                            top = if (systemBarsControllerState.isSystemBarVisible) WindowInsets
+                                .systemBars
+                                .only(WindowInsetsSides.Top)
+                                .asPaddingValues()
+                                .calculateTopPadding() else {
+                                0.dp
+                            }
+                        )
+                ) {
+                    IconButton(onClick = onBackButtonClicked) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = Color.White,
+                            contentDescription = null,
+                        )
+                    }
+                }
+            }
+        }
         AnimatedVisibility(
             visible = systemBarsControllerState.isSystemBarVisible,
             enter = standardEnter,
