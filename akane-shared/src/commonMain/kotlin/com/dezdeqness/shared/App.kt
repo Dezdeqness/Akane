@@ -75,7 +75,7 @@ fun App() {
                         detailsScreen(
                             onBackPressed = navController::navigateUp,
                             onEpisodeClick = {
-                                controller.navigateToPlayer(navController, it)
+                                controller.navigateToPlayer(rootController, it)
                             },
                         )
                     }

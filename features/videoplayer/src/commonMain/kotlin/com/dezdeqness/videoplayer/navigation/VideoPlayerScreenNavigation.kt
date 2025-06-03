@@ -16,10 +16,15 @@ fun NavGraphBuilder.videoPlayerScreen(
     onBackPressed: () -> Unit,
 ) {
     composable(
-        VIDEO_PLAYER_ROUTE,
-        arguments = listOf(navArgument(EPISODE_URL) { type = NavType.StringType }),
+        route = "$VIDEO_PLAYER_ROUTE?$EPISODE_URL={$EPISODE_URL}",
+        arguments = listOf(
+            navArgument(EPISODE_URL) {
+                type = NavType.StringType
+                nullable = false
+            }
+        )
     ) { entry ->
-        val url = entry.arguments?.getString(EPISODE_URL) ?: throw NullPointerException()
+        val url = entry.savedStateHandle.get<String>(EPISODE_URL) ?: throw NullPointerException()
         val decodedUrl = url.decodeURLPart()
         VideoPlayerPage(
             url = decodedUrl,
