@@ -16,6 +16,7 @@ kotlin {
             implementation(libs.coil.network.ktor)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
+            implementation(libs.material.icons.core)
         }
         val desktopMain by getting
 
