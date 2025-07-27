@@ -1,5 +1,6 @@
 package com.dezdeqness.videoplayer
 
+import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -36,6 +37,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToLong
@@ -54,6 +56,8 @@ fun ActionPlayerView(
     var isUserSliding by remember { mutableStateOf(false) }
     var localCachedTime by remember { mutableFloatStateOf(cachedTime.toFloat()) }
 
+    val isVertical = LocalConfiguration.current.orientation == ORIENTATION_PORTRAIT
+
     LaunchedEffect(currentTime, cachedTime) {
         if (!isUserSliding) {
             localCurrentTime = currentTime
@@ -61,6 +65,44 @@ fun ActionPlayerView(
         }
     }
 
+    if (isVertical) {
+        ActionPlayerViewVertical(
+            modifier = modifier,
+            totalDuration = totalDuration,
+            localCurrentTime = localCurrentTime,
+            localCachedTime = localCachedTime,
+            onUserSlidingChange = { isUserSliding = it },
+            onLocalTimeChange = { localCurrentTime = it },
+            onLocalCachedChange = { localCachedTime = it },
+            onSeekTo = onSeekTo,
+        )
+    } else {
+        ActionPlayerViewHorizontal(
+            modifier = modifier,
+            totalDuration = totalDuration,
+            localCurrentTime = localCurrentTime,
+            localCachedTime = localCachedTime,
+            onUserSlidingChange = { isUserSliding = it },
+            onLocalTimeChange = { localCurrentTime = it },
+            onLocalCachedChange = { localCachedTime = it },
+            onSeekTo = onSeekTo,
+        )
+    }
+
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ActionPlayerViewVertical(
+    modifier: Modifier = Modifier,
+    totalDuration: Long,
+    localCurrentTime: Long,
+    localCachedTime: Float,
+    onSeekTo: (Long) -> Unit = {},
+    onUserSlidingChange: (Boolean) -> Unit,
+    onLocalTimeChange: (Long) -> Unit,
+    onLocalCachedChange: (Float) -> Unit,
+) {
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -69,12 +111,13 @@ fun ActionPlayerView(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
         ) {
             Text(
                 text = formatTime(localCurrentTime / 1000),
                 color = Color.White,
             )
+
             Text(
                 text = formatTime(totalDuration / 1000),
                 color = Color.White,
@@ -84,16 +127,15 @@ fun ActionPlayerView(
         Slider(
             value = localCurrentTime.toFloat(),
             onValueChange = {
-                isUserSliding = true
-                localCurrentTime = it.roundToLong()
-                localCachedTime = 0f
+                onUserSlidingChange(true)
+                onLocalTimeChange(it.roundToLong())
+                onLocalCachedChange(0f)
             },
             onValueChangeFinished = {
-                isUserSliding = false
+                onUserSlidingChange(false)
                 onSeekTo(localCurrentTime)
             },
             valueRange = 0f..totalDuration.toFloat(),
-            modifier = Modifier.fillMaxWidth(),
             thumb = {
                 val interactionSource = remember { MutableInteractionSource() }
                 val modifier = Modifier
@@ -128,8 +170,101 @@ fun ActionPlayerView(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            IconButton(onClick = { onOptionsClick() }) {
-                Icon(Icons.Default.MoreVert, contentDescription = "Options")
+            IconButton(onClick = {  }) {
+                Icon(
+                    Icons.Default.MoreVert, contentDescription = "Options",
+                    tint = Color.White,
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun ActionPlayerViewHorizontal(
+    modifier: Modifier = Modifier,
+    totalDuration: Long,
+    localCurrentTime: Long,
+    localCachedTime: Float,
+    onSeekTo: (Long) -> Unit = {},
+    onUserSlidingChange: (Boolean) -> Unit,
+    onLocalTimeChange: (Long) -> Unit,
+    onLocalCachedChange: (Float) -> Unit,
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+    ) {
+        Column(
+            modifier = Modifier.weight(1f)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                Text(
+                    text = formatTime(localCurrentTime / 1000),
+                    color = Color.White,
+                )
+
+                Text(
+                    text = formatTime(totalDuration / 1000),
+                    color = Color.White,
+                )
+            }
+
+            Slider(
+                value = localCurrentTime.toFloat(),
+                onValueChange = {
+                    onUserSlidingChange(true)
+                    onLocalTimeChange(it.roundToLong())
+                    onLocalCachedChange(0f)
+                },
+                onValueChangeFinished = {
+                    onUserSlidingChange(false)
+                    onSeekTo(localCurrentTime)
+                },
+                valueRange = 0f..totalDuration.toFloat(),
+                thumb = {
+                    val interactionSource = remember { MutableInteractionSource() }
+                    val modifier = Modifier
+                        .padding(top = 3.dp)
+                        .size(DpSize(10.dp, 10.dp))
+                        .shadow(1.dp, CircleShape, clip = false)
+                        .indication(
+                            interactionSource = interactionSource,
+                            indication = ripple(bounded = false, radius = 20.dp)
+                        )
+                    SliderDefaults.Thumb(interactionSource = interactionSource, modifier = modifier)
+                },
+                track = { sliderPositions ->
+                    SliderDefaults.Track(
+                        sliderState = sliderPositions,
+                        modifier = Modifier
+                            .height(4.dp)
+                            .pulsatingEffect(
+                                if (sliderPositions.value == 0f) 0f else sliderPositions.value / sliderPositions.valueRange.endInclusive,
+                                if (localCachedTime == 0f) 0f else localCachedTime / sliderPositions.valueRange.endInclusive,
+                            ),
+                        thumbTrackGapSize = 0.dp,
+                        trackInsideCornerSize = 0.dp,
+                        drawStopIndicator = null,
+                    )
+                },
+            )
+        }
+
+        Row(
+            modifier = Modifier.padding(top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            IconButton(onClick = {  }) {
+                Icon(
+                    Icons.Default.MoreVert, contentDescription = "Options",
+                    tint = Color.White,
+                )
             }
         }
     }
