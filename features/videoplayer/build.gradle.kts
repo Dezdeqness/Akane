@@ -18,6 +18,8 @@ kotlin {
             implementation(libs.kermit)
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(project(":features:details"))
         }
 
         androidMain.dependencies {

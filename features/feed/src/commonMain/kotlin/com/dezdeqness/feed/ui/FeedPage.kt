@@ -67,7 +67,7 @@ fun FeedPage(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-        if (state.isLoading) {
+        if (state.status == Status.Initial || state.status == Status.Loading) {
             Box(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center,

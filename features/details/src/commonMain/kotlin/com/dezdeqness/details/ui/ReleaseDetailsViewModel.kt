@@ -4,14 +4,21 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.details.navigation.RELEASE_ID
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
 
 class ReleaseDetailsViewModel(
     private val releaseRepository: ReleaseRepository,
@@ -21,40 +28,50 @@ class ReleaseDetailsViewModel(
 
     private var releaseId = savedStateHandle.get<Long>(RELEASE_ID) ?: -1
 
-    private val _releaseDetailsStateFlow: MutableStateFlow<ReleaseDetailsState> =
-        MutableStateFlow(ReleaseDetailsState())
-    val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = _releaseDetailsStateFlow
+    private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
-    fun onInitialLoad() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _releaseDetailsStateFlow.update {
-                it.copy(status = Status.Loading)
-            }
-            releaseRepository
-                .getReleaseById(id = releaseId)
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = loadEvents
+        .onStart { emit(LoadEvent.Initial) }
+        .flatMapLatest { event ->
+            flow {
+                val result = releaseRepository.getReleaseById(releaseId)
+                emit(LoadResult(event, result))
+            }.flowOn(Dispatchers.IO)
+        }
+        .scan(ReleaseDetailsState()) { previous, result ->
+            result
+                .result
                 .onSuccess { details ->
-                    _releaseDetailsStateFlow.update {
-                        it.copy(
-                            status = Status.Loaded,
-                            details = releaseDetailsUiMapper.map(details)
-                        )
-                    }
-                    Logger.i(
-                        tag = TAG,
-                        messageString = "Loaded $details",
+                    return@scan previous.copy(
+                        status = Status.Loaded,
+                        details = releaseDetailsUiMapper.map(details)
                     )
                 }
                 .onFailure { throwable ->
-                    _releaseDetailsStateFlow.update {
-                        it.copy(status = Status.Error)
-                    }
                     Logger.e(
                         tag = TAG,
                         messageString = throwable.message.orEmpty(),
                     )
+                    return@scan previous.copy(status = Status.Error)
                 }
+
+            previous
         }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = ReleaseDetailsState(status = Status.Loading)
+        )
+
+    private sealed class LoadEvent {
+        object Initial : LoadEvent()
     }
+
+    private data class LoadResult(
+        val event: LoadEvent,
+        val result: Result<ReleaseDetailsEntity>,
+    )
 
     companion object {
         private const val TAG = "ReleaseDetailsViewModel"

@@ -24,11 +24,13 @@ class FeedApiDatasourceImpl(
                 .map(feedMapper::map)
 
             val nextPage = (body?.meta?.pagination?.currentPage ?: 0) + 1
+            val currentPage = (body?.meta?.pagination?.currentPage ?: 0)
             val totalPages = body?.meta?.pagination?.totalPages ?: 0
             Result.success(
                 FeedEntity(
                     items = items,
-                    page = nextPage,
+                    nextPage = nextPage,
+                    currentPage = currentPage,
                     hasNextPage = nextPage < totalPages,
                 )
             )

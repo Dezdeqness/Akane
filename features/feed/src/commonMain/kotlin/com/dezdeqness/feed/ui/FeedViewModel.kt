@@ -3,104 +3,115 @@ package com.dezdeqness.feed.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.feed.domain.model.FeedEntity
 import com.dezdeqness.feed.domain.repository.FeedRepository
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
 
 class FeedViewModel(
     private val feedRepository: FeedRepository,
     private val feedUiMapper: FeedUiMapper,
 ) : ViewModel() {
 
-    private val _feedStateFlow: MutableStateFlow<FeedState> = MutableStateFlow(FeedState())
-    val feedStateFlow: StateFlow<FeedState> = _feedStateFlow
+    private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
-    private var currentPage = INITIAL_PAGE
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val feedStateFlow: StateFlow<FeedState> = loadEvents
+        .onStart { emit(LoadEvent.Initial) }
+        .flatMapLatest { event ->
+            flow {
+                val result = feedRepository.getFeed(
+                    page = event.page,
+                )
 
-    init {
-        onInitialLoad()
-    }
-
-    private fun onInitialLoad() {
-        viewModelScope.launch(Dispatchers.IO) {
-            _feedStateFlow.update {
-                it.copy(isLoading = true)
-            }
-            feedRepository
-                .getFeed(page = currentPage)
-                .onSuccess { feed ->
-                    currentPage = feed.page
-                    _feedStateFlow.update {
-                        it.copy(
-                            isLoading = false,
-                            items = feed.items.map(feedUiMapper::map),
-                            hasNextPage = feed.hasNextPage,
-                        )
-                    }
-                    Logger.i(
-                        tag = TAG,
-                        messageString = """
-                            Initial load current position: $currentPage
-                            $feed
-                        """.trimIndent(),
+                emit(
+                    LoadResult(
+                        event = event,
+                        result = result,
                     )
-                }
-                .onFailure { throwable ->
-                    _feedStateFlow.update {
-                        it.copy(
-                            isLoading = false,
-                            hasNextPage = false,
-                        )
-                    }
-                    Logger.e(
-                        tag = TAG,
-                        messageString = "Initial load: ${throwable.message.orEmpty()}",
-                    )
-                }
+                )
+            }.flowOn(Dispatchers.IO)
         }
-    }
+        .scan(FeedState()) { previous, loadResult ->
+            val event = loadResult.event
+            val result = loadResult.result
+
+            result.onSuccess { response ->
+                val mappedList = response.items.map(feedUiMapper::map)
+                val updatedList = when (event) {
+                    is LoadEvent.Refresh, is LoadEvent.Initial -> mappedList
+                    is LoadEvent.LoadMore -> previous.items + mappedList
+                }
+
+                val newStatus = if (mappedList.isEmpty()) {
+                    Status.Empty
+                } else {
+                    Status.Loaded
+                }
+
+                return@scan previous.copy(
+                    items = updatedList,
+                    status = newStatus,
+                    currentPage = response.currentPage,
+                    hasNextPage = response.hasNextPage,
+                )
+            }
+
+            result.onFailure { error ->
+                val newStatus = when (event) {
+                    is LoadEvent.Initial -> Status.Error
+                    else -> previous.status
+                }
+
+                Logger.e(
+                    tag = TAG,
+                    messageString = "Load error: ${error.message.orEmpty()}\n$newStatus",
+                )
+
+                return@scan previous.copy(
+                    status = newStatus,
+                )
+            }
+
+            previous
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = FeedState()
+        )
 
     fun onLoadMore() {
-        viewModelScope.launch(Dispatchers.IO) {
-            feedRepository
-                .getFeed(page = currentPage)
-                .onSuccess { feed ->
-                    currentPage = feed.page
-                    val paginatedData = feed.items.map(feedUiMapper::map)
-
-                    _feedStateFlow.update {
-                        it.copy(
-                            isLoading = false,
-                            items = it.items + paginatedData,
-                            hasNextPage = feed.hasNextPage,
-                        )
-                    }
-                    Logger.i(
-                        tag = TAG,
-                        messageString = """
-                            Load more current position: $currentPage
-                            $feed
-                        """.trimIndent(),
-                    )
-                }
-                .onFailure { throwable ->
-                    _feedStateFlow.update {
-                        it.copy(
-                            isLoading = false,
-                            hasNextPage = false,
-                        )
-                    }
-                    Logger.e(
-                        tag = TAG,
-                        messageString = "Load more: ${throwable.message.orEmpty()}",
-                    )
-                }
+        val state = feedStateFlow.value
+        if (state.hasNextPage) {
+            loadEvents.tryEmit(LoadEvent.LoadMore(state.currentPage + 1))
         }
     }
+
+    private sealed class LoadEvent(
+        open val page: Int,
+    ) {
+        data object Refresh : LoadEvent(page = INITIAL_PAGE)
+
+        data class LoadMore(override val page: Int) : LoadEvent(page = page)
+
+        data object Initial : LoadEvent(page = INITIAL_PAGE)
+    }
+
+    private data class LoadResult(
+        val event: LoadEvent,
+        val result: Result<FeedEntity>,
+    )
 
     companion object {
         private const val TAG = "FeedViewModel"
