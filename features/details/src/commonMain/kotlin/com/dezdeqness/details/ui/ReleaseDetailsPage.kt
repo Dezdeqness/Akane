@@ -58,7 +58,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun DetailsPage(
     modifier: Modifier = Modifier,
     viewModel: ReleaseDetailsViewModel = koinViewModel(),
-    onEpisodeClick: (String) -> Unit,
+    onEpisodeClick: (Long, String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
     val context = LocalPlatformContext.current
@@ -236,7 +236,7 @@ fun DetailsPage(
                                 .fillMaxWidth()
                                 .clickable(
                                     onClick = {
-                                        onEpisodeClick.invoke(item.hls720.orEmpty())
+                                        onEpisodeClick.invoke(state.details!!.id, item.id)
                                     }
                                 )
                         ) {

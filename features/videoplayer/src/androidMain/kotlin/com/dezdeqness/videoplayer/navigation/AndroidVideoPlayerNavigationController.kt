@@ -6,8 +6,8 @@ import com.dezdeqness.videoplayer.VideoPlayerActivity
 import org.koin.java.KoinJavaComponent.inject
 
 class AndroidVideoPlayerNavigationController : VideoPlayerNavigationController {
-    override fun navigateToPlayer(controller: NavHostController, url: String) {
+    override fun navigateToPlayer(controller: NavHostController, id: Long, episodeId: String) {
         val context = inject<Context>(Context::class.java)
-        VideoPlayerActivity.startActivity(context.value, url)
+        VideoPlayerActivity.startActivity(context.value, id, episodeId)
     }
 }

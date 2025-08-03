@@ -34,7 +34,8 @@ import com.dezdeqness.designsystem.utils.noRippleClickable
 import com.dezdeqness.videoplayer.core.FullScreenState
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
-import com.dezdeqness.videoplayer.navigation.EPISODE_URL
+import com.dezdeqness.videoplayer.navigation.EPISODE_ID
+import com.dezdeqness.videoplayer.navigation.ID
 import kotlinx.coroutines.delay
 
 class VideoPlayerActivity : ComponentActivity() {
@@ -44,7 +45,8 @@ class VideoPlayerActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
-        val url = intent.getStringExtra(EPISODE_URL) ?: return
+        val id = intent.getLongExtra(ID, 0)
+        val episodeId = intent.getStringExtra(EPISODE_ID) ?: return
 
         setContent {
             val systemBarsControllerState = rememberFullScreenState(
@@ -77,7 +79,8 @@ class VideoPlayerActivity : ComponentActivity() {
                     }
             ) {
                 VideoPlayerScreen(
-                    videoUrl = url,
+                    id = id,
+                    episodeId = episodeId,
                     systemBarsControllerState = systemBarsControllerState,
                     onBackButtonClicked = {
                         finish()
@@ -93,9 +96,10 @@ class VideoPlayerActivity : ComponentActivity() {
     }
 
     companion object {
-        fun startActivity(context: Context, url: String) {
+        fun startActivity(context: Context, id: Long, episodeId: String) {
             val intent = Intent(context, VideoPlayerActivity::class.java).apply {
-                putExtra(EPISODE_URL, url)
+                putExtra(ID, id)
+                putExtra(EPISODE_ID, episodeId)
                 addFlags(FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)

@@ -10,17 +10,20 @@ import com.dezdeqness.videoplayer.core.rememberFullScreenState
 
 @Composable
 fun VideoPlayerPage(
-    url: String,
+    id: Long,
+    episodeId: String,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
-//    viewModel: VideoPlayerViewModel = koinViewModel(),
 ) {
-//    val state by viewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
-        VideoPlayerScreen(videoUrl = url, systemBarsControllerState = rememberFullScreenState())
+        VideoPlayerScreen(
+            id = id,
+            episodeId = episodeId,
+            systemBarsControllerState = rememberFullScreenState()
+        )
     }
 }
 

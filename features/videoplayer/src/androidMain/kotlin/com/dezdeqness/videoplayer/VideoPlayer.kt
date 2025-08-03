@@ -1,3 +1,5 @@
+@file:kotlin.OptIn(ExperimentalMaterial3Api::class)
+
 package com.dezdeqness.videoplayer
 
 import android.view.TextureView
@@ -9,22 +11,23 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.WindowInsetsSides
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.only
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
@@ -37,7 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.MediaItem
 import androidx.media3.exoplayer.ExoPlayer
@@ -45,9 +48,12 @@ import androidx.core.net.toUri
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.dezdeqness.videoplayer.core.FullScreenState
+import com.dezdeqness.videoplayer.ui.Status
+import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -72,13 +78,17 @@ private val standardExit = fadeOut(
     )
 )
 
-@OptIn(UnstableApi::class)
+@OptIn(UnstableApi::class, ExperimentalMaterial3Api::class)
 @Composable
 actual fun VideoPlayerScreen(
-    videoUrl: String,
+    id: Long,
+    episodeId: String,
+    videoPlayerViewModel: VideoPlayerViewModel,
     systemBarsControllerState: FullScreenState,
     onBackButtonClicked: () -> Unit,
 ) {
+    val state by videoPlayerViewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
+
     val context = LocalContext.current
 
     val playerView = remember { TextureView(context) }
@@ -88,12 +98,7 @@ actual fun VideoPlayerScreen(
             .Builder(context)
             .setSeekForwardIncrementMs(10000L)
             .setSeekBackIncrementMs(10000L)
-            .build().apply {
-                val mediaItem = MediaItem.fromUri(videoUrl.toUri())
-                setMediaItem(mediaItem)
-                prepare()
-                playWhenReady = true
-            }
+            .build()
     }
 
     val playerState = rememberVideoPlayerState(
@@ -113,6 +118,32 @@ actual fun VideoPlayerScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
+
+        if (state.status == Status.Initial || state.status == Status.Loading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center)
+            )
+
+            return@Box
+        }
+
+        val currentEpisode = remember(state.episodes, state.currentEpisodeId) {
+            state.episodes.first { it.id == state.currentEpisodeId }
+        }
+
+        LaunchedEffect(state.episodes, state.currentEpisodeId) {
+
+            if (state.episodes.isEmpty()) return@LaunchedEffect
+            exoPlayer.apply {
+                val mediaItems = state.episodes.map { MediaItem.fromUri(it.hls720!!.toUri()) }
+                val startIndex = state.episodes.indexOfFirst { it.id == state.currentEpisodeId }
+                setMediaItems(mediaItems, startIndex, 0)
+                prepare()
+
+                playWhenReady = true
+            }
+        }
+
         AndroidView(
             modifier = Modifier
                 .fillMaxSize()
@@ -129,28 +160,50 @@ actual fun VideoPlayerScreen(
             exit = standardExit,
         ) {
             Box(modifier = Modifier.fillMaxSize()) {
-                Row(
+                TopAppBar(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.TopCenter)
-                        .padding(
-                            top = if (systemBarsControllerState.isSystemBarVisible) WindowInsets
-                                .systemBars
-                                .only(WindowInsetsSides.Top)
-                                .asPaddingValues()
-                                .calculateTopPadding() else {
-                                0.dp
-                            }
-                        )
-                ) {
-                    IconButton(onClick = onBackButtonClicked) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            tint = Color.White,
-                            contentDescription = null,
-                        )
+//                        .padding(
+//                            top = if (systemBarsControllerState.isSystemBarVisible) WindowInsets
+//                                .systemBars
+//                                .only(WindowInsetsSides.Top)
+//                                .asPaddingValues()
+//                                .calculateTopPadding() else {
+//                                0.dp
+//                            }
+//                        )
+                    ,
+                    title = {
+                        Column {
+                            Text(
+                                state.title,
+                                style = MaterialTheme.typography.headlineMedium,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                            Text(
+                                currentEpisode.name.ifEmpty { "${currentEpisode.ordinal} эпизод" },
+                                style = MaterialTheme.typography.titleSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+                        }
+                    },
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        titleContentColor = Color.White,
+                        containerColor = Color.Transparent,
+                    ),
+                    navigationIcon = {
+                        IconButton(onClick = onBackButtonClicked) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.ArrowBack,
+                                tint = Color.White,
+                                contentDescription = null,
+                            )
+                        }
                     }
-                }
+                )
             }
         }
         AnimatedVisibility(

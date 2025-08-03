@@ -12,7 +12,7 @@ const val DETAILS_ROUTE = "details_route/{$RELEASE_ID}"
 
 fun NavGraphBuilder.detailsScreen(
     onBackPressed: () -> Unit,
-    onEpisodeClick: (String) -> Unit,
+    onEpisodeClick: (Long, String) -> Unit,
 ) {
     composable(
         DETAILS_ROUTE,
