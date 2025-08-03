@@ -45,6 +45,14 @@ class VideoPlayerActivity : ComponentActivity() {
         enableEdgeToEdge()
         super.onCreate(savedInstanceState)
 
+        WindowCompat.getInsetsController(window, window.decorView).apply {
+            isAppearanceLightStatusBars = false
+            isAppearanceLightNavigationBars = false
+            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+            hide(WindowInsetsCompat.Type.navigationBars())
+            hide(WindowInsetsCompat.Type.statusBars())
+        }
+
         val id = intent.getLongExtra(ID, 0)
         val episodeId = intent.getStringExtra(EPISODE_ID) ?: return
 
@@ -53,8 +61,6 @@ class VideoPlayerActivity : ComponentActivity() {
                 initialNavigationBarVisibility = SystemBarsVisibility.Visible,
                 initialStatusBarVisibility = SystemBarsVisibility.Visible
             )
-
-            InstallFullScreenState(systemBarsControllerState)
 
             val shouldTriggerEffect by remember { derivedStateOf { lastTouchEvent == MotionEvent.ACTION_UP } }
 
@@ -106,44 +112,4 @@ class VideoPlayerActivity : ComponentActivity() {
         }
     }
 
-}
-
-@Composable
-fun InstallFullScreenState(state: FullScreenState = rememberFullScreenState()) {
-
-    val mState by rememberUpdatedState(newValue = state)
-
-    val context = LocalContext.current
-
-    val insetsController = remember(context) {
-        val window = run {
-            while (context is ContextWrapper) {
-                if (context is Activity) return@run context
-                return@run context.baseContext as Activity
-            }
-            null
-        }?.window ?: return@remember null
-
-        WindowCompat.getInsetsController(window, window.decorView)
-    }
-
-    DisposableEffect(
-        state.isNavigationBarVisible,
-        state.isStatusBarVisible,
-        state.isSystemBarVisible
-    ) {
-        insetsController?.apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
-            systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
-
-            if (mState.isNavigationBarVisible) show(WindowInsetsCompat.Type.navigationBars())
-            else hide(WindowInsetsCompat.Type.navigationBars())
-
-            if (mState.isStatusBarVisible) show(WindowInsetsCompat.Type.statusBars())
-            else hide(WindowInsetsCompat.Type.statusBars())
-        }
-
-        onDispose {}
-    }
 }
