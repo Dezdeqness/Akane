@@ -9,6 +9,7 @@ data class VideoPlayerState(
     val episodes: List<EpisodeUiItem> = listOf(),
     val status: Status = Status.Initial,
     val currentEpisodeId: String = "",
+    val isPlaylistBottomSheetVisible: Boolean = false,
 )
 
 enum class Status {
