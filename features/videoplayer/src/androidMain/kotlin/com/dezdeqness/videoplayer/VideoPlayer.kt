@@ -52,6 +52,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.dezdeqness.videoplayer.core.FullScreenState
+import com.dezdeqness.videoplayer.ui.PlaylistBottomSheet
 import com.dezdeqness.videoplayer.ui.Status
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -249,9 +250,26 @@ actual fun VideoPlayerScreen(
                     cachedTime = playerState.bufferedDuration,
                     onSeekTo = {
                         playerState.seekByTimestamp(it)
+                    },
+                    onPlaylistClick = {
+                        videoPlayerViewModel.onPlaylistActionClicked()
                     }
                 )
             }
+        }
+
+        if (state.isPlaylistBottomSheetVisible) {
+            PlaylistBottomSheet(
+                modifier = Modifier,
+                episodes = state.episodes,
+                currentEpisodeId = state.currentEpisodeId,
+                onSelected = { id ->
+                    videoPlayerViewModel.selectEpisode(id)
+                },
+                onDismiss = {
+                    videoPlayerViewModel.onPlaylistActionClosed()
+                }
+            )
         }
 
     }

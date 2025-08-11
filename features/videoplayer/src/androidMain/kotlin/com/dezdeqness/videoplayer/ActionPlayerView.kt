@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -40,6 +41,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 import kotlin.math.roundToLong
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +53,7 @@ fun ActionPlayerView(
     cachedTime: Long,
     onSeekTo: (Long) -> Unit = {},
     onOptionsClick: () -> Unit = {},
+    onPlaylistClick: () -> Unit = {},
 ) {
     var localCurrentTime by remember { mutableLongStateOf(currentTime) }
     var isUserSliding by remember { mutableStateOf(false) }
@@ -75,6 +78,7 @@ fun ActionPlayerView(
             onLocalTimeChange = { localCurrentTime = it },
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
+            onPlaylistClick = onPlaylistClick,
         )
     } else {
         ActionPlayerViewHorizontal(
@@ -86,6 +90,7 @@ fun ActionPlayerView(
             onLocalTimeChange = { localCurrentTime = it },
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
+            onPlaylistClick = onPlaylistClick,
         )
     }
 
@@ -102,6 +107,7 @@ private fun ActionPlayerViewVertical(
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
+    onPlaylistClick: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -135,7 +141,7 @@ private fun ActionPlayerViewVertical(
                 onUserSlidingChange(false)
                 onSeekTo(localCurrentTime)
             },
-            valueRange = 0f..totalDuration.toFloat(),
+            valueRange = 0f..abs(totalDuration).toFloat(),
             thumb = {
                 val interactionSource = remember { MutableInteractionSource() }
                 val modifier = Modifier
@@ -170,7 +176,17 @@ private fun ActionPlayerViewVertical(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            IconButton(onClick = {  }) {
+            IconButton(
+                onClick = {
+                    onPlaylistClick()
+                },
+            ) {
+                Icon(
+                    Icons.Default.Menu, contentDescription = "Playlist",
+                    tint = Color.White,
+                )
+            }
+            IconButton(onClick = { }) {
                 Icon(
                     Icons.Default.MoreVert, contentDescription = "Options",
                     tint = Color.White,
@@ -191,6 +207,7 @@ private fun ActionPlayerViewHorizontal(
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
+    onPlaylistClick: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -260,7 +277,17 @@ private fun ActionPlayerViewHorizontal(
             modifier = Modifier.padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            IconButton(onClick = {  }) {
+            IconButton(
+                onClick = {
+                    onPlaylistClick()
+                },
+            ) {
+                Icon(
+                    Icons.Default.Menu, contentDescription = "Playlist",
+                    tint = Color.White,
+                )
+            }
+            IconButton(onClick = { }) {
                 Icon(
                     Icons.Default.MoreVert, contentDescription = "Options",
                     tint = Color.White,
