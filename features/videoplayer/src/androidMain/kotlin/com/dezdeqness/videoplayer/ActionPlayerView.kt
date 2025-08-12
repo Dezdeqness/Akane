@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -60,11 +58,11 @@ fun ActionPlayerView(
     cachedTime: Long,
     videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
-    onOptionsClick: () -> Unit = {},
     onPlaylistClick: () -> Unit = {},
     onVideoSpeedClick: () -> Unit = {},
     onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
     onVideoSpeedDismiss: () -> Unit = {},
+    qualityAction: @Composable () -> Unit,
 ) {
     var localCurrentTime by remember { mutableLongStateOf(currentTime) }
     var isUserSliding by remember { mutableStateOf(false) }
@@ -94,6 +92,7 @@ fun ActionPlayerView(
             onVideoSpeedClick = onVideoSpeedClick,
             onVideoSpeedSelect = onVideoSpeedSelect,
             onVideoSpeedDismiss = onVideoSpeedDismiss,
+            qualityAction = qualityAction,
         )
     } else {
         ActionPlayerViewHorizontal(
@@ -110,6 +109,7 @@ fun ActionPlayerView(
             onVideoSpeedClick = onVideoSpeedClick,
             onVideoSpeedSelect = onVideoSpeedSelect,
             onVideoSpeedDismiss = onVideoSpeedDismiss,
+            qualityAction = qualityAction,
         )
     }
 
@@ -131,6 +131,7 @@ private fun ActionPlayerViewVertical(
     onVideoSpeedClick: () -> Unit = {},
     onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
     onVideoSpeedDismiss: () -> Unit = {},
+    qualityAction: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -200,7 +201,7 @@ private fun ActionPlayerViewVertical(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Spacer(modifier = Modifier.weight(1f))
-
+            qualityAction()
             Box {
                 TextButton(
                     onClick = {
@@ -229,12 +230,6 @@ private fun ActionPlayerViewVertical(
                     tint = Color.White,
                 )
             }
-            IconButton(onClick = { }) {
-                Icon(
-                    Icons.Default.MoreVert, contentDescription = "Options",
-                    tint = Color.White,
-                )
-            }
         }
     }
 }
@@ -255,6 +250,7 @@ private fun ActionPlayerViewHorizontal(
     onVideoSpeedClick: () -> Unit = {},
     onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
     onVideoSpeedDismiss: () -> Unit = {},
+    qualityAction: @Composable () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -290,7 +286,7 @@ private fun ActionPlayerViewHorizontal(
                     onUserSlidingChange(false)
                     onSeekTo(localCurrentTime)
                 },
-                valueRange = 0f..totalDuration.toFloat(),
+                valueRange = 0f..abs(totalDuration).toFloat(),
                 thumb = {
                     val interactionSource = remember { MutableInteractionSource() }
                     val modifier = Modifier
@@ -324,6 +320,7 @@ private fun ActionPlayerViewHorizontal(
             modifier = Modifier.padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            qualityAction()
             Box {
                 TextButton(
                     onClick = {
@@ -349,12 +346,6 @@ private fun ActionPlayerViewHorizontal(
             ) {
                 Icon(
                     Icons.Default.Menu, contentDescription = "Playlist",
-                    tint = Color.White,
-                )
-            }
-            IconButton(onClick = { }) {
-                Icon(
-                    Icons.Default.MoreVert, contentDescription = "Options",
                     tint = Color.White,
                 )
             }

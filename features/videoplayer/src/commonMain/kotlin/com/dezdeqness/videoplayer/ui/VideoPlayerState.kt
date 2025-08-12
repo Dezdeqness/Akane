@@ -9,6 +9,7 @@ data class VideoPlayerState(
     val currentEpisodeId: String = "",
     val isPlaylistBottomSheetVisible: Boolean = false,
     val videoSpeedData: VideoSpeedData = VideoSpeedData(),
+    val qualityData: QualityData = QualityData(),
 )
 
 @Immutable
@@ -38,4 +39,15 @@ enum class VideoSpeed(val speed: Float) {
     Fast(1.5f),
     VeryFast(1.75f),
     Fastest(2f)
+}
+
+data class QualityData(
+    val currentVideoQuality: VideoQuality = VideoQuality.q720,
+    val isQualityDropdownVisible: Boolean = false,
+)
+
+enum class VideoQuality(val quality: Int) {
+    q480(480),
+    q720(720),
+    q1080(1080)
 }

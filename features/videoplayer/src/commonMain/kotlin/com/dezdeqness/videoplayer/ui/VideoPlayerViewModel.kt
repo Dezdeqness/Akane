@@ -33,6 +33,7 @@ class VideoPlayerViewModel(
     private val currentEpisodeIdFlow = MutableStateFlow(episodeId)
     private val playlistVisibleFlow = MutableStateFlow(false)
     private val videoSpeedFlow = MutableStateFlow(VideoSpeedData())
+    private val qualityDataFlow = MutableStateFlow(QualityData())
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
@@ -65,13 +66,15 @@ class VideoPlayerViewModel(
         currentEpisodeIdFlow,
         playlistVisibleFlow,
         videoSpeedFlow,
-    ) { videoData, currentEpisodeId, playlistVisible, videoSpeedData ->
+        qualityDataFlow,
+    ) { videoData, currentEpisodeId, playlistVisible, videoSpeedData, qualityData ->
 
         VideoPlayerState(
             videoData = videoData,
             currentEpisodeId = currentEpisodeId.ifEmpty { videoData.episodes.firstOrNull()?.id.orEmpty() },
             isPlaylistBottomSheetVisible = playlistVisible,
             videoSpeedData = videoSpeedData,
+            qualityData = qualityData,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, VideoPlayerState())
 
@@ -97,6 +100,18 @@ class VideoPlayerViewModel(
 
     fun onVideoSpeedSelect(videoSpeed: VideoSpeed) {
         videoSpeedFlow.tryEmit(videoSpeedFlow.value.copy(videoSpeed = videoSpeed))
+    }
+
+    fun onQualityActionClicked() {
+        qualityDataFlow.tryEmit(qualityDataFlow.value.copy(isQualityDropdownVisible = true))
+    }
+
+    fun onQualityActionClosed() {
+        qualityDataFlow.tryEmit(qualityDataFlow.value.copy(isQualityDropdownVisible = false))
+    }
+
+    fun onVideoQualitySelect(videoQuality: VideoQuality) {
+        qualityDataFlow.tryEmit(qualityDataFlow.value.copy(currentVideoQuality = videoQuality))
     }
 
     private sealed class LoadEvent() {

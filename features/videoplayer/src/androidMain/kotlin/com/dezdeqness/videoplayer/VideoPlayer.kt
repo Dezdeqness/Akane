@@ -23,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -53,8 +54,10 @@ import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import com.dezdeqness.videoplayer.core.FullScreenState
 import com.dezdeqness.videoplayer.ui.PlaylistBottomSheet
+import com.dezdeqness.videoplayer.ui.QualityDropdownMenu
 import com.dezdeqness.videoplayer.ui.Status
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
+import com.dezdeqness.videoplayer.ui.VideoQuality
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -135,13 +138,32 @@ actual fun VideoPlayerScreen(
             videoData.episodes.first { it.id == state.currentEpisodeId }
         }
 
+        LaunchedEffect(videoData.episodes, state.qualityData.currentVideoQuality) {
+            if (videoData.episodes.isEmpty()) return@LaunchedEffect
+            exoPlayer.apply {
+
+                val mediaItems = videoData.episodes.map {
+                    val url = when (state.qualityData.currentVideoQuality) {
+                        VideoQuality.q480 -> it.hls480.orEmpty()
+                        VideoQuality.q720 -> it.hls720.orEmpty()
+                        VideoQuality.q1080 -> it.hls1080.orEmpty()
+                    }
+                    MediaItem.fromUri(url.toUri())
+                }
+                val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
+
+                setMediaItems(mediaItems, startIndex, playerState.currentPositionPlayer)
+                prepare()
+
+                playWhenReady = true
+            }
+        }
+
         LaunchedEffect(videoData.episodes, state.currentEpisodeId) {
             if (videoData.episodes.isEmpty()) return@LaunchedEffect
             exoPlayer.apply {
-                val mediaItems = videoData.episodes.map { MediaItem.fromUri(it.hls720!!.toUri()) }
                 val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
-                setMediaItems(mediaItems, startIndex, 0)
-                prepare()
+                seekTo(startIndex, 0)
 
                 playWhenReady = true
             }
@@ -264,6 +286,24 @@ actual fun VideoPlayerScreen(
                     onVideoSpeedClick = videoPlayerViewModel::onVideoSpeedActionClicked,
                     onVideoSpeedSelect = videoPlayerViewModel::onVideoSpeedSelect,
                     onVideoSpeedDismiss = videoPlayerViewModel::onVideoSpeedActionClosed,
+                    qualityAction = {
+                        Box {
+                            TextButton(
+                                onClick = videoPlayerViewModel::onQualityActionClicked
+                            ) {
+                                Text(
+                                    "${state.qualityData.currentVideoQuality.quality}",
+                                    color = Color.White,
+                                )
+                            }
+                            QualityDropdownMenu(
+                                isExpanded = state.qualityData.isQualityDropdownVisible,
+                                currentQuality = state.qualityData.currentVideoQuality,
+                                onQualityChange = videoPlayerViewModel::onVideoQualitySelect,
+                                onDismiss = videoPlayerViewModel::onQualityActionClosed,
+                            )
+                        }
+                    }
                 )
             }
         }
