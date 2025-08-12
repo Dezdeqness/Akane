@@ -4,8 +4,10 @@ import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,6 +45,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import com.dezdeqness.videoplayer.ui.VideoSpeed
+import com.dezdeqness.videoplayer.ui.VideoSpeedData
+import com.dezdeqness.videoplayer.ui.VideoSpeedDropdownMenu
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
@@ -51,9 +58,13 @@ fun ActionPlayerView(
     totalDuration: Long,
     currentTime: Long,
     cachedTime: Long,
+    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
     onOptionsClick: () -> Unit = {},
     onPlaylistClick: () -> Unit = {},
+    onVideoSpeedClick: () -> Unit = {},
+    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
+    onVideoSpeedDismiss: () -> Unit = {},
 ) {
     var localCurrentTime by remember { mutableLongStateOf(currentTime) }
     var isUserSliding by remember { mutableStateOf(false) }
@@ -79,6 +90,10 @@ fun ActionPlayerView(
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
             onPlaylistClick = onPlaylistClick,
+            videoSpeedData = videoSpeedData,
+            onVideoSpeedClick = onVideoSpeedClick,
+            onVideoSpeedSelect = onVideoSpeedSelect,
+            onVideoSpeedDismiss = onVideoSpeedDismiss,
         )
     } else {
         ActionPlayerViewHorizontal(
@@ -91,6 +106,10 @@ fun ActionPlayerView(
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
             onPlaylistClick = onPlaylistClick,
+            videoSpeedData = videoSpeedData,
+            onVideoSpeedClick = onVideoSpeedClick,
+            onVideoSpeedSelect = onVideoSpeedSelect,
+            onVideoSpeedDismiss = onVideoSpeedDismiss,
         )
     }
 
@@ -103,11 +122,15 @@ private fun ActionPlayerViewVertical(
     totalDuration: Long,
     localCurrentTime: Long,
     localCachedTime: Float,
+    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
     onPlaylistClick: () -> Unit = {},
+    onVideoSpeedClick: () -> Unit = {},
+    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
+    onVideoSpeedDismiss: () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -176,6 +199,26 @@ private fun ActionPlayerViewVertical(
                 .padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            Spacer(modifier = Modifier.weight(1f))
+
+            Box {
+                TextButton(
+                    onClick = {
+                        onVideoSpeedClick()
+                    }
+                ) {
+                    Text(
+                        "${videoSpeedData.videoSpeed.speed}x",
+                        color = Color.White,
+                    )
+                }
+                VideoSpeedDropdownMenu(
+                    isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
+                    currentSpeed = videoSpeedData.videoSpeed,
+                    onSpeedChange = onVideoSpeedSelect,
+                    onDismiss = onVideoSpeedDismiss,
+                )
+            }
             IconButton(
                 onClick = {
                     onPlaylistClick()
@@ -203,11 +246,15 @@ private fun ActionPlayerViewHorizontal(
     totalDuration: Long,
     localCurrentTime: Long,
     localCachedTime: Float,
+    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
     onPlaylistClick: () -> Unit = {},
+    onVideoSpeedClick: () -> Unit = {},
+    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
+    onVideoSpeedDismiss: () -> Unit = {},
 ) {
     Row(
         modifier = modifier
@@ -277,6 +324,24 @@ private fun ActionPlayerViewHorizontal(
             modifier = Modifier.padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
+            Box {
+                TextButton(
+                    onClick = {
+                        onVideoSpeedClick()
+                    }
+                ) {
+                    Text(
+                        "${videoSpeedData.videoSpeed.speed}x",
+                        color = Color.White,
+                    )
+                }
+                VideoSpeedDropdownMenu(
+                    isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
+                    currentSpeed = videoSpeedData.videoSpeed,
+                    onSpeedChange = onVideoSpeedSelect,
+                    onDismiss = onVideoSpeedDismiss,
+                )
+            }
             IconButton(
                 onClick = {
                     onPlaylistClick()

@@ -6,7 +6,6 @@ import androidx.lifecycle.viewModelScope
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
-import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.IO
@@ -31,15 +30,14 @@ class VideoPlayerViewModel(
     private var releaseId = savedStateHandle.get<Long>(ID) ?: -1
     private var episodeId = savedStateHandle.get<String>(EPISODE_ID).orEmpty()
 
-    private val titleFlow = MutableStateFlow("")
-    private val statusFlow = MutableStateFlow(Status.Initial)
     private val currentEpisodeIdFlow = MutableStateFlow(episodeId)
     private val playlistVisibleFlow = MutableStateFlow(false)
+    private val videoSpeedFlow = MutableStateFlow(VideoSpeedData())
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    private val episodesFlow: StateFlow<List<EpisodeUiItem>> = loadEvents
+    private val videoDataFlow: StateFlow<VideoData> = loadEvents
         .onStart { emit(LoadEvent.Initial) }
         .flatMapLatest { event ->
             flow {
@@ -49,38 +47,35 @@ class VideoPlayerViewModel(
             }.flowOn(Dispatchers.IO)
         }
         .map { result ->
-            if (result.isFailure) {
-                statusFlow.tryEmit(Status.Error)
-            } else {
-                titleFlow.tryEmit(result.getOrNull()?.name.orEmpty())
-                statusFlow.tryEmit(Status.Loaded)
-            }
-
-            result.getOrNull()
+            val list = result.getOrNull()
                 ?.episodes
                 ?.map(videoPlayerUiMapper::map)
                 ?.sortedBy { it.ordinal }
                 ?: emptyList()
+            VideoData(
+                title = result.getOrNull()?.name.orEmpty(),
+                episodes = list,
+                status = if (result.isFailure) Status.Error else Status.Loaded
+            )
         }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
+        .stateIn(viewModelScope, SharingStarted.Lazily, VideoData(status = Status.Loading))
 
     val videoPlayerStateFlow: StateFlow<VideoPlayerState> = combine(
-        episodesFlow,
-        statusFlow,
-        titleFlow,
+        videoDataFlow,
         currentEpisodeIdFlow,
         playlistVisibleFlow,
-    ) { episodes, status, title, currentEpisodeId, playlistVisible ->
+        videoSpeedFlow,
+    ) { videoData, currentEpisodeId, playlistVisible, videoSpeedData ->
+
         VideoPlayerState(
-            title = title,
-            episodes = episodes,
-            status = status,
-            currentEpisodeId = currentEpisodeId.ifEmpty { episodes.firstOrNull()?.id.orEmpty() },
+            videoData = videoData,
+            currentEpisodeId = currentEpisodeId.ifEmpty { videoData.episodes.firstOrNull()?.id.orEmpty() },
             isPlaylistBottomSheetVisible = playlistVisible,
+            videoSpeedData = videoSpeedData,
         )
     }.stateIn(viewModelScope, SharingStarted.Lazily, VideoPlayerState())
 
-    fun selectEpisode(episodeId: String) {
+    fun onSelectEpisode(episodeId: String) {
         currentEpisodeIdFlow.value = episodeId
     }
 
@@ -90,6 +85,18 @@ class VideoPlayerViewModel(
 
     fun onPlaylistActionClosed() {
         playlistVisibleFlow.tryEmit(false)
+    }
+
+    fun onVideoSpeedActionClicked() {
+        videoSpeedFlow.tryEmit(videoSpeedFlow.value.copy(isVideoSpeedDropdownVisible = true))
+    }
+
+    fun onVideoSpeedActionClosed() {
+        videoSpeedFlow.tryEmit(videoSpeedFlow.value.copy(isVideoSpeedDropdownVisible = false))
+    }
+
+    fun onVideoSpeedSelect(videoSpeed: VideoSpeed) {
+        videoSpeedFlow.tryEmit(videoSpeedFlow.value.copy(videoSpeed = videoSpeed))
     }
 
     private sealed class LoadEvent() {

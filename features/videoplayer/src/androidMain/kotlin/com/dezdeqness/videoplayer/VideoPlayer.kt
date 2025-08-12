@@ -92,6 +92,10 @@ actual fun VideoPlayerScreen(
 
     val context = LocalContext.current
 
+    val videoData = state.videoData
+
+    val videoSpeedData = state.videoSpeedData
+
     val playerView = remember { TextureView(context) }
 
     val exoPlayer = remember {
@@ -119,8 +123,7 @@ actual fun VideoPlayerScreen(
             .fillMaxSize()
             .background(Color.Black)
     ) {
-
-        if (state.status == Status.Initial || state.status == Status.Loading) {
+        if (videoData.status == Status.Initial || videoData.status == Status.Loading) {
             CircularProgressIndicator(
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -128,21 +131,24 @@ actual fun VideoPlayerScreen(
             return@Box
         }
 
-        val currentEpisode = remember(state.episodes, state.currentEpisodeId) {
-            state.episodes.first { it.id == state.currentEpisodeId }
+        val currentEpisode = remember(videoData.episodes, state.currentEpisodeId) {
+            videoData.episodes.first { it.id == state.currentEpisodeId }
         }
 
-        LaunchedEffect(state.episodes, state.currentEpisodeId) {
-
-            if (state.episodes.isEmpty()) return@LaunchedEffect
+        LaunchedEffect(videoData.episodes, state.currentEpisodeId) {
+            if (videoData.episodes.isEmpty()) return@LaunchedEffect
             exoPlayer.apply {
-                val mediaItems = state.episodes.map { MediaItem.fromUri(it.hls720!!.toUri()) }
-                val startIndex = state.episodes.indexOfFirst { it.id == state.currentEpisodeId }
+                val mediaItems = videoData.episodes.map { MediaItem.fromUri(it.hls720!!.toUri()) }
+                val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
                 setMediaItems(mediaItems, startIndex, 0)
                 prepare()
 
                 playWhenReady = true
             }
+        }
+
+        LaunchedEffect(videoSpeedData) {
+            playerState.setSpeed(videoSpeedData.videoSpeed.speed)
         }
 
         AndroidView(
@@ -178,7 +184,7 @@ actual fun VideoPlayerScreen(
                     title = {
                         Column {
                             Text(
-                                state.title,
+                                videoData.title,
                                 style = MaterialTheme.typography.headlineMedium,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -253,7 +259,11 @@ actual fun VideoPlayerScreen(
                     },
                     onPlaylistClick = {
                         videoPlayerViewModel.onPlaylistActionClicked()
-                    }
+                    },
+                    videoSpeedData = videoSpeedData,
+                    onVideoSpeedClick = videoPlayerViewModel::onVideoSpeedActionClicked,
+                    onVideoSpeedSelect = videoPlayerViewModel::onVideoSpeedSelect,
+                    onVideoSpeedDismiss = videoPlayerViewModel::onVideoSpeedActionClosed,
                 )
             }
         }
@@ -261,10 +271,10 @@ actual fun VideoPlayerScreen(
         if (state.isPlaylistBottomSheetVisible) {
             PlaylistBottomSheet(
                 modifier = Modifier,
-                episodes = state.episodes,
+                episodes = state.videoData.episodes,
                 currentEpisodeId = state.currentEpisodeId,
                 onSelected = { id ->
-                    videoPlayerViewModel.selectEpisode(id)
+                    videoPlayerViewModel.onSelectEpisode(id)
                 },
                 onDismiss = {
                     videoPlayerViewModel.onPlaylistActionClosed()
@@ -351,6 +361,10 @@ class VideoPlayerState(
 
     fun seekByTimestamp(timestamp: Long) {
         seekTo(timestamp)
+    }
+
+    fun setSpeed(speed: Float) {
+        setPlaybackSpeed(speed)
     }
 }
 
