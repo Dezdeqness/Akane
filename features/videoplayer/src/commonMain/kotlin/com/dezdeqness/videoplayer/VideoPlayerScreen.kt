@@ -1,9 +1,5 @@
-@file:kotlin.OptIn(ExperimentalMaterial3Api::class)
-
 package com.dezdeqness.videoplayer
 
-import android.view.TextureView
-import androidx.annotation.OptIn
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
 import androidx.compose.animation.core.tween
@@ -17,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -27,44 +24,27 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.core.net.toUri
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.media3.common.Player
-import androidx.media3.common.util.UnstableApi
 import com.dezdeqness.videoplayer.core.FullScreenState
-import com.dezdeqness.videoplayer.ui.PlaylistBottomSheet
-import com.dezdeqness.videoplayer.ui.QualityDropdownMenu
+import com.dezdeqness.videoplayer.core.player.VideoPlayerView
+import com.dezdeqness.videoplayer.core.player.rememberVideoPlayerState
 import com.dezdeqness.videoplayer.ui.Status
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import com.dezdeqness.videoplayer.ui.VideoQuality
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
-import kotlin.math.roundToLong
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
+import com.dezdeqness.videoplayer.ui.composables.ActionPlayerView
+import com.dezdeqness.videoplayer.ui.composables.ControlPlayerView
+import com.dezdeqness.videoplayer.ui.composables.bottomsheet.PlaylistBottomSheet
+import com.dezdeqness.videoplayer.ui.composables.dropdown.QualityDropdownMenu
+import com.dezdeqness.videoplayer.ui.composables.dropdown.VideoSpeedDropdownMenu
+import org.koin.compose.viewmodel.koinViewModel
+import kotlin.text.ifEmpty
 
 private val standardEnter = fadeIn(
     tween(
@@ -82,44 +62,22 @@ private val standardExit = fadeOut(
     )
 )
 
-@OptIn(UnstableApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-actual fun VideoPlayerScreen(
+fun VideoPlayerScreen(
     id: Long,
     episodeId: String,
-    videoPlayerViewModel: VideoPlayerViewModel,
+    videoPlayerViewModel: VideoPlayerViewModel = koinViewModel(),
     systemBarsControllerState: FullScreenState,
-    onBackButtonClicked: () -> Unit,
+    onBackButtonClicked: () -> Unit = {},
 ) {
     val state by videoPlayerViewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
-
-    val context = LocalContext.current
 
     val videoData = state.videoData
 
     val videoSpeedData = state.videoSpeedData
 
-    val playerView = remember { TextureView(context) }
-
-    val exoPlayer = remember {
-        ExoPlayer
-            .Builder(context)
-            .setSeekForwardIncrementMs(10000L)
-            .setSeekBackIncrementMs(10000L)
-            .build()
-    }
-
-    val playerState = rememberVideoPlayerState(
-        exoPlayer = exoPlayer,
-    )
-
-    DisposableEffect(Unit) {
-        onDispose {
-            exoPlayer.clearVideoTextureView(playerView)
-            exoPlayer.stop()
-            exoPlayer.release()
-        }
-    }
+    val playerState = rememberVideoPlayerState()
 
     Box(
         modifier = Modifier
@@ -140,49 +98,46 @@ actual fun VideoPlayerScreen(
 
         LaunchedEffect(videoData.episodes, state.qualityData.currentVideoQuality) {
             if (videoData.episodes.isEmpty()) return@LaunchedEffect
-            exoPlayer.apply {
-
-                val mediaItems = videoData.episodes.map {
-                    val url = when (state.qualityData.currentVideoQuality) {
-                        VideoQuality.q480 -> it.hls480.orEmpty()
-                        VideoQuality.q720 -> it.hls720.orEmpty()
-                        VideoQuality.q1080 -> it.hls1080.orEmpty()
-                    }
-                    MediaItem.fromUri(url.toUri())
+            val mediaItems = videoData.episodes.map {
+                when (state.qualityData.currentVideoQuality) {
+                    VideoQuality.q480 -> it.hls480.orEmpty()
+                    VideoQuality.q720 -> it.hls720.orEmpty()
+                    VideoQuality.q1080 -> it.hls1080.orEmpty()
                 }
-                val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
-
-                setMediaItems(mediaItems, startIndex, playerState.currentPositionPlayer)
-                prepare()
-
-                playWhenReady = true
             }
+            val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
+            playerState.setVideoItems(mediaItems, startIndex, playerState.currentPositionPlayer)
+            playerState.play()
         }
 
         LaunchedEffect(videoData.episodes, state.currentEpisodeId) {
             if (videoData.episodes.isEmpty()) return@LaunchedEffect
-            exoPlayer.apply {
-                val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
-                seekTo(startIndex, 0)
-
-                playWhenReady = true
+            val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
+            playerState.seekByTimestamp(0)
+            if (startIndex > 0) {
+                val mediaItems = videoData.episodes.map {
+                    when (state.qualityData.currentVideoQuality) {
+                        VideoQuality.q480 -> it.hls480.orEmpty()
+                        VideoQuality.q720 -> it.hls720.orEmpty()
+                        VideoQuality.q1080 -> it.hls1080.orEmpty()
+                    }
+                }
+                playerState.setVideoItems(mediaItems, startIndex, 0)
             }
+            playerState.play()
         }
 
         LaunchedEffect(videoSpeedData) {
             playerState.setSpeed(videoSpeedData.videoSpeed.speed)
         }
 
-        AndroidView(
+        VideoPlayerView(
             modifier = Modifier
                 .fillMaxSize()
                 .aspectRatio(16 / 9F),
-            factory = {
-                playerView.apply {
-                    exoPlayer.setVideoTextureView(playerView)
-                }
-            }
+            playerState = playerState,
         )
+
         AnimatedVisibility(
             visible = systemBarsControllerState.isSystemBarVisible,
             enter = standardEnter,
@@ -279,13 +234,6 @@ actual fun VideoPlayerScreen(
                     onSeekTo = {
                         playerState.seekByTimestamp(it)
                     },
-                    onPlaylistClick = {
-                        videoPlayerViewModel.onPlaylistActionClicked()
-                    },
-                    videoSpeedData = videoSpeedData,
-                    onVideoSpeedClick = videoPlayerViewModel::onVideoSpeedActionClicked,
-                    onVideoSpeedSelect = videoPlayerViewModel::onVideoSpeedSelect,
-                    onVideoSpeedDismiss = videoPlayerViewModel::onVideoSpeedActionClosed,
                     qualityAction = {
                         Box {
                             TextButton(
@@ -301,6 +249,34 @@ actual fun VideoPlayerScreen(
                                 currentQuality = state.qualityData.currentVideoQuality,
                                 onQualityChange = videoPlayerViewModel::onVideoQualitySelect,
                                 onDismiss = videoPlayerViewModel::onQualityActionClosed,
+                            )
+                        }
+                    },
+                    speedAction = {
+                        Box {
+                            TextButton(
+                                onClick = videoPlayerViewModel::onVideoSpeedActionClicked,
+                            ) {
+                                Text(
+                                    "${videoSpeedData.videoSpeed.speed}x",
+                                    color = Color.White,
+                                )
+                            }
+                            VideoSpeedDropdownMenu(
+                                isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
+                                currentSpeed = videoSpeedData.videoSpeed,
+                                onSpeedChange = videoPlayerViewModel::onVideoSpeedSelect,
+                                onDismiss = videoPlayerViewModel::onVideoSpeedActionClosed,
+                            )
+                        }
+                    },
+                    playlistAction = {
+                        IconButton(
+                            onClick = videoPlayerViewModel::onPlaylistActionClicked,
+                        ) {
+                            Icon(
+                                Icons.Default.Menu, contentDescription = "Playlist",
+                                tint = Color.White,
                             )
                         }
                     }
@@ -323,119 +299,4 @@ actual fun VideoPlayerScreen(
         }
 
     }
-}
-
-class VideoPlayerState(
-    private val exoPlayer: ExoPlayer,
-    private val scope: CoroutineScope,
-    private val updatePlaybackStateInterval: Duration
-) : ExoPlayer by exoPlayer, Player.Listener {
-    @get:JvmName("isPlayingX")
-    var isPlaying by mutableStateOf(false)
-        private set
-    var durationPlayer by mutableLongStateOf(0)
-        private set
-    var currentPositionPlayer by mutableLongStateOf(0)
-        private set
-    val currentProgress by derivedStateOf {
-        val progress = (currentPositionPlayer / durationPlayer).toFloat()
-        if (progress.isNaN() || progress.isInfinite()) 0f
-        else progress
-    }
-
-    @get:JvmName("getVolumeX")
-    @set:JvmName("setVolumeX")
-    var volume by mutableFloatStateOf(getVolume())
-        private set
-    val isMuted by derivedStateOf { volume == 0f }
-
-    @get:JvmName("isLoadingX")
-    var isLoading by mutableStateOf(false)
-        private set
-    var isBuffering by mutableStateOf(false)
-        private set
-    var bufferedDuration by mutableLongStateOf(0L)
-        private set
-    private var playbackStateJob: Job? = null
-
-    init {
-        addListener(this)
-    }
-
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-        super.onIsPlayingChanged(isPlaying)
-
-        this.isPlaying = isPlaying
-        this.durationPlayer = getDuration()
-    }
-
-    override fun onIsLoadingChanged(isLoading: Boolean) {
-        super.onIsLoadingChanged(isLoading)
-
-        this.isLoading = isLoading
-    }
-
-    override fun onPlaybackStateChanged(playbackState: Int) {
-        super.onPlaybackStateChanged(playbackState)
-
-        isBuffering = playbackState == Player.STATE_BUFFERING
-
-        playbackStateJob?.cancel()
-        playbackStateJob = scope.launch {
-            while (true) {
-                this@VideoPlayerState.currentPositionPlayer = getCurrentPosition()
-                this@VideoPlayerState.bufferedDuration = getTotalBufferedDuration()
-                delay(updatePlaybackStateInterval)
-            }
-        }
-    }
-
-    override fun setVolume(volume: Float) {
-        exoPlayer.volume = volume
-        this.volume = volume
-    }
-
-    fun seekTo(progress: Float) {
-        seekTo((progress * durationPlayer).roundToLong())
-    }
-
-    fun seekByTimestamp(timestamp: Long) {
-        seekTo(timestamp)
-    }
-
-    fun setSpeed(speed: Float) {
-        setPlaybackSpeed(speed)
-    }
-}
-
-@Composable
-fun rememberVideoPlayerState(
-    lifecycleAware: Boolean = true,
-    exoPlayer: ExoPlayer,
-    updatePlaybackStateInterval: Duration = 500.milliseconds
-): VideoPlayerState {
-    val scope = rememberCoroutineScope()
-    val videoPlayerState = remember {
-        VideoPlayerState(exoPlayer, scope, updatePlaybackStateInterval)
-    }
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    if (lifecycleAware) {
-        DisposableEffect(lifecycleOwner) {
-            val observer = LifecycleEventObserver { _, event ->
-                when (event) {
-                    Lifecycle.Event.ON_RESUME -> videoPlayerState.play()
-                    Lifecycle.Event.ON_PAUSE -> videoPlayerState.pause()
-                    else -> {}
-                }
-            }
-            lifecycleOwner.lifecycle.addObserver(observer)
-            onDispose {
-                lifecycleOwner.lifecycle.removeObserver(observer)
-                videoPlayerState.release()
-            }
-        }
-    }
-
-    return videoPlayerState
 }

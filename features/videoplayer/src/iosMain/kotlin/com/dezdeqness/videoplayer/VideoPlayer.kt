@@ -28,7 +28,7 @@ import platform.UIKit.UIView
 
 @OptIn(ExperimentalForeignApi::class)
 @Composable
-actual fun VideoPlayerScreen(
+actual fun VideoPlayer(
     videoUrl: String,
     systemBarsControllerState: FullScreenState,
     onBackButtonClicked: () -> Unit
