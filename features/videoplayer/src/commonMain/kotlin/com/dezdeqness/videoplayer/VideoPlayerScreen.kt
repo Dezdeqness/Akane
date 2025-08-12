@@ -114,7 +114,7 @@ fun VideoPlayerScreen(
             if (videoData.episodes.isEmpty()) return@LaunchedEffect
             val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
             playerState.seekByTimestamp(0)
-            if (startIndex > 0) {
+            if (startIndex >= 0) {
                 val mediaItems = videoData.episodes.map {
                     when (state.qualityData.currentVideoQuality) {
                         VideoQuality.q480 -> it.hls480.orEmpty()
