@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer
+package com.dezdeqness.videoplayer.ui.composables
 
 import akane.features.videoplayer.generated.resources.Res
 import akane.features.videoplayer.generated.resources.*

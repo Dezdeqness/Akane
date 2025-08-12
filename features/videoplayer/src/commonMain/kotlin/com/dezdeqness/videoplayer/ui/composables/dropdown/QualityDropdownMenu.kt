@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer.ui
+package com.dezdeqness.videoplayer.ui.composables.dropdown
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -8,27 +8,28 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.dezdeqness.videoplayer.ui.VideoQuality
 
 @Composable
-fun VideoSpeedDropdownMenu(
+fun QualityDropdownMenu(
     isExpanded: Boolean,
-    currentSpeed: VideoSpeed,
-    onSpeedChange: (VideoSpeed) -> Unit,
+    currentQuality: VideoQuality,
+    onQualityChange: (VideoQuality) -> Unit,
     onDismiss: () -> Unit,
 ) {
     DropdownMenu(
         expanded = isExpanded,
         onDismissRequest = { onDismiss() }
     ) {
-        VideoSpeed.entries.toTypedArray().forEach { item ->
+        VideoQuality.entries.toTypedArray().forEach { item ->
             DropdownMenuItem(
-                text = { Text("${item.speed}x", color = Color.Black) },
+                text = { Text("${item.quality}", color = Color.Black) },
                 onClick = {
-                    onSpeedChange(item)
+                    onQualityChange(item)
                     onDismiss()
                 },
                 trailingIcon = {
-                    if (item == currentSpeed) Icon(Icons.Default.Check, contentDescription = null)
+                    if (item == currentQuality) Icon(Icons.Default.Check, contentDescription = null)
                 }
             )
         }

@@ -1,10 +1,8 @@
-package com.dezdeqness.videoplayer
+package com.dezdeqness.videoplayer.ui.composables
 
-import android.content.res.Configuration.ORIENTATION_PORTRAIT
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -13,16 +11,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -40,12 +33,9 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.videoplayer.ui.VideoSpeed
-import com.dezdeqness.videoplayer.ui.VideoSpeedData
-import com.dezdeqness.videoplayer.ui.VideoSpeedDropdownMenu
+import com.dezdeqness.videoplayer.core.getDeviceConfiguration
 import kotlin.math.abs
 import kotlin.math.roundToLong
 
@@ -56,19 +46,16 @@ fun ActionPlayerView(
     totalDuration: Long,
     currentTime: Long,
     cachedTime: Long,
-    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
-    onPlaylistClick: () -> Unit = {},
-    onVideoSpeedClick: () -> Unit = {},
-    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
-    onVideoSpeedDismiss: () -> Unit = {},
     qualityAction: @Composable () -> Unit,
+    speedAction: @Composable () -> Unit,
+    playlistAction: @Composable () -> Unit,
 ) {
     var localCurrentTime by remember { mutableLongStateOf(currentTime) }
     var isUserSliding by remember { mutableStateOf(false) }
     var localCachedTime by remember { mutableFloatStateOf(cachedTime.toFloat()) }
 
-    val isVertical = LocalConfiguration.current.orientation == ORIENTATION_PORTRAIT
+    val isVertical = getDeviceConfiguration().isPortrait
 
     LaunchedEffect(currentTime, cachedTime) {
         if (!isUserSliding) {
@@ -87,12 +74,9 @@ fun ActionPlayerView(
             onLocalTimeChange = { localCurrentTime = it },
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
-            onPlaylistClick = onPlaylistClick,
-            videoSpeedData = videoSpeedData,
-            onVideoSpeedClick = onVideoSpeedClick,
-            onVideoSpeedSelect = onVideoSpeedSelect,
-            onVideoSpeedDismiss = onVideoSpeedDismiss,
             qualityAction = qualityAction,
+            speedAction = speedAction,
+            playlistAction = playlistAction,
         )
     } else {
         ActionPlayerViewHorizontal(
@@ -104,12 +88,9 @@ fun ActionPlayerView(
             onLocalTimeChange = { localCurrentTime = it },
             onLocalCachedChange = { localCachedTime = it },
             onSeekTo = onSeekTo,
-            onPlaylistClick = onPlaylistClick,
-            videoSpeedData = videoSpeedData,
-            onVideoSpeedClick = onVideoSpeedClick,
-            onVideoSpeedSelect = onVideoSpeedSelect,
-            onVideoSpeedDismiss = onVideoSpeedDismiss,
             qualityAction = qualityAction,
+            speedAction = speedAction,
+            playlistAction = playlistAction,
         )
     }
 
@@ -122,16 +103,13 @@ private fun ActionPlayerViewVertical(
     totalDuration: Long,
     localCurrentTime: Long,
     localCachedTime: Float,
-    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
-    onPlaylistClick: () -> Unit = {},
-    onVideoSpeedClick: () -> Unit = {},
-    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
-    onVideoSpeedDismiss: () -> Unit = {},
     qualityAction: @Composable () -> Unit,
+    speedAction: @Composable () -> Unit,
+    playlistAction: @Composable () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -201,35 +179,10 @@ private fun ActionPlayerViewVertical(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Spacer(modifier = Modifier.weight(1f))
+
             qualityAction()
-            Box {
-                TextButton(
-                    onClick = {
-                        onVideoSpeedClick()
-                    }
-                ) {
-                    Text(
-                        "${videoSpeedData.videoSpeed.speed}x",
-                        color = Color.White,
-                    )
-                }
-                VideoSpeedDropdownMenu(
-                    isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
-                    currentSpeed = videoSpeedData.videoSpeed,
-                    onSpeedChange = onVideoSpeedSelect,
-                    onDismiss = onVideoSpeedDismiss,
-                )
-            }
-            IconButton(
-                onClick = {
-                    onPlaylistClick()
-                },
-            ) {
-                Icon(
-                    Icons.Default.Menu, contentDescription = "Playlist",
-                    tint = Color.White,
-                )
-            }
+            speedAction()
+            playlistAction()
         }
     }
 }
@@ -241,16 +194,13 @@ private fun ActionPlayerViewHorizontal(
     totalDuration: Long,
     localCurrentTime: Long,
     localCachedTime: Float,
-    videoSpeedData: VideoSpeedData,
     onSeekTo: (Long) -> Unit = {},
     onUserSlidingChange: (Boolean) -> Unit,
     onLocalTimeChange: (Long) -> Unit,
     onLocalCachedChange: (Float) -> Unit,
-    onPlaylistClick: () -> Unit = {},
-    onVideoSpeedClick: () -> Unit = {},
-    onVideoSpeedSelect: (VideoSpeed) -> Unit = {},
-    onVideoSpeedDismiss: () -> Unit = {},
     qualityAction: @Composable () -> Unit,
+    speedAction: @Composable () -> Unit,
+    playlistAction: @Composable () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -321,34 +271,8 @@ private fun ActionPlayerViewHorizontal(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             qualityAction()
-            Box {
-                TextButton(
-                    onClick = {
-                        onVideoSpeedClick()
-                    }
-                ) {
-                    Text(
-                        "${videoSpeedData.videoSpeed.speed}x",
-                        color = Color.White,
-                    )
-                }
-                VideoSpeedDropdownMenu(
-                    isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
-                    currentSpeed = videoSpeedData.videoSpeed,
-                    onSpeedChange = onVideoSpeedSelect,
-                    onDismiss = onVideoSpeedDismiss,
-                )
-            }
-            IconButton(
-                onClick = {
-                    onPlaylistClick()
-                },
-            ) {
-                Icon(
-                    Icons.Default.Menu, contentDescription = "Playlist",
-                    tint = Color.White,
-                )
-            }
+            speedAction()
+            playlistAction()
         }
     }
 }

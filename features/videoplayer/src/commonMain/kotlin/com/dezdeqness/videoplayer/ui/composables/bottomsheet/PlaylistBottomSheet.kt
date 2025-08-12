@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer.ui
+package com.dezdeqness.videoplayer.ui.composables.bottomsheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
-import kotlin.text.ifEmpty
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
