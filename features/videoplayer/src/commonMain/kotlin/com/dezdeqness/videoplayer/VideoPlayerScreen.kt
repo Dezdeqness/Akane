@@ -1,10 +1,6 @@
 package com.dezdeqness.videoplayer
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.CubicBezierEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,33 +36,17 @@ import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import com.dezdeqness.videoplayer.ui.VideoQuality
 import com.dezdeqness.videoplayer.ui.composables.ActionPlayerView
 import com.dezdeqness.videoplayer.ui.composables.ControlPlayerView
+import com.dezdeqness.videoplayer.ui.composables.ProgressSlider
+import com.dezdeqness.videoplayer.ui.composables.VideoLayout
 import com.dezdeqness.videoplayer.ui.composables.bottomsheet.PlaylistBottomSheet
 import com.dezdeqness.videoplayer.ui.composables.dropdown.QualityDropdownMenu
 import com.dezdeqness.videoplayer.ui.composables.dropdown.VideoSpeedDropdownMenu
 import org.koin.compose.viewmodel.koinViewModel
 import kotlin.text.ifEmpty
 
-private val standardEnter = fadeIn(
-    tween(
-        durationMillis = 250,
-        delayMillis = 0,
-        easing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1.0f),
-    )
-)
-
-private val standardExit = fadeOut(
-    tween(
-        durationMillis = 200,
-        delayMillis = 0,
-        easing = CubicBezierEasing(0.3f, 0.0f, 1f, 1f),
-    )
-)
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VideoPlayerScreen(
-    id: Long,
-    episodeId: String,
     videoPlayerViewModel: VideoPlayerViewModel = koinViewModel(),
     systemBarsControllerState: FullScreenState,
     onBackButtonClicked: () -> Unit = {},
@@ -131,23 +111,12 @@ fun VideoPlayerScreen(
             playerState.setSpeed(videoSpeedData.videoSpeed.speed)
         }
 
-        VideoPlayerView(
-            modifier = Modifier
-                .fillMaxSize()
-                .aspectRatio(16 / 9F),
-            playerState = playerState,
-        )
-
-        AnimatedVisibility(
-            visible = systemBarsControllerState.isSystemBarVisible,
-            enter = standardEnter,
-            exit = standardExit,
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+        VideoLayout(
+            modifier = Modifier.fillMaxSize(),
+            isSystemBarVisible = systemBarsControllerState.isSystemBarVisible,
+            appbar = {
                 TopAppBar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .align(Alignment.TopCenter)
+                    modifier = Modifier.fillMaxWidth(),
 //                        .padding(
 //                            top = if (systemBarsControllerState.isSystemBarVisible) WindowInsets
 //                                .systemBars
@@ -157,7 +126,6 @@ fun VideoPlayerScreen(
 //                                0.dp
 //                            }
 //                        )
-                    ,
                     title = {
                         Column {
                             Text(
@@ -188,51 +156,25 @@ fun VideoPlayerScreen(
                         }
                     }
                 )
-            }
-        }
-        AnimatedVisibility(
-            visible = systemBarsControllerState.isSystemBarVisible,
-            enter = standardEnter,
-            exit = standardExit,
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
-                ControlPlayerView(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(0.2f))
-                        .align(Alignment.Center),
-                    isPlaying = playerState.isPlaying,
-                    isLoading = playerState.isBuffering,
-                    onSeekForward = {
-                        playerState.seekForward()
-                    },
-                    onSeekBackward = {
-                        playerState.seekBack()
-                    },
-                    onPlayPauseToggle = {
-                        if (it) {
-                            playerState.pause()
-                        } else {
-                            playerState.play()
-                        }
-                    }
+            },
+            videoPlayerView = { modifier ->
+                VideoPlayerView(
+                    modifier = modifier.aspectRatio(16 / 9F),
+                    playerState = playerState,
                 )
-            }
-        }
-
-        AnimatedVisibility(
-            visible = systemBarsControllerState.isSystemBarVisible,
-            enter = standardEnter,
-            exit = standardExit,
-        ) {
-            Box(modifier = Modifier.fillMaxSize()) {
+            },
+            actionPlayerView = {
                 ActionPlayerView(
-                    modifier = Modifier.align(Alignment.BottomCenter),
-                    totalDuration = playerState.durationPlayer,
-                    currentTime = playerState.currentPositionPlayer,
-                    cachedTime = playerState.bufferedDuration,
-                    onSeekTo = {
-                        playerState.seekByTimestamp(it)
+                    progressSlider = { modifier ->
+                        ProgressSlider(
+                            modifier = modifier,
+                            totalDuration = playerState.durationPlayer,
+                            currentTime = playerState.currentPositionPlayer,
+                            cachedTime = playerState.bufferedDuration,
+                            onSeekTo = {
+                                playerState.seekByTimestamp(it)
+                            }
+                        )
                     },
                     qualityAction = {
                         Box {
@@ -281,8 +223,28 @@ fun VideoPlayerScreen(
                         }
                     }
                 )
+            },
+            controlPlayerView = {
+                ControlPlayerView(
+                    modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.2f)),
+                    isPlaying = playerState.isPlaying,
+                    isLoading = playerState.isBuffering,
+                    onSeekForward = {
+                        playerState.seekForward()
+                    },
+                    onSeekBackward = {
+                        playerState.seekBack()
+                    },
+                    onPlayPauseToggle = {
+                        if (it) {
+                            playerState.pause()
+                        } else {
+                            playerState.play()
+                        }
+                    }
+                )
             }
-        }
+        )
 
         if (state.isPlaylistBottomSheetVisible) {
             PlaylistBottomSheet(

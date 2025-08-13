@@ -85,8 +85,6 @@ class VideoPlayerActivity : ComponentActivity() {
                     }
             ) {
                 VideoPlayerScreen(
-                    id = id,
-                    episodeId = episodeId,
                     systemBarsControllerState = systemBarsControllerState,
                     onBackButtonClicked = {
                         finish()

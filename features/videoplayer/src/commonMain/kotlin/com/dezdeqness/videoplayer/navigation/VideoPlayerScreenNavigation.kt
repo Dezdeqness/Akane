@@ -33,8 +33,6 @@ fun NavGraphBuilder.videoPlayerScreen(
         val episodeId = entry.savedStateHandle.get<String>(EPISODE_ID) ?: throw NullPointerException()
 
         VideoPlayerPage(
-            id = id,
-            episodeId = episodeId,
             onBackPressed = onBackPressed,
         )
     }

@@ -10,8 +10,6 @@ import com.dezdeqness.videoplayer.core.rememberFullScreenState
 
 @Composable
 fun VideoPlayerPage(
-    id: Long,
-    episodeId: String,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
 ) {
@@ -20,8 +18,6 @@ fun VideoPlayerPage(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         VideoPlayerScreen(
-            id = id,
-            episodeId = episodeId,
             systemBarsControllerState = rememberFullScreenState()
         )
     }
