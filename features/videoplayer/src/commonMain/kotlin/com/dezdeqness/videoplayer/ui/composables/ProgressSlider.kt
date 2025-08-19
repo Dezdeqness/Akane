@@ -115,10 +115,12 @@ fun ProgressSlider(
     }
 }
 
-private fun formatTime(seconds: Long): String {
-    val minutes = seconds / 60
-    val secs = seconds % 60
-    return "%02d:%02d".format(minutes, secs)
+fun formatTime(duration: Long): String {
+    val minutes = duration / 60
+    val seconds = duration % 60
+    val min = minutes.toString().padStart(2, '0')
+    val sec = seconds.toString().padStart(2, '0')
+    return "$min:$sec"
 }
 
 @Composable

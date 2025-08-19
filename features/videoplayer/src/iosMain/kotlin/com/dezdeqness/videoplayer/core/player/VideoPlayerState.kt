@@ -7,7 +7,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import platform.AVFoundation.AVPlayer
+import platform.AVFoundation.AVQueuePlayer
 import kotlin.time.Duration
 
 @Composable
@@ -17,7 +17,7 @@ actual fun rememberVideoPlayerState(
 ): VideoPlayerState {
     val scope = rememberCoroutineScope()
     val lifecycleOwner = LocalLifecycleOwner.current
-    val avPlayer = remember { AVPlayer() }
+    val avPlayer = remember { AVQueuePlayer() }
     val videoPlayerState = remember {
         VideoPlayerState(IosVideoPlayer(avPlayer), scope, updatePlaybackStateInterval)
     }

@@ -18,7 +18,8 @@ fun VideoPlayerPage(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         VideoPlayerScreen(
-            systemBarsControllerState = rememberFullScreenState()
+            systemBarsControllerState = rememberFullScreenState(),
+            onBackButtonClicked = onBackPressed,
         )
     }
 }
