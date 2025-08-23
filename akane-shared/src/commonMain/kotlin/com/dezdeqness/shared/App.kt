@@ -1,5 +1,7 @@
 package com.dezdeqness.shared
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -9,11 +11,12 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import org.jetbrains.compose.ui.tooling.preview.Preview
 
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.feed.navigation.feedScreen
@@ -24,7 +27,6 @@ import com.dezdeqness.videoplayer.core.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
 
 @Composable
-@Preview
 fun App() {
     val controller = remember { videoController() }
 
@@ -39,9 +41,7 @@ fun App() {
             composable(route = "root") {
                 val navController = rememberNavController()
 
-                var currentRoute by remember {
-                    mutableStateOf(AkaneBottomTabModel.HOME)
-                }
+                val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
 
                 Scaffold(
                     bottomBar = {
@@ -51,13 +51,21 @@ fun App() {
                         ) {
                             AkaneBottomTabModel.entries.forEach { item ->
                                 NavigationBarItem(
-                                    selected = currentRoute == item,
+                                    selected = currentDestination == item.route,
                                     onClick = {
-                                        currentRoute = item
+                                        if (currentDestination != item.route) {
+                                            navController.navigate(item.route) {
+                                                popUpTo(navController.graph.startDestinationId) {
+                                                    saveState = true
+                                                }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                        }
                                     },
                                     icon = {
                                         Icon(
-                                            imageVector = if (currentRoute == item) item.selectedIcon else item.unselectedIcon,
+                                            imageVector = if (currentDestination == item.route) item.selectedIcon else item.unselectedIcon,
                                             contentDescription = null,
                                         )
                                     },
@@ -71,17 +79,26 @@ fun App() {
                         startDestination = FEED_ROUTE,
                         modifier = Modifier.fillMaxSize().padding(padding)
                     ) {
-                        feedScreen(navController::navigateToDetailsScreen)
-                        detailsScreen(
-                            onBackPressed = navController::navigateUp,
-                            onEpisodeClick = { id, episodeId ->
-                                controller.navigateToPlayer(rootController, id, episodeId)
-                            },
-                        )
+                        feedScreen(rootController::navigateToDetailsScreen)
+                        composable("personal") {
+                            Box(modifier = Modifier.fillMaxSize().background(Color.Red))
+                        }
+                        composable("search") {
+                            Box(modifier = Modifier.fillMaxSize().background(Color.Blue))
+                        }
+                        composable("profile") {
+                            Box(modifier = Modifier.fillMaxSize().background(Color.Green))
+                        }
                     }
                 }
             }
 
+            detailsScreen(
+                onBackPressed = rootController::navigateUp,
+                onEpisodeClick = { id, episodeId ->
+                    controller.navigateToPlayer(rootController, id, episodeId)
+                },
+            )
             videoPlayerScreen(onBackPressed = rootController::navigateUp)
         }
 
