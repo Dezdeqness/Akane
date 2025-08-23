@@ -3,6 +3,7 @@ package com.dezdeqness.shared
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.feed.navigation.FEED_ROUTE
+import com.dezdeqness.personal.navigation.PERSONAL_ROUTE
 
 
 internal enum class AkaneBottomTabModel(
@@ -16,7 +17,7 @@ internal enum class AkaneBottomTabModel(
         unselectedIcon = AkaneIcons.HomeBorder,
     ),
     PERSONAL(
-        route = "personal",
+        route = PERSONAL_ROUTE,
         selectedIcon = AkaneIcons.Personal,
         unselectedIcon = AkaneIcons.PersonalBorder,
     ),

@@ -23,6 +23,7 @@ import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.details.navigation.detailsScreen
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
+import com.dezdeqness.personal.navigation.personalScreen
 import com.dezdeqness.videoplayer.core.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
 
@@ -80,9 +81,7 @@ fun App() {
                         modifier = Modifier.fillMaxSize().padding(padding)
                     ) {
                         feedScreen(rootController::navigateToDetailsScreen)
-                        composable("personal") {
-                            Box(modifier = Modifier.fillMaxSize().background(Color.Red))
-                        }
+                        personalScreen()
                         composable("search") {
                             Box(modifier = Modifier.fillMaxSize().background(Color.Blue))
                         }
