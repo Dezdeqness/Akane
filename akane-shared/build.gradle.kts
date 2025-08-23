@@ -27,6 +27,7 @@ kotlin {
             implementation(projects.features.feed)
             implementation(projects.features.details)
             implementation(projects.features.videoplayer)
+            implementation(projects.features.personal)
 
             implementation(compose.runtime)
             implementation(compose.material3)
