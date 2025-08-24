@@ -2,12 +2,12 @@ package com.dezdeqness.personal.navigation
 
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import com.dezdeqness.personal.ui.PersonalPage
+import com.dezdeqness.personal.ui.PersonalStandalonePage
 
 const val PERSONAL_ROUTE = "personal_route"
 
-fun NavGraphBuilder.personalScreen() {
+fun NavGraphBuilder.personalScreen(onItemClicked: (Long) -> Unit) {
     composable(PERSONAL_ROUTE) {
-        PersonalPage()
+        PersonalStandalonePage(onItemClicked = onItemClicked)
     }
 }

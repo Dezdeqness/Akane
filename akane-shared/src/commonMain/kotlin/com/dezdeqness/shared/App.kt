@@ -81,7 +81,7 @@ fun App() {
                         modifier = Modifier.fillMaxSize().padding(padding)
                     ) {
                         feedScreen(rootController::navigateToDetailsScreen)
-                        personalScreen()
+                        personalScreen(rootController::navigateToDetailsScreen)
                         composable("search") {
                             Box(modifier = Modifier.fillMaxSize().background(Color.Blue))
                         }
