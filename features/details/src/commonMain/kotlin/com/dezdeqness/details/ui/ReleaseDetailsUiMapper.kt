@@ -12,7 +12,7 @@ class ReleaseDetailsUiMapper(
         id = item.id,
         title = item.name,
         summary = item.description,
-        imageUrl = BaseUrl.BASE_URL_IMAGES + item.poster,
+        imageUrl = item.poster,
         genres = item.genres,
         episodesTotal = item.episodesTotal,
         episodes = item.episodes.map(episodesUiMapper::map)

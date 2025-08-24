@@ -51,6 +51,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.LocalPlatformContext
 import coil3.request.ImageRequest
 import coil3.util.DebugLogger
+import com.dezdeqness.designsystem.icons.AkaneIcons
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -112,7 +113,24 @@ fun DetailsPage(
                         } else {
                             MaterialTheme.colorScheme.primary
                         }
-                    )
+                    ),
+                actions = {
+                    if (state.status == Status.Loaded) {
+                        IconButton(
+                            onClick = {
+                                val details = state.details ?: return@IconButton
+                                viewModel.onFavouriteClicked(details.id)
+                            },
+                        ) {
+                            val isFavourite = state.isFavourite
+                            Icon(
+                                if (isFavourite) AkaneIcons.Favorite else AkaneIcons.FavoriteBorder,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        }
+                    }
+                }
             )
         }
     ) {
@@ -250,7 +268,10 @@ fun DetailsPage(
                                     contentScale = ContentScale.FillWidth,
                                     contentDescription = null,
                                     imageLoader = loader,
-                                    colorFilter = ColorFilter.tint(Color.Gray, blendMode = BlendMode.Darken),
+                                    colorFilter = ColorFilter.tint(
+                                        Color.Gray,
+                                        blendMode = BlendMode.Darken
+                                    ),
                                     modifier = Modifier
                                         .height(200.dp)
                                         .blur(

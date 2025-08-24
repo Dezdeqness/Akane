@@ -17,6 +17,8 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(libs.material.icons.core)
+
+            implementation(project(":features:personal"))
         }
         val desktopMain by getting
 

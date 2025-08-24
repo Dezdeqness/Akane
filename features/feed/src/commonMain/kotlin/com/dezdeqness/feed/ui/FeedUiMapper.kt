@@ -2,7 +2,6 @@ package com.dezdeqness.feed.ui
 
 import com.dezdeqness.feed.domain.model.ReleaseEntity
 import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
-import com.dezdeqness.network.constants.BaseUrl
 
 class FeedUiMapper {
 
@@ -10,7 +9,7 @@ class FeedUiMapper {
         id = item.id,
         title = item.name,
         summary = item.description,
-        imageUrl = BaseUrl.BASE_URL_IMAGES + item.poster,
+        imageUrl = item.poster,
     )
 
 }
