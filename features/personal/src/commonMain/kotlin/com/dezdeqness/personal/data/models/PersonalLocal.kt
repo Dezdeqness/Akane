@@ -9,4 +9,5 @@ data class PersonalLocal(
     val id: Long,
     val name: String,
     val poster: String,
+    val createdTimeStamp: Long,
 )

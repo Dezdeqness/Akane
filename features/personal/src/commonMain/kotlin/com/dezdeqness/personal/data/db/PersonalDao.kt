@@ -15,10 +15,10 @@ interface PersonalDao {
     @Query("DELETE from 'personal' WHERE id = :id")
     suspend fun delete(id: Long)
 
-    @Query("SELECT * FROM 'personal'")
+    @Query("SELECT * FROM 'personal' ORDER BY createdTimeStamp DESC")
     fun getPersonalAsFlow(): Flow<List<PersonalLocal>>
 
-    @Query("SELECT * FROM 'personal'")
+    @Query("SELECT * FROM 'personal' ORDER BY createdTimeStamp DESC")
     suspend fun getPersonalList(): List<PersonalLocal>
 
     @Query("SELECT EXISTS(SELECT 1 FROM 'personal' WHERE id = :id)")
