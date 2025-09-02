@@ -43,19 +43,19 @@ class FeedApiDatasourceImpl(
 
     override suspend fun getFeedBestRating(limit: Int) = getFeedByQueryMap(
         limit = limit, queryMap = mapOf(
-            "fsorting" to "RATING_DESC",
+            "f[sorting]" to "RATING_DESC",
         )
     )
 
     override suspend fun getFeedOngoing(limit: Int) = getFeedByQueryMap(
         limit = limit, queryMap = mapOf(
-            "fproduction_statuses" to "IS_ONGOING",
+            "f[publish_statuses]" to "IS_ONGOING",
         )
     )
 
-    override suspend fun getFeedInProduction(limit: Int) = getFeedByQueryMap(
+    override suspend fun getFeedReleased(limit: Int) = getFeedByQueryMap(
         limit = limit, queryMap = mapOf(
-            "fproduction_statuses" to "IS_IN_PRODUCTION",
+            "f[production_statuses]" to "IS_NOT_IN_PRODUCTION",
         )
     )
 

@@ -2,6 +2,7 @@ package com.dezdeqness.shared.di
 
 import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.feed.di.feedModule
+import com.dezdeqness.home.di.homeModule
 import com.dezdeqness.personal.di.personalModule
 import com.dezdeqness.videoplayer.di.videoPlayerModule
 import org.koin.core.context.startKoin
@@ -13,6 +14,7 @@ object KoinModules {
         detailsModule,
         videoPlayerModule,
         personalModule,
+        homeModule,
     )
 
     fun initKoinModules() {

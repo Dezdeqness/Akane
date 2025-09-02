@@ -7,5 +7,5 @@ interface FeedRepository {
     suspend fun getFeed(page: Int): Result<FeedEntity>
     suspend fun getFeedBestRating(): Result<List<ReleaseEntity>>
     suspend fun getFeedOngoing(): Result<List<ReleaseEntity>>
-    suspend fun getFeedInProduction(): Result<List<ReleaseEntity>>
+    suspend fun getFeedReleased(): Result<List<ReleaseEntity>>
 }

@@ -7,5 +7,5 @@ interface FeedApiDatasource {
     suspend fun getFeed(page: Int): Result<FeedEntity>
     suspend fun getFeedBestRating(limit: Int = 10): Result<List<ReleaseEntity>>
     suspend fun getFeedOngoing(limit: Int = 10): Result<List<ReleaseEntity>>
-    suspend fun getFeedInProduction(limit: Int = 10): Result<List<ReleaseEntity>>
+    suspend fun getFeedReleased(limit: Int = 10): Result<List<ReleaseEntity>>
 }
