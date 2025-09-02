@@ -1,7 +1,5 @@
 package com.dezdeqness.shared
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -11,18 +9,17 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.details.navigation.detailsScreen
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
+import com.dezdeqness.home.navigation.HOME_ROUTE
+import com.dezdeqness.home.navigation.homeScreen
 import com.dezdeqness.personal.navigation.personalScreen
 import com.dezdeqness.videoplayer.core.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
@@ -77,17 +74,12 @@ fun App() {
                 ) { padding ->
                     NavHost(
                         navController = navController,
-                        startDestination = FEED_ROUTE,
+                        startDestination = HOME_ROUTE,
                         modifier = Modifier.fillMaxSize().padding(padding)
                     ) {
+                        homeScreen(rootController::navigateToDetailsScreen)
                         feedScreen(rootController::navigateToDetailsScreen)
                         personalScreen(rootController::navigateToDetailsScreen)
-                        composable("search") {
-                            Box(modifier = Modifier.fillMaxSize().background(Color.Blue))
-                        }
-                        composable("profile") {
-                            Box(modifier = Modifier.fillMaxSize().background(Color.Green))
-                        }
                     }
                 }
             }

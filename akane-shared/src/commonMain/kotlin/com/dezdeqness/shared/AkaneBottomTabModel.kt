@@ -3,8 +3,8 @@ package com.dezdeqness.shared
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.feed.navigation.FEED_ROUTE
+import com.dezdeqness.home.navigation.HOME_ROUTE
 import com.dezdeqness.personal.navigation.PERSONAL_ROUTE
-
 
 internal enum class AkaneBottomTabModel(
     val route: String,
@@ -12,7 +12,7 @@ internal enum class AkaneBottomTabModel(
     val unselectedIcon: ImageVector,
 ) {
     HOME(
-        route = FEED_ROUTE,
+        route = HOME_ROUTE,
         selectedIcon = AkaneIcons.Home,
         unselectedIcon = AkaneIcons.HomeBorder,
     ),
@@ -22,13 +22,8 @@ internal enum class AkaneBottomTabModel(
         unselectedIcon = AkaneIcons.PersonalBorder,
     ),
     SEARCH(
-        route = "search",
+        route = FEED_ROUTE,
         selectedIcon = AkaneIcons.Search,
         unselectedIcon = AkaneIcons.SearchBorder,
-    ),
-    PROFILE(
-        route = "profile",
-        selectedIcon = AkaneIcons.Profile,
-        unselectedIcon = AkaneIcons.ProfileBoarder,
     ),
 }

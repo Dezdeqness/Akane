@@ -28,6 +28,7 @@ kotlin {
             implementation(projects.features.details)
             implementation(projects.features.videoplayer)
             implementation(projects.features.personal)
+            implementation(projects.features.home)
 
             implementation(compose.runtime)
             implementation(compose.material3)
