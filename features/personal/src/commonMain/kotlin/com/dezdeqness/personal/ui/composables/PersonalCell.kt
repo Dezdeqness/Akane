@@ -13,9 +13,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalMinimumInteractiveComponentEnforcement
+import androidx.compose.material3.LocalMinimumInteractiveComponentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,7 +73,7 @@ fun PersonalCell(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
+                .padding(start = 8.dp, top = 8.dp),
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.End,
         ) {
@@ -85,15 +88,17 @@ fun PersonalCell(
             )
 
             Row(verticalAlignment = Alignment.Bottom) {
-                IconButton(
-                    onClick = {
-                        onRemoveItemClicked(item.id)
+                CompositionLocalProvider(LocalMinimumInteractiveComponentSize provides 24.dp) {
+                    IconButton(
+                        onClick = {
+                            onRemoveItemClicked(item.id)
+                        }
+                    ) {
+                        Icon(
+                            AkaneIcons.Favorite, contentDescription = null,
+                            tint = Color.Black,
+                        )
                     }
-                ) {
-                    Icon(
-                        AkaneIcons.Favorite, contentDescription = null,
-                        tint = Color.Black,
-                    )
                 }
             }
         }

@@ -11,9 +11,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.personal.ui.composables.PersonalCell
@@ -31,13 +33,15 @@ fun PersonalPage(
 
     Scaffold(
         modifier = modifier,
+        containerColor = Color.White,
         topBar = {
             TopAppBar(
                 title = {
                     Text("Сохраненные")
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
             )
-        }
+        },
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
             if (state.list.isEmpty()) {
