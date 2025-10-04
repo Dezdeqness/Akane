@@ -10,7 +10,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kermit)
-            implementation(libs.core)
+            api(libs.core)
         }
         val desktopMain by getting
 

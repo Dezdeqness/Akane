@@ -3,11 +3,10 @@ package com.dezdeqness.feed.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.feed.domain.model.FeedEntity
 import com.dezdeqness.feed.domain.repository.FeedRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -21,6 +20,7 @@ import kotlinx.coroutines.flow.stateIn
 class FeedViewModel(
     private val feedRepository: FeedRepository,
     private val feedUiMapper: FeedUiMapper,
+    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
@@ -40,7 +40,7 @@ class FeedViewModel(
                         result = result,
                     )
                 )
-            }.flowOn(Dispatchers.IO)
+            }.flowOn(coroutineDispatcherProvider.io())
         }
         .scan(FeedState()) { previous, loadResult ->
             val event = loadResult.event

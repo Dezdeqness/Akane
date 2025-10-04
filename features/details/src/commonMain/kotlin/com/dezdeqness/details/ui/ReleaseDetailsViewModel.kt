@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.details.navigation.RELEASE_ID
@@ -28,6 +29,7 @@ class ReleaseDetailsViewModel(
     private val releaseRepository: ReleaseRepository,
     private val personalRepository: PersonalRepository,
     private val releaseDetailsUiMapper: ReleaseDetailsUiMapper,
+    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -43,7 +45,7 @@ class ReleaseDetailsViewModel(
             flow {
                 val result = releaseRepository.getReleaseById(releaseId)
                 emit(LoadResult(event, result))
-            }.flowOn(Dispatchers.IO)
+            }.flowOn(coroutineDispatcherProvider.io())
         }
         .scan(ReleaseDetailsState()) { previous, result ->
             result

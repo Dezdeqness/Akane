@@ -3,12 +3,11 @@ package com.dezdeqness.videoplayer.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -25,6 +24,7 @@ class VideoPlayerViewModel(
     private val releaseRepository: ReleaseRepository,
     private val videoPlayerUiMapper: VideoPlayerUiMapper,
     private val savedStateHandle: SavedStateHandle,
+    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
     private var releaseId = savedStateHandle.get<Long>(ID) ?: -1
@@ -45,7 +45,7 @@ class VideoPlayerViewModel(
                 val result = releaseRepository.getReleaseById(releaseId)
 
                 emit(result)
-            }.flowOn(Dispatchers.IO)
+            }.flowOn(coroutineDispatcherProvider.io())
         }
         .map { result ->
             val list = result.getOrNull()

@@ -2,11 +2,10 @@ package com.dezdeqness.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.feed.domain.repository.FeedRepository
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -25,6 +24,7 @@ import kotlin.collections.component3
 class HomeViewModel(
     private val feedRepository: FeedRepository,
     private val homeUiMapper: HomeUiMapper,
+    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
     private val reloadTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -57,7 +57,7 @@ class HomeViewModel(
                             status = StateStatus.Loaded,
                         )
                     )
-                }.flowOn(Dispatchers.IO)
+                }.flowOn(coroutineDispatcherProvider.io())
             }
             .stateIn(
                 scope = viewModelScope,
