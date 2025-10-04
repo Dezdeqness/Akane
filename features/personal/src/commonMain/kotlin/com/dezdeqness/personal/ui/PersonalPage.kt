@@ -7,17 +7,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.personal.ui.composables.PersonalCell
 import com.dezdeqness.personal.ui.composables.PersonalEmptyState
 import kotlinx.coroutines.flow.StateFlow
@@ -33,13 +34,12 @@ fun PersonalPage(
 
     Scaffold(
         modifier = modifier,
-        containerColor = Color.White,
+        containerColor = AppTheme.colors.background,
         topBar = {
-            TopAppBar(
-                title = {
-                    Text("Сохраненные")
-                },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White),
+            AppToolbar(
+                title = "Сохраненные",
+                navigationIcon = null,
+                colors = TopAppBarDefaults.topAppBarColors(containerColor = AppTheme.colors.background),
             )
         },
     ) { paddingValues ->
@@ -61,6 +61,7 @@ fun PersonalPage(
                                 .fillMaxWidth()
                                 .animateItem()
                                 .padding(vertical = 4.dp, horizontal = 16.dp)
+                                .clip(RoundedCornerShape(8.dp))
                                 .clickable(
                                     onClick = {
                                         actions.onItemClicked(item.id)

@@ -10,20 +10,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.util.DebugLogger
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.home.ui.model.HomeUiModel
 
 @Composable
@@ -32,13 +27,6 @@ fun HomeSectionItem(
     item: HomeUiModel,
     onItemClicked: (Long) -> Unit,
 ) {
-    val context = LocalPlatformContext.current
-    val loader = remember {
-        ImageLoader.Builder(context)
-            .logger(DebugLogger())
-            .build()
-    }
-
     Column(
         modifier = modifier
             .width(140.dp)
@@ -50,14 +38,8 @@ fun HomeSectionItem(
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),
     ) {
-        AsyncImage(
-            model = remember(item.imagePath) {
-                ImageRequest.Builder(context)
-                    .data(item.imagePath)
-                    .build()
-            },
-            contentDescription = null,
-            imageLoader = loader,
+        AppImage(
+            data = item.imagePath,
             contentScale = ContentScale.FillBounds,
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,7 +53,7 @@ fun HomeSectionItem(
             modifier = Modifier.padding(horizontal = 2.dp).fillMaxWidth(),
             textAlign = TextAlign.Center,
             maxLines = 1,
-            color = Color.Black,
+            color = AppTheme.colors.textPrimary,
             fontWeight = FontWeight.Normal,
             overflow = TextOverflow.Ellipsis,
         )

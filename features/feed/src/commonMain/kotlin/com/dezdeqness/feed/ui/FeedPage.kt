@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,11 +27,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.ImageLoader
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.util.DebugLogger
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.image.AppImage
 import org.koin.compose.viewmodel.koinViewModel
 
 private const val PAGINATION_LOAD_FACTOR = 0.75
@@ -47,13 +43,6 @@ fun FeedPage(
         mutableStateOf(false)
     }
 
-    val context = LocalPlatformContext.current
-    val loader = remember {
-        ImageLoader.Builder(context)
-            .logger(DebugLogger())
-            .build()
-    }
-
     val state by viewModel.feedStateFlow.collectAsStateWithLifecycle()
 
     LaunchedEffect(state.items) {
@@ -65,7 +54,7 @@ fun FeedPage(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        containerColor = AppTheme.colors.background,
     ) {
         if (state.status == Status.Initial || state.status == Status.Loading) {
             Box(
@@ -114,14 +103,9 @@ fun FeedPage(
                             .padding(horizontal = 16.dp)
                     ) {
                         Row(modifier = Modifier.weight(1f)) {
-                            AsyncImage(
-                                model = ImageRequest.Builder(context)
-                                    .data(item.imageUrl)
-                                    .build(),
-                                contentDescription = null,
-                                imageLoader = loader,
-                                modifier = Modifier
-                                    .size(150.dp)
+                            AppImage(
+                                data = item.imageUrl,
+                                modifier = Modifier.size(150.dp)
                             )
                         }
                         Column(
@@ -133,7 +117,7 @@ fun FeedPage(
                                 item.title,
                                 fontSize = 18.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = AppTheme.colors.textPrimary,
                             )
 
                             Text(
@@ -141,7 +125,7 @@ fun FeedPage(
                                 fontSize = 14.sp,
                                 maxLines = 3,
                                 overflow = TextOverflow.Ellipsis,
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
+                                color = AppTheme.colors.textPrimary.copy(alpha = 0.78f),
                             )
 
                         }

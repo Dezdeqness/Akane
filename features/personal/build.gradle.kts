@@ -11,9 +11,6 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            implementation(libs.coil.compose)
-            implementation(libs.coil.core)
-            implementation(libs.coil.kt)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
 

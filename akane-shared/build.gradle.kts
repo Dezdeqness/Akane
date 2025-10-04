@@ -34,6 +34,9 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
 
+            implementation(libs.coil.kt)
+            implementation(libs.coil.network.ktor)
+
             implementation(libs.androidx.navigation.compose)
             implementation(compose.components.uiToolingPreview)
         }

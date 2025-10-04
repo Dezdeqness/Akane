@@ -11,9 +11,6 @@ kotlin {
         commonMain.dependencies {
             api(libs.bundles.ktorfit.common)
             implementation(libs.coil.compose)
-            implementation(libs.coil.core)
-            implementation(libs.coil.kt)
-            implementation(libs.coil.network.ktor)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(project(":features:feed"))

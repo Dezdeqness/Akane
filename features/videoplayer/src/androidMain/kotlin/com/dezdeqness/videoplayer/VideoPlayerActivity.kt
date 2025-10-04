@@ -1,8 +1,6 @@
 package com.dezdeqness.videoplayer
 
-import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.os.Bundle
@@ -14,24 +12,23 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
+import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.designsystem.utils.noRippleClickable
-import com.dezdeqness.videoplayer.core.FullScreenState
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
@@ -53,9 +50,6 @@ class VideoPlayerActivity : ComponentActivity() {
             hide(WindowInsetsCompat.Type.statusBars())
         }
 
-        val id = intent.getLongExtra(ID, 0)
-        val episodeId = intent.getStringExtra(EPISODE_ID) ?: return
-
         setContent {
             val systemBarsControllerState = rememberFullScreenState(
                 initialNavigationBarVisibility = SystemBarsVisibility.Visible,
@@ -71,25 +65,31 @@ class VideoPlayerActivity : ComponentActivity() {
                 }
             }
 
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier
-                    .background(Color.Black)
-                    .fillMaxSize()
-                    .noRippleClickable {
-                        if (systemBarsControllerState.isSystemBarVisible) {
-                            systemBarsControllerState.hideSystemBar()
-                        } else {
-                            systemBarsControllerState.showSystemBar()
-                        }
-                    }
+            CompositionLocalProvider(
+                LocalAstImageLoader provides getImageLoader()
             ) {
-                VideoPlayerScreen(
-                    systemBarsControllerState = systemBarsControllerState,
-                    onBackButtonClicked = {
-                        finish()
+                AppTheme {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        modifier = Modifier
+                            .background(Color.Black)
+                            .fillMaxSize()
+                            .noRippleClickable {
+                                if (systemBarsControllerState.isSystemBarVisible) {
+                                    systemBarsControllerState.hideSystemBar()
+                                } else {
+                                    systemBarsControllerState.showSystemBar()
+                                }
+                            }
+                    ) {
+                        VideoPlayerScreen(
+                            systemBarsControllerState = systemBarsControllerState,
+                            onBackButtonClicked = {
+                                finish()
+                            }
+                        )
                     }
-                )
+                }
             }
         }
     }

@@ -11,12 +11,9 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +24,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dezdeqness.core.ui.views.buttons.AppIconButton
+import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.videoplayer.core.FullScreenState
 import com.dezdeqness.videoplayer.core.player.VideoPlayerView
 import com.dezdeqness.videoplayer.core.player.rememberVideoPlayerState
@@ -41,7 +40,6 @@ import com.dezdeqness.videoplayer.ui.composables.bottomsheet.PlaylistBottomSheet
 import com.dezdeqness.videoplayer.ui.composables.dropdown.QualityDropdownMenu
 import com.dezdeqness.videoplayer.ui.composables.dropdown.VideoSpeedDropdownMenu
 import org.koin.compose.viewmodel.koinViewModel
-import kotlin.text.ifEmpty
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -114,7 +112,7 @@ fun VideoPlayerScreen(
             modifier = Modifier.fillMaxSize(),
             isSystemBarVisible = systemBarsControllerState.isSystemBarVisible,
             appbar = {
-                TopAppBar(
+                AppToolbar(
                     modifier = Modifier.fillMaxWidth(),
 //                        .padding(
 //                            top = if (systemBarsControllerState.isSystemBarVisible) WindowInsets
@@ -145,14 +143,12 @@ fun VideoPlayerScreen(
                         titleContentColor = Color.White,
                         containerColor = Color.Transparent,
                     ),
-                    navigationIcon = {
-                        IconButton(onClick = onBackButtonClicked) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.ArrowBack,
-                                tint = Color.White,
-                                contentDescription = null,
-                            )
-                        }
+                    navigation = {
+                        AppIconButton(
+                            icon = Icons.AutoMirrored.Filled.ArrowBack,
+                            tint = Color.White,
+                            onClick = onBackButtonClicked
+                        )
                     }
                 )
             },
@@ -212,14 +208,11 @@ fun VideoPlayerScreen(
                         }
                     },
                     playlistAction = {
-                        IconButton(
+                        AppIconButton(
+                            icon = Icons.Default.Menu,
                             onClick = videoPlayerViewModel::onPlaylistActionClicked,
-                        ) {
-                            Icon(
-                                Icons.Default.Menu, contentDescription = "Playlist",
-                                tint = Color.White,
-                            )
-                        }
+                            tint = Color.White,
+                        )
                     }
                 )
             },

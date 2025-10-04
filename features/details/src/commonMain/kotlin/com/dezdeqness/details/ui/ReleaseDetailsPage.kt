@@ -19,14 +19,10 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -46,11 +42,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil3.ImageLoader
-import coil3.compose.AsyncImage
-import coil3.compose.LocalPlatformContext
-import coil3.request.ImageRequest
-import coil3.util.DebugLogger
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.buttons.AppIconButton
+import com.dezdeqness.core.ui.views.chips.AppChip
+import com.dezdeqness.core.ui.views.header.Header
+import com.dezdeqness.core.ui.views.image.AppImage
+import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -62,13 +59,6 @@ fun DetailsPage(
     onEpisodeClick: (Long, String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    val context = LocalPlatformContext.current
-    val loader = remember {
-        ImageLoader.Builder(context)
-            .logger(DebugLogger())
-            .build()
-    }
-
     val listState = rememberLazyListState()
 
     val isToolbarTransparent by remember {
@@ -81,29 +71,24 @@ fun DetailsPage(
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = MaterialTheme.colorScheme.primaryContainer,
+        containerColor = AppTheme.colors.background,
         topBar = {
-            TopAppBar(
+            AppToolbar(
                 title = {
                     if (!isToolbarTransparent && state.status == Status.Loaded) {
                         Text(
                             state.details?.title.orEmpty(),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = AppTheme.colors.textPrimary,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                 },
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            onBackPressed()
-                        }) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = null,
-                        )
-                    }
+                navigation = {
+                    AppIconButton(
+                        icon = Icons.AutoMirrored.Filled.ArrowBack,
+                        onClick = onBackPressed,
+                    )
                 },
                 colors = TopAppBarDefaults
                     .topAppBarColors()
@@ -111,24 +96,20 @@ fun DetailsPage(
                         containerColor = if (isToolbarTransparent) {
                             Color.Transparent
                         } else {
-                            MaterialTheme.colorScheme.primary
+                            AppTheme.colors.background
                         }
                     ),
                 actions = {
                     if (state.status == Status.Loaded) {
-                        IconButton(
+                        val isFavourite = state.isFavourite
+                        AppIconButton(
+                            icon = if (isFavourite) AkaneIcons.Favorite else AkaneIcons.FavoriteBorder,
                             onClick = {
-                                val details = state.details ?: return@IconButton
-                                viewModel.onFavouriteClicked(details.id)
+                                val details = state.details
+                                viewModel.onFavouriteClicked(details?.id ?: 0)
                             },
-                        ) {
-                            val isFavourite = state.isFavourite
-                            Icon(
-                                if (isFavourite) AkaneIcons.Favorite else AkaneIcons.FavoriteBorder,
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.onPrimary,
-                            )
-                        }
+                            tint = AppTheme.colors.textPrimary,
+                        )
                     }
                 }
             )
@@ -145,7 +126,8 @@ fun DetailsPage(
             }
 
             Status.Loading,
-            Status.Initial -> {
+            Status.Initial,
+                -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center,
@@ -163,14 +145,8 @@ fun DetailsPage(
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     item {
-                        AsyncImage(
-                            model = remember {
-                                ImageRequest.Builder(context)
-                                    .data(details.imageUrl)
-                                    .build()
-                            },
-                            contentDescription = null,
-                            imageLoader = loader,
+                        AppImage(
+                            data = details.imageUrl,
                             modifier = Modifier
                                 .padding(top = 56.dp)
                                 .height(250.dp)
@@ -184,7 +160,7 @@ fun DetailsPage(
                             fontSize = 18.sp,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
+                            color = AppTheme.colors.textPrimary,
                             textAlign = TextAlign.Center,
                         )
                     }
@@ -198,17 +174,14 @@ fun DetailsPage(
                         ) {
                             items(details.genres.size) { index ->
                                 val item = details.genres[index]
-                                SuggestionChip(
-                                    enabled = false,
+                                AppChip(
                                     onClick = {},
-                                    label = {
-                                        Text(
-                                            item,
-                                            fontSize = 14.sp,
-                                            color = MaterialTheme.colorScheme.onPrimary,
-                                        )
-                                    },
-                                    modifier = Modifier.padding(end = 8.dp)
+                                    title = item,
+                                    colors = FilterChipDefaults.filterChipColors().copy(
+                                        containerColor = AppTheme.colors.background,
+                                        selectedContainerColor = AppTheme.colors.background,
+                                    ),
+                                    modifier = Modifier.padding(end = 8.dp),
                                 )
                             }
                         }
@@ -228,20 +201,17 @@ fun DetailsPage(
                                 details.summary,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
+                                color = AppTheme.colors.textPrimary.copy(alpha = 0.78f),
                             )
                         }
                     }
 
                     item {
-                        Text(
-                            "Вышедшие эпизоды",
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.Bold,
-                            modifier = Modifier.fillMaxWidth()
+                        Header(
+                            title = "Вышедшие эпизоды",
+                            modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(vertical = 8.dp, horizontal = 16.dp),
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            textAlign = TextAlign.Start,
                         )
                     }
 
@@ -259,15 +229,10 @@ fun DetailsPage(
                                 )
                         ) {
                             Box {
-                                AsyncImage(
-                                    model = remember {
-                                        ImageRequest.Builder(context)
-                                            .data(item.previewUrl)
-                                            .build()
-                                    },
+                                AppImage(
+                                    data = item.previewUrl,
                                     contentScale = ContentScale.FillWidth,
                                     contentDescription = null,
-                                    imageLoader = loader,
                                     colorFilter = ColorFilter.tint(
                                         Color.Gray,
                                         blendMode = BlendMode.Darken
@@ -288,7 +253,7 @@ fun DetailsPage(
                                         item.name,
                                         fontSize = 16.sp,
                                         modifier = Modifier.padding(horizontal = 16.dp),
-                                        color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.78f),
+                                        color = Color.White.copy(alpha = 0.78f),
                                     )
 
                                     Text(
@@ -299,7 +264,7 @@ fun DetailsPage(
                                             vertical = 8.dp
                                         ),
                                         fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onPrimary
+                                        color = Color.White,
                                     )
                                 }
                             }
