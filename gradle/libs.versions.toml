@@ -22,7 +22,8 @@ kspVersion = "2.0.21-1.0.27"
 room = "2.7.2"
 sqlite = "2.5.2"
 composeBom = "2025.05.01"
-
+supportCoreVersion = "0.1.2"
+supportCoreUiVersion = "0.3.1-beta05"
 androidx-navigation = "2.9.0-beta01"
 coil = "3.0.4"
 material = "1.8.1"
@@ -57,7 +58,8 @@ ksp-gradlePlugin = { group = "com.google.devtools.ksp", name = "com.google.devto
 
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 compose-material3 =  { group = "org.jetbrains.compose.material3", name = "material3", version.ref = "material" }
-
+core = { module = "com.dezdeqness.support:core", version.ref = "supportCoreVersion" }
+core-ui = { module = "com.dezdeqness.support:core-ui", version.ref = "supportCoreUiVersion" }
 ktor-content-negotiation = { group = "io.ktor", name = "ktor-client-content-negotiation", version.ref = "ktorVersion" }
 ktor-core = { group = "io.ktor", name = "ktor-client-core", version.ref = "ktorVersion" }
 ktor-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktorVersion" }

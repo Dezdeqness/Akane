@@ -21,8 +21,8 @@ kotlin {
 
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.core.designsystem)
-            implementation(projects.core.network)
+            implementation(projects.common.designsystem)
+            implementation(projects.common.network)
 
             implementation(projects.features.feed)
             implementation(projects.features.details)

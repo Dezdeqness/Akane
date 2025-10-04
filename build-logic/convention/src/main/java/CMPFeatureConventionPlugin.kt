@@ -13,8 +13,9 @@ class CMPFeatureConventionPlugin : Plugin<Project> {
                 apply(libs.findPlugin("compose-compiler").get().get().pluginId)
             }
             dependencies {
-                add("commonMainImplementation", project(":core:designsystem"))
-                add("commonMainImplementation", project(":core:network"))
+                add("commonMainImplementation", project(":common:designsystem"))
+                add("commonMainImplementation", project(":common:network"))
+                add("commonMainImplementation", project(":common:core"))
                 add("commonMainImplementation", libs.findLibrary("androidx-navigation-compose").get())
             }
         }

@@ -14,6 +14,7 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.material3)
             implementation(libs.material.icons.core)
+            implementation(libs.core.ui)
         }
 
         val desktopMain by getting
