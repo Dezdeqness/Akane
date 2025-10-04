@@ -11,6 +11,7 @@ val homeModule = module {
         HomeViewModel(
             feedRepository = get(),
             homeUiMapper = get(),
+            coroutineDispatcherProvider = get(),
         )
     }
 }

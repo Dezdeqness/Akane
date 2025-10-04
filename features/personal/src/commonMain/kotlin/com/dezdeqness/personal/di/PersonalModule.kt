@@ -12,6 +12,7 @@ val personalModule = module {
         PersonalViewModel(
             personalRepository = get(),
             personalUiMapper = get(),
+            coroutineDispatcherProvider = get(),
         )
     }
 }

@@ -1,6 +1,6 @@
 package com.dezdeqness.shared.di
 
-import com.dezdeqness.core.di.coreModule
+import com.dezdeqness.foundation.di.coreModule
 import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.feed.di.feedModule
 import com.dezdeqness.home.di.homeModule

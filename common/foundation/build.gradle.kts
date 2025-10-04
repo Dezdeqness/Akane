@@ -1,9 +1,9 @@
 plugins {
-    alias(libs.plugins.dezdeqness.cmp.feature)
+    alias(libs.plugins.dezdeqness.kmp.library)
 }
 
 android {
-    namespace = "com.dezdeqness.core"
+    namespace = "com.dezdeqness.foundation"
 }
 
 kotlin {
@@ -15,7 +15,6 @@ kotlin {
         val desktopMain by getting
 
         desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
         }
 
