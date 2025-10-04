@@ -25,7 +25,7 @@ composeBom = "2025.05.01"
 supportCoreVersion = "0.1.2"
 supportCoreUiVersion = "0.3.1-beta05"
 androidx-navigation = "2.9.0-beta01"
-coil = "3.0.4"
+coil = "3.3.0"
 material = "1.8.1"
 koin-bom = "4.1.0-RC1"
 
