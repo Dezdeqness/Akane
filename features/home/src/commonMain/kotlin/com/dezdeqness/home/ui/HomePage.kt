@@ -12,7 +12,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.home.ui.composables.HomeError
 import com.dezdeqness.home.ui.composables.HomeSection
 import kotlinx.coroutines.flow.StateFlow
-import kotlin.collections.component2
 
 @Composable
 fun HomePage(
