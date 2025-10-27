@@ -29,6 +29,20 @@ data class ReleaseResponse(
     val episodesTotal: Long?,
     val genres: List<Genre>,
     val episodes: List<Episode>?,
+    @SerialName("added_in_users_favorites")
+    val userFavourites: Long,
+    @SerialName("average_duration_of_episode")
+    val averageDuration: Long?,
+    @SerialName("added_in_planned_collection")
+    val planned: Long,
+    @SerialName("added_in_watched_collection")
+    val watched: Long,
+    @SerialName("added_in_watching_collection")
+    val watching: Long,
+    @SerialName("added_in_postponed_collection")
+    val postponed: Long,
+    @SerialName("added_in_abandoned_collection")
+    val abandoned: Long,
 )
 
 @Serializable
@@ -59,8 +73,8 @@ data class Poster(
 
 @Serializable
 data class Optimized(
-    val src: String,
-    val thumbnail: String,
+    val src: String?,
+    val thumbnail: String?,
 )
 
 @Serializable
@@ -91,13 +105,7 @@ data class Genre(
 data class Image(
     val preview: String,
     val thumbnail: String,
-    val optimized: Optimized2,
-)
-
-@Serializable
-data class Optimized2(
-    val preview: String?,
-    val thumbnail: String,
+    val optimized: Optimized,
 )
 
 // TODO: make map of hls
@@ -142,7 +150,7 @@ data class Ending(
 
 @Serializable
 data class Preview(
-    val src: String,
-    val thumbnail: String,
-    val optimized: Optimized2,
+    val src: String?,
+    val thumbnail: String?,
+    val optimized: Optimized,
 )

@@ -9,7 +9,7 @@ class EpisodesManager {
         EpisodeEntity(
             id = response.id,
             name = response.name.orEmpty(),
-            previewUrl = response.preview.src,
+            previewUrl = response.preview.src.orEmpty(),
             ordinal = response.ordinal,
             hls480 = response.hls480,
             hls720 = response.hls720,
