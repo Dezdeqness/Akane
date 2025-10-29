@@ -4,4 +4,5 @@ object ApiEndPoints {
     private const val ANIME = "anime/"
     const val CATALOG_RELEASES = "${ANIME}catalog/releases"
     const val RELEASE = "${ANIME}releases/{id}"
+    const val FRANCHISE = "franchises/releases/{id}"
 }

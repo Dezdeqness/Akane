@@ -2,7 +2,9 @@ package com.dezdeqness.network.di
 
 import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.network.services.CatalogService
+import com.dezdeqness.network.services.FranchiseService
 import com.dezdeqness.network.services.createCatalogService
+import com.dezdeqness.network.services.createFranchiseService
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
@@ -55,5 +57,9 @@ val networkModule = module {
 
     single<CatalogService> {
         get<Ktorfit>().createCatalogService()
+    }
+
+    single<FranchiseService>{
+        get<Ktorfit>().createFranchiseService()
     }
 }
