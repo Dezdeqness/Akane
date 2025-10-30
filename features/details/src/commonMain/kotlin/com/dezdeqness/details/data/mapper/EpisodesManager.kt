@@ -1,7 +1,7 @@
 package com.dezdeqness.details.data.mapper
 
 import com.dezdeqness.details.domain.model.EpisodeEntity
-import com.dezdeqness.network.models.response.Episode
+import com.dezdeqness.network.models.core.Episode
 
 class EpisodesManager {
 

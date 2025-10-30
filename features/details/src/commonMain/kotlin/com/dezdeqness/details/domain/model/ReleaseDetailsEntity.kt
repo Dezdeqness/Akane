@@ -6,6 +6,7 @@ data class ReleaseDetailsEntity(
     val name: String,
     val poster: String,
     val type: String,
+    val season: String,
     val description: String,
     val episodesTotal: Long,
     val genres: List<String>,
