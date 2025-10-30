@@ -8,5 +8,5 @@ import de.jensklingenberg.ktorfit.http.Path
 
 interface FranchiseService {
     @GET(FRANCHISE)
-    suspend fun getReleaseFranchiseById(@Path id: Long): Response<FranchiseResponse>
+    suspend fun getReleaseFranchiseById(@Path id: Long): Response<List<FranchiseResponse>>
 }

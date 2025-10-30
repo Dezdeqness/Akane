@@ -16,7 +16,9 @@ class FranchiseDatasourceImpl(
             val body = response.body()
                 ?: return@tryWithCatch Result.failure(Throwable("Code: ${response.code}\nError: ${response.errorBody()}"))
 
-            val entity = franchiseMapper.map(body)
+            val data = body.first()
+
+            val entity = franchiseMapper.map(data)
 
             Result.success(entity)
         } else {

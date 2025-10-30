@@ -35,7 +35,7 @@ data class ReleaseResponse(
     val description: String?,
     @SerialName("episodes_total")
     val episodesTotal: Long?,
-    val genres: List<Genre>,
+    val genres: List<Genre>?,
     val episodes: List<Episode>?,
     @SerialName("added_in_users_favorites")
     val userFavourites: Long,
