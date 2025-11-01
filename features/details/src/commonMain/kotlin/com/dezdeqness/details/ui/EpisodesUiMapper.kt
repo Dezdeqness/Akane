@@ -10,7 +10,7 @@ class EpisodesUiMapper {
         EpisodesUiModel(
             id = item.id,
             name = item.name,
-            previewUrl = BaseUrl.BASE_URL_IMAGES + item.previewUrl,
+            previewUrl = if (item.previewUrl.isNotEmpty()) BaseUrl.BASE_URL_IMAGES + item.previewUrl else "",
             ordinal = item.ordinal,
             hls720 = item.hls720.orEmpty(),
         )
