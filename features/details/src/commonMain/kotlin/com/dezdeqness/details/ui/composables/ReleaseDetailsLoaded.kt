@@ -17,10 +17,12 @@ import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,9 +51,19 @@ fun ReleaseDetailsLoaded(
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
-    val connection = remember { CollapsingAppBarNestedScrollConnection() }
+    val scope = rememberCoroutineScope()
+    val connection = remember { CollapsingAppBarNestedScrollConnection(scope) }
 
     val tabs = details.tabs
+
+    LaunchedEffect(selectedTabIndex) {
+        if (selectedTabIndex != 0) {
+            connection.collapse()
+            connection.isScrollEnabled = false
+        } else {
+            connection.isScrollEnabled = true
+        }
+    }
 
     CompositionLocalProvider(
         LocalNestedScrollConnection provides connection,
@@ -85,7 +97,7 @@ fun ReleaseDetailsLoaded(
                             ReleaseToolbar(
                                 title = details.header.title,
                                 isFavourite = isFavourite,
-                                onBackPressed= onBackPressed,
+                                onBackPressed = onBackPressed,
                                 onFavouriteClicked = onFavouriteClicked,
                             )
                         }
@@ -102,7 +114,9 @@ fun ReleaseDetailsLoaded(
                         tabs.forEachIndexed { index, item ->
                             Tab(
                                 selected = selectedTabIndex == index,
-                                onClick = { selectedTabIndex = index },
+                                onClick = {
+                                    selectedTabIndex = index
+                                },
                                 text = { Text(item.title) }
                             )
                         }
