@@ -37,11 +37,11 @@ class ReleaseDetailsUiMapper(
         }
     }
 
-    private fun mapEpisodes(item: ReleaseDetailsEntity) = DetailsTab.Episodes(
+    private fun mapEpisodes(item: ReleaseDetailsEntity) = DetailsTab.EpisodesTab(
         episodes = item.episodes.map(episodesUiMapper::map)
     )
 
-    private fun mapInfo(item: ReleaseDetailsEntity) = DetailsTab.Info(
+    private fun mapInfo(item: ReleaseDetailsEntity) = DetailsTab.InfoTab(
         summary = item.description,
         genres = item.genres,
         type = item.type,
@@ -51,7 +51,7 @@ class ReleaseDetailsUiMapper(
         isOngoing = item.isOngoing,
     )
 
-    private fun mapStats(item: ReleaseDetailsEntity) = DetailsTab.Statistics(
+    private fun mapStats(item: ReleaseDetailsEntity) = DetailsTab.StatisticsTab(
         userFavourites = item.userFavourites,
         planned = item.planned,
         watched = item.watched,

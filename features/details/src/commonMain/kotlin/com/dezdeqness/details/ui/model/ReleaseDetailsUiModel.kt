@@ -14,8 +14,8 @@ data class ReleaseDetailsHeaderUiModel(
     val imageUrl: String,
 )
 
-sealed interface DetailsTab {
-    data class Info(
+sealed class DetailsTab(val title: String) {
+    data class InfoTab(
         val summary: String,
         val genres: List<String>,
         val type: String,
@@ -23,9 +23,9 @@ sealed interface DetailsTab {
         val episodesTotal: Long,
         val averageDuration: String,
         val isOngoing: Boolean,
-    ) : DetailsTab
+    ) : DetailsTab("Информация")
 
-    data class Episodes(val episodes: List<EpisodesUiModel>) : DetailsTab
+    data class EpisodesTab(val episodes: List<EpisodesUiModel>) : DetailsTab("Эпизоды")
 
     data class FranchiseTab(
         val id: String,
@@ -37,16 +37,16 @@ sealed interface DetailsTab {
         val totalReleases: Long,
         val totalDuration: String,
         val releases: List<FranchiseReleaseUiModel>,
-    ) : DetailsTab
+    ) : DetailsTab("Франшиза")
 
-    data class Statistics(
+    data class StatisticsTab(
         val userFavourites: Long,
         val planned: Long,
         val watched: Long,
         val watching: Long,
         val postponed: Long,
         val abandoned: Long,
-    ) : DetailsTab
+    ) : DetailsTab("Статистика")
 
 }
 
