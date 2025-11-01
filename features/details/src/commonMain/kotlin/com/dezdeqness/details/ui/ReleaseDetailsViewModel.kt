@@ -6,13 +6,12 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
+import com.dezdeqness.details.domain.repository.FranchiseRepository
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.details.navigation.RELEASE_ID
 import com.dezdeqness.personal.domain.models.PersonalEntity
 import com.dezdeqness.personal.domain.repository.PersonalRepository
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -27,6 +26,7 @@ import kotlinx.coroutines.launch
 
 class ReleaseDetailsViewModel(
     private val releaseRepository: ReleaseRepository,
+    private val franchiseRepository: FranchiseRepository,
     private val personalRepository: PersonalRepository,
     private val releaseDetailsUiMapper: ReleaseDetailsUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
@@ -43,17 +43,20 @@ class ReleaseDetailsViewModel(
         .onStart { emit(LoadEvent.Initial) }
         .flatMapLatest { event ->
             flow {
-                val result = releaseRepository.getReleaseById(releaseId)
-                emit(LoadResult(event, result))
+                val releaseResult = releaseRepository.getReleaseById(releaseId)
+                val franchiseResult = franchiseRepository.getReleaseFranchiseById(releaseId)
+                emit(LoadResult(event, releaseResult, franchiseResult))
             }.flowOn(coroutineDispatcherProvider.io())
         }
         .scan(ReleaseDetailsState()) { previous, result ->
             result
-                .result
+                .releaseResult
                 .onSuccess { details ->
+                    val franchise = result.franchiseResult.getOrNull()
+                    val details = releaseDetailsUiMapper.map(details, franchise)
                     return@scan previous.copy(
                         status = Status.Loaded,
-                        details = releaseDetailsUiMapper.map(details)
+                        details = details
                     )
                 }
                 .onFailure { throwable ->
@@ -78,15 +81,15 @@ class ReleaseDetailsViewModel(
         )
 
     fun onFavouriteClicked(id: Long) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch(coroutineDispatcherProvider.io()) {
             if (personalRepository.containsById(id = id)) {
                 personalRepository.deleteById(id = id)
             } else {
                 val item = releaseDetailsStateFlow.value.details ?: return@launch
                 val personalEntity = PersonalEntity(
                     id = item.id,
-                    name = item.title,
-                    poster = item.imageUrl,
+                    name = item.header.title,
+                    poster = item.header.imageUrl,
                 )
                 personalRepository.add(personalEntity)
             }
@@ -99,7 +102,8 @@ class ReleaseDetailsViewModel(
 
     private data class LoadResult(
         val event: LoadEvent,
-        val result: Result<ReleaseDetailsEntity>,
+        val releaseResult: Result<ReleaseDetailsEntity>,
+        val franchiseResult: Result<com.dezdeqness.details.domain.model.FranchiseEntity>,
     )
 
     companion object {
