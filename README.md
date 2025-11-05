@@ -1,14 +1,43 @@
-This is a Kotlin Multiplatform project targeting Android, iOS, Desktop.
+<h1 align="center" id="title">Akane</h1>
 
-* `/composeApp` is for code that will be shared across your Compose Multiplatform applications.
-  It contains several subfolders:
-  - `commonMain` is for code that’s common for all targets.
-  - Other folders are for Kotlin code that will be compiled for only the platform indicated in the folder name.
-    For example, if you want to use Apple’s CoreCrypto for the iOS part of your Kotlin app,
-    `iosMain` would be the right folder for such calls.
+<p align="center">
+  <img src="akane-android/src/main/ic_launcher-playstore.png" alt="project-image" width="100" height="100">
+</p>
 
-* `/iosApp` contains iOS applications. Even if you’re sharing your UI with Compose Multiplatform, 
-  you need this entry point for your iOS app. This is also where you should add SwiftUI code for your project.
+<h2>📦 Latest Release</h2>
 
+<p align="center">
+  <a href="https://github.com/Dezdeqness/Akane/releases/latest">
+    <img src="https://img.shields.io/github/v/release/Dezdeqness/Akane?style=for-the-badge&color=brightgreen" alt="GitHub release badge">
+  </a>
+</p>
+<h2>⚙️ Features</h2>
 
-Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+- Search anime by query and different filters
+- Video player
+- Offline mode
+
+<h2>🛠️ Tech stack</h2>
+
+- Compose / Kotlin Multiplatform
+- Coroutines
+- Coil
+- Room
+- Android Architecture Components
+- Koin
+- Ktorfit
+
+<h2>🔮 Future plans</h2>
+
+- [ ] Search and filter
+- [ ] iOS player features tier II
+- [ ] Desktop support for app (Basic features)
+- [ ] Desktop player features tier I
+- [ ] Auth & Profile
+- [ ] Offline mode
+- [ ] Achievements
+- [ ] Widget
+
+<h2>🎨 Project Screenshots:</h2>
+
+TBA
