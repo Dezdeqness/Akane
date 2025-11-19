@@ -7,7 +7,7 @@ import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
 val detailsModule = module {
-    includes(domainModule)
+    includes(dataModule, domainModule)
     single { EpisodesUiMapper() }
     single { ReleaseDetailsUiMapper(episodesUiMapper = get()) }
     viewModelOf(::ReleaseDetailsViewModel)

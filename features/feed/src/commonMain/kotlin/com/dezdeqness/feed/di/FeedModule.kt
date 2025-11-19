@@ -6,7 +6,7 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val feedModule = module {
-    includes(domainModule)
+    includes(dataModule, domainModule)
     single { FeedUiMapper() }
     viewModel {
         FeedViewModel(
