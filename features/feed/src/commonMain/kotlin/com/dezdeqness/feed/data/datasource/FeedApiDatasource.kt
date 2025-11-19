@@ -8,4 +8,9 @@ interface FeedApiDatasource {
     suspend fun getFeedBestRating(limit: Int = 10): Result<List<ReleaseEntity>>
     suspend fun getFeedOngoing(limit: Int = 10): Result<List<ReleaseEntity>>
     suspend fun getFeedReleased(limit: Int = 10): Result<List<ReleaseEntity>>
+    suspend fun getFeed(
+        page: Int,
+        limit: Int,
+        queryMap: Map<String, Any>,
+    ): Result<FeedEntity>
 }
