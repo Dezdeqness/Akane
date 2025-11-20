@@ -1,8 +1,7 @@
-
 plugins {
     alias(libs.plugins.dezdeqness.kmp.library)
     alias(libs.plugins.kotlin.serialization)
-    id("de.jensklingenberg.ktorfit") version "2.2.0"
+    alias(libs.plugins.ktorfit)
 }
 
 android {
