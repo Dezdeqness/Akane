@@ -3,6 +3,7 @@ package com.dezdeqness.designsystem.icons
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
@@ -29,4 +30,5 @@ object AkaneIcons {
     val Back = Icons.AutoMirrored.Filled.ArrowBack
     val Menu = Icons.Default.Menu
     val Check = Icons.Default.Check
+    val Close = Icons.Default.Close
 }
