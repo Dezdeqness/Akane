@@ -33,7 +33,10 @@ fun FeedPage(
         containerColor = AppTheme.colors.background,
         modifier = modifier.fillMaxSize(),
         topBar = {
-            FeedSearch(onQueryChanged = viewModel::onQueryChanged)
+            FeedSearch(
+                onQueryChanged = viewModel::onQueryChanged,
+                onFilterClicked = {},
+            )
         }
     ) { contentPadding ->
         Box(modifier = Modifier.padding(contentPadding)) {

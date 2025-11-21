@@ -12,6 +12,7 @@ import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
+import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.rounded.Star
@@ -31,4 +32,5 @@ object AkaneIcons {
     val Menu = Icons.Default.Menu
     val Check = Icons.Default.Check
     val Close = Icons.Default.Close
+    val Filter = Icons.Rounded.FilterList
 }

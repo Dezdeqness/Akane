@@ -1,5 +1,8 @@
 package com.dezdeqness.feed.ui.composable
 
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.foundation.text.input.setTextAndPlaceCursorAtEnd
 import androidx.compose.material3.ExpandedFullScreenSearchBar
@@ -14,8 +17,11 @@ import androidx.compose.material3.rememberSearchBarState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import kotlinx.coroutines.launch
 
@@ -24,6 +30,7 @@ import kotlinx.coroutines.launch
 fun FeedSearch(
     modifier: Modifier = Modifier,
     onQueryChanged: (String) -> Unit,
+    onFilterClicked: () -> Unit,
 ) {
     val searchBarState = rememberSearchBarState()
 
@@ -103,10 +110,22 @@ fun FeedSearch(
             )
         }
 
-    TopSearchBar(
-        state = searchBarState,
-        inputField = inputField,
-    )
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        TopSearchBar(
+            state = searchBarState,
+            inputField = inputField,
+            modifier = Modifier.weight(1f),
+        )
+
+        AppIconButton(
+            modifier = Modifier.padding(end = 8.dp),
+            icon = AkaneIcons.Filter,
+            onClick = onFilterClicked,
+        )
+    }
     ExpandedFullScreenSearchBar(
         state = searchBarState,
         inputField = inputField,
