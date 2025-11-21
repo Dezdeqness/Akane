@@ -10,23 +10,15 @@ class FeedRepositoryImpl(
     private val catalogFilterMapper: CatalogFilterMapper,
 ) : FeedRepository {
 
-    override suspend fun getFeed(page: Int) =
-        getFeed(
-            CatalogFilter(
-                page = page,
-                limit = DEFAULT_LIMIT,
-            )
-        )
-
-    override suspend fun getFeed(filter: CatalogFilter) = run {
+    override suspend fun getFeed(
+        page: Int,
+        filter: CatalogFilter,
+    ) = run {
         val builder = catalogFilterMapper.map(filter)
-
-        val page = builder.page ?: filter.page ?: 1
-        val limit = builder.limit ?: filter.limit ?: DEFAULT_LIMIT
 
         feedApiDatasource.getFeed(
             page = page,
-            limit = limit,
+            limit = DEFAULT_LIMIT,
             queryMap = builder.buildQueryMap(),
         )
     }
@@ -36,6 +28,6 @@ class FeedRepositoryImpl(
     override suspend fun getFeedReleased() = feedApiDatasource.getFeedReleased()
 
     companion object {
-        private const val DEFAULT_LIMIT = 15
+        private const val DEFAULT_LIMIT = 21
     }
 }

@@ -31,7 +31,7 @@ class ReleaseMapper(
             watching = response.watching,
             postponed = response.postponed,
             abandoned = response.abandoned,
-            season = response.season.description,
+            season = response.season.description.orEmpty(),
         )
 
 }

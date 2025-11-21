@@ -6,9 +6,6 @@ import com.dezdeqness.feed.domain.model.CatalogFilter
 
 class CatalogFilterMapper {
     fun map(filter: CatalogFilter): CatalogFilterBuilder = CatalogFilterBuilder().apply {
-        filter.page?.let { page(it) }
-        filter.limit?.let { limit(it) }
-
         if (filter.genres.isNotEmpty()) {
             genres(filter.genres)
         }

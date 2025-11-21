@@ -27,11 +27,12 @@ class FeedViewModel(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val feedStateFlow: StateFlow<FeedState> = loadEvents
-        .onStart { emit(LoadEvent.Initial) }
+        .onStart { emit(LoadEvent.Initial()) }
         .flatMapLatest { event ->
             flow {
                 val result = feedRepository.getFeed(
                     page = event.page,
+                    filter = event.input.filterCatalogFilter,
                 )
 
                 emit(
@@ -91,21 +92,44 @@ class FeedViewModel(
             initialValue = FeedState()
         )
 
+    fun onQueryChanged(query: String) {
+        val currentInput = feedStateFlow.value.input
+        if (currentInput.search == query) return
+        val filter = currentInput.filterCatalogFilter.copy(search = query)
+        val input = currentInput.copy(filterCatalogFilter = filter)
+        loadEvents.tryEmit(LoadEvent.Refresh(input = input))
+    }
+
     fun onLoadMore() {
         val state = feedStateFlow.value
         if (state.hasNextPage) {
-            loadEvents.tryEmit(LoadEvent.LoadMore(state.currentPage + 1))
+            loadEvents.tryEmit(
+                LoadEvent.LoadMore(
+                    input = state.input,
+                    page = state.currentPage + 1,
+                )
+            )
         }
     }
 
     private sealed class LoadEvent(
+        open val input: FeedUserInput,
         open val page: Int,
     ) {
-        data object Refresh : LoadEvent(page = INITIAL_PAGE)
+        data class Refresh(
+            override val input: FeedUserInput,
+        ) : LoadEvent(input = input, page = INITIAL_PAGE)
 
-        data class LoadMore(override val page: Int) : LoadEvent(page = page)
+        data class LoadMore(
+            override val input: FeedUserInput,
+            override val page: Int,
+        ) :
+            LoadEvent(input = input, page = page)
 
-        data object Initial : LoadEvent(page = INITIAL_PAGE)
+        data class Initial(
+            override val input: FeedUserInput = FeedUserInput(),
+        ) :
+            LoadEvent(input = input, page = INITIAL_PAGE)
     }
 
     private data class LoadResult(

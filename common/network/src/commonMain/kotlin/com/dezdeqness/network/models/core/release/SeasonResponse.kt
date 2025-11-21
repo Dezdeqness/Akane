@@ -4,6 +4,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class Season(
-    val value: String,
-    val description: String,
+    val value: String?,
+    val description: String?,
 )

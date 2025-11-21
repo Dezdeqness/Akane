@@ -1,8 +1,6 @@
 package com.dezdeqness.feed.domain.model
 
 data class CatalogFilter(
-    val page: Int? = null,
-    val limit: Int? = null,
     val genres: List<Int> = emptyList(),
     val types: List<ReleaseType> = emptyList(),
     val seasons: List<Season> = emptyList(),

@@ -3,13 +3,6 @@ package com.dezdeqness.feed.data.builder
 import com.dezdeqness.network.constants.ApiParams
 
 class CatalogFilterBuilder {
-
-    var page: Int? = null
-        private set
-
-    var limit: Int? = null
-        private set
-
     private val genres = mutableListOf<Int>()
     private val types = mutableListOf<String>()
     private val seasons = mutableListOf<String>()
@@ -22,9 +15,6 @@ class CatalogFilterBuilder {
     private var productionStatus: String? = null
     private val include = mutableListOf<String>()
     private val exclude = mutableListOf<String>()
-
-    fun page(value: Int) = apply { page = value }
-    fun limit(value: Int) = apply { limit = value }
 
     fun genres(ids: List<Int>) = apply { genres += ids }
     fun types(values: List<String>) = apply { types += values }
