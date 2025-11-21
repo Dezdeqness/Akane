@@ -6,9 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
+import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.videoplayer.core.FullScreenState
 import com.dezdeqness.videoplayer.core.player.VideoPlayerView
 import com.dezdeqness.videoplayer.core.player.rememberVideoPlayerState
@@ -145,7 +143,7 @@ fun VideoPlayerScreen(
                     ),
                     navigation = {
                         AppIconButton(
-                            icon = Icons.AutoMirrored.Filled.ArrowBack,
+                            icon = AkaneIcons.Back,
                             tint = Color.White,
                             onClick = onBackButtonClicked
                         )
@@ -209,7 +207,7 @@ fun VideoPlayerScreen(
                     },
                     playlistAction = {
                         AppIconButton(
-                            icon = Icons.Default.Menu,
+                            icon = AkaneIcons.Menu,
                             onClick = videoPlayerViewModel::onPlaylistActionClicked,
                             tint = Color.White,
                         )

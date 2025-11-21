@@ -12,7 +12,6 @@ kotlin {
             api(libs.bundles.ktorfit.common)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
-            implementation(libs.material.icons.core)
 
             implementation(project(":features:personal"))
         }

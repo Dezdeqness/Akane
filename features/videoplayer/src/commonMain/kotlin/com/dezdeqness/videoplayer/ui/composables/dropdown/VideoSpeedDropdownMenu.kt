@@ -1,13 +1,12 @@
 package com.dezdeqness.videoplayer.ui.composables.dropdown
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
+import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.videoplayer.ui.VideoSpeed
 
 @Composable
@@ -29,7 +28,7 @@ fun VideoSpeedDropdownMenu(
                     onDismiss()
                 },
                 trailingIcon = {
-                    if (item == currentSpeed) Icon(Icons.Default.Check, contentDescription = null)
+                    if (item == currentSpeed) Icon(AkaneIcons.Check, contentDescription = null)
                 }
             )
         }

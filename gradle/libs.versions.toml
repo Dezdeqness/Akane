@@ -84,7 +84,7 @@ coil-core = { group = "io.coil-kt.coil3", name = "coil-core", version.ref = "coi
 coil-kt = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }
 coil-network-ktor = { group = "io.coil-kt.coil3", name = "coil-network-ktor3", version.ref = "coil" }
 
-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "materialIconsCore" }
+material-icons-core = { module = "org.jetbrains.compose.material:material-icons-extended", version.ref = "materialIconsCore" }
 media3-ui = { group = "androidx.media3", name = "media3-ui", version.ref = "media3_version" }
 media3-exoplayer = { group = "androidx.media3", name = "media3-exoplayer", version.ref = "media3_version" }
 media3-common = { group = "androidx.media3", name = "media3-common-ktx", version.ref = "media3_version" }

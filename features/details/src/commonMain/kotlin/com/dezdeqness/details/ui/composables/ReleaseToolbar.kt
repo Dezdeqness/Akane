@@ -1,7 +1,5 @@
 package com.dezdeqness.details.ui.composables
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -53,7 +51,7 @@ fun ReleaseToolbar(
                 contentColor = AppTheme.colors.surface,
             ) {
                 Icon(
-                    Icons.AutoMirrored.Filled.ArrowBack,
+                    AkaneIcons.Back,
                     contentDescription = null,
                     tint = AppTheme.colors.textPrimary
                 )
