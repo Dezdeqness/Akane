@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.feed.ui.composable.FeedFilterBottomSheet
 import com.dezdeqness.feed.ui.composable.FeedGrid
 import com.dezdeqness.feed.ui.composable.FeedSearch
 import org.koin.compose.viewmodel.koinViewModel
@@ -26,6 +27,7 @@ fun FeedPage(
     onReleaseClicked: (Long) -> Unit,
 ) {
     val state by viewModel.feedStateFlow.collectAsStateWithLifecycle()
+    val isFeedFilterShownState by viewModel.isFeedFilterShownState.collectAsStateWithLifecycle()
 
     val hasNextPage = state.hasNextPage
 
@@ -35,7 +37,7 @@ fun FeedPage(
         topBar = {
             FeedSearch(
                 onQueryChanged = viewModel::onQueryChanged,
-                onFilterClicked = {},
+                onFilterClicked = viewModel::onFilterClicked,
             )
         }
     ) { contentPadding ->
@@ -67,6 +69,14 @@ fun FeedPage(
                     onReleaseClicked = onReleaseClicked,
                 )
             }
+        }
+
+        if (isFeedFilterShownState) {
+            FeedFilterBottomSheet(
+                catalogFilter = state.input.filterCatalogFilter,
+                onClosed = viewModel::onFilterClosed,
+                onFilterChanged = viewModel::onFilterChanged,
+            )
         }
     }
 }

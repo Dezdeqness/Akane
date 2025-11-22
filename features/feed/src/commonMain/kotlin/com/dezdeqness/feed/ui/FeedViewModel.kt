@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
+import com.dezdeqness.feed.domain.model.CatalogFilter
 import com.dezdeqness.feed.domain.model.FeedEntity
 import com.dezdeqness.feed.domain.repository.FeedRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flatMapLatest
@@ -16,6 +18,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 
 class FeedViewModel(
     private val feedRepository: FeedRepository,
@@ -24,6 +27,9 @@ class FeedViewModel(
 ) : ViewModel() {
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
+
+    private val _isFeedFilterShownState = MutableStateFlow(false)
+    val isFeedFilterShownState: StateFlow<Boolean> = _isFeedFilterShownState
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val feedStateFlow: StateFlow<FeedState> = loadEvents
@@ -98,6 +104,21 @@ class FeedViewModel(
         val filter = currentInput.filterCatalogFilter.copy(search = query)
         val input = currentInput.copy(filterCatalogFilter = filter)
         loadEvents.tryEmit(LoadEvent.Refresh(input = input))
+    }
+
+    fun onFilterClicked() {
+        _isFeedFilterShownState.update { true }
+    }
+
+    fun onFilterChanged(catalogFilter: CatalogFilter) {
+        val currentInput = feedStateFlow.value.input
+
+        val input = currentInput.copy(filterCatalogFilter = catalogFilter)
+        loadEvents.tryEmit(LoadEvent.Refresh(input = input))
+    }
+
+    fun onFilterClosed() {
+        _isFeedFilterShownState.update { false }
     }
 
     fun onLoadMore() {
