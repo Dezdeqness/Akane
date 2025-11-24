@@ -2,6 +2,7 @@ package com.dezdeqness.designsystem.icons
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Menu
@@ -33,4 +34,5 @@ object AkaneIcons {
     val Check = Icons.Default.Check
     val Close = Icons.Default.Close
     val Filter = Icons.Rounded.FilterList
+    val ArrowDropDown = Icons.Filled.ArrowDropDown
 }

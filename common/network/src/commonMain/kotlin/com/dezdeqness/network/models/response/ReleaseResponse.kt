@@ -21,7 +21,7 @@ data class ReleaseResponse(
     val season: Season,
     val poster: Poster,
     @SerialName("fresh_at")
-    val freshAt: String,
+    val freshAt: String?,
     @SerialName("created_at")
     val createdAt: String?,
     @SerialName("updated_at")
