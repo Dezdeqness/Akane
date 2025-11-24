@@ -69,6 +69,7 @@ class FeedViewModel(
                 return@scan previous.copy(
                     items = updatedList,
                     status = newStatus,
+                    input = event.input,
                     currentPage = response.currentPage,
                     hasNextPage = response.hasNextPage,
                 )
