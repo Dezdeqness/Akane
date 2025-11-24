@@ -99,9 +99,16 @@ class FeedFilterMapper(
             id = FeedFilterSectionIds.AGE_RATINGS,
             displayName = "Возрастной рейтинг",
             items = AgeRating.entries.map { rating ->
+                val title = when (rating) {
+                    AgeRating.R0_PLUS -> "+0"
+                    AgeRating.R6_PLUS -> "+6"
+                    AgeRating.R12_PLUS -> "+12"
+                    AgeRating.R16_PLUS -> "+16"
+                    AgeRating.R18_PLUS -> "+18"
+                }
                 FilterCellUiModel(
                     id = rating.name,
-                    title = "${rating.ordinal * 6}+",
+                    title = title,
                 )
             },
             selectedCells = filter.ageRatings.map(AgeRating::name).toSet(),
