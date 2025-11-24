@@ -1,5 +1,7 @@
 plugins {
     alias(libs.plugins.dezdeqness.kmp.library)
+    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.jetbrainsCompose)
 }
 
 android {
@@ -10,6 +12,7 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(libs.kermit)
+            implementation(libs.androidx.lifecycle.runtime.compose)
             api(libs.core)
         }
         val desktopMain by getting

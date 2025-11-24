@@ -12,12 +12,11 @@ fun <T> Flow<T>.collectEvents(
     lifecycleState: Lifecycle.State = Lifecycle.State.STARTED,
     sideEffect: (suspend (event: T) -> Unit),
 ) {
-    val sideEffectFlow = this
     val lifecycleOwner = LocalLifecycleOwner.current
 
-    LaunchedEffect(sideEffectFlow, lifecycleOwner) {
+    LaunchedEffect(this@collectEvents, lifecycleOwner) {
         lifecycleOwner.lifecycle.repeatOnLifecycle(lifecycleState) {
-            sideEffectFlow.collect {
+            collect {
                 sideEffect(it)
             }
         }

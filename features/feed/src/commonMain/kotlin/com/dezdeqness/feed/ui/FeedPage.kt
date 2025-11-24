@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
-import com.dezdeqness.feed.ui.composable.FeedFilterBottomSheet
 import com.dezdeqness.feed.ui.composable.FeedGrid
 import com.dezdeqness.feed.ui.composable.FeedSearch
+import com.dezdeqness.feed.ui.filter.composables.FeedFilterBottomSheet
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
