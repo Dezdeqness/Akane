@@ -29,6 +29,7 @@ kotlin {
             implementation(projects.features.videoplayer)
             implementation(projects.features.personal)
             implementation(projects.features.home)
+            implementation(projects.features.calendar)
 
             implementation(compose.runtime)
             implementation(compose.material3)
