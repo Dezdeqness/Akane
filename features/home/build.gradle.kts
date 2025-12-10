@@ -14,6 +14,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(project(":features:feed"))
+            implementation(project(":features:calendar"))
         }
 
         val desktopMain by getting

@@ -1,8 +1,10 @@
 package com.dezdeqness.network.di
 
 import com.dezdeqness.network.constants.BaseUrl
+import com.dezdeqness.network.services.CalendarService
 import com.dezdeqness.network.services.CatalogService
 import com.dezdeqness.network.services.FranchiseService
+import com.dezdeqness.network.services.createCalendarService
 import com.dezdeqness.network.services.createCatalogService
 import com.dezdeqness.network.services.createFranchiseService
 import de.jensklingenberg.ktorfit.Ktorfit
@@ -61,5 +63,9 @@ val networkModule = module {
 
     single<FranchiseService>{
         get<Ktorfit>().createFranchiseService()
+    }
+
+    single<CalendarService> {
+        get<Ktorfit>().createCalendarService()
     }
 }

@@ -9,7 +9,7 @@ data class ScheduleItemResponse(
     @SerialName("full_season_is_released")
     val fullSeasonIsReleased: Boolean,
     @SerialName("published_release_episode")
-    val publishedReleaseEpisode: PublishedEpisode,
+    val publishedReleaseEpisode: PublishedEpisode?,
     @SerialName("next_release_episode_number")
     val nextReleaseEpisodeNumber: Int,
 )

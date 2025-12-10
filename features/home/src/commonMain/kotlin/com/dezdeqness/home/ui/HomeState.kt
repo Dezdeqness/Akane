@@ -8,6 +8,7 @@ data class HomeState(
     val bestRated: List<HomeUiModel> = listOf(),
     val released: List<HomeUiModel> = listOf(),
     val onGoing: List<HomeUiModel> = listOf(),
+    val freshUpdates: List<HomeUiModel> = listOf(),
     val status: StateStatus = StateStatus.Initial,
 )
 

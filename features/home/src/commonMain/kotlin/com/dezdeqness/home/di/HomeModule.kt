@@ -10,6 +10,7 @@ val homeModule = module {
     viewModel {
         HomeViewModel(
             feedRepository = get(),
+            calendarRepository = get(),
             homeUiMapper = get(),
             coroutineDispatcherProvider = get(),
         )
