@@ -14,6 +14,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
@@ -65,6 +66,7 @@ class HomeViewModel(
                     )
                 }.flowOn(coroutineDispatcherProvider.io())
             }
+            .catch { emit(HomeState(status = StateStatus.Error)) }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,

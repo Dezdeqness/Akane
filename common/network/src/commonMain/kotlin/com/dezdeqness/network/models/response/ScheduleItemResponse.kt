@@ -11,5 +11,5 @@ data class ScheduleItemResponse(
     @SerialName("published_release_episode")
     val publishedReleaseEpisode: PublishedEpisode?,
     @SerialName("next_release_episode_number")
-    val nextReleaseEpisodeNumber: Int,
+    val nextReleaseEpisodeNumber: Int?,
 )
