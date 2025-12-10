@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.dezdeqness.home.ui.composables.FreshUpdatesSection
 import com.dezdeqness.home.ui.composables.HomeError
 import com.dezdeqness.home.ui.composables.HomeSection
 import kotlinx.coroutines.flow.StateFlow
@@ -39,6 +40,12 @@ fun HomePage(
             LazyColumn(
                 modifier = modifier,
             ) {
+                item {
+                    FreshUpdatesSection(
+                        items = state.freshUpdates,
+                        onItemClicked = actions::onItemClicked,
+                    )
+                }
                 item {
                     HomeSection(
                         title = "Новинки",
