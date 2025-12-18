@@ -6,8 +6,14 @@ import com.dezdeqness.personal.ui.PersonalStandalonePage
 
 const val PERSONAL_ROUTE = "personal_route"
 
-fun NavGraphBuilder.personalScreen(onItemClicked: (Long) -> Unit) {
+fun NavGraphBuilder.personalScreen(
+    onItemClicked: (Long) -> Unit,
+    onEmptyListActionClicked: () -> Unit,
+) {
     composable(PERSONAL_ROUTE) {
-        PersonalStandalonePage(onItemClicked = onItemClicked)
+        PersonalStandalonePage(
+            onItemClicked = onItemClicked,
+            onEmptyListActionClicked = onEmptyListActionClicked,
+        )
     }
 }

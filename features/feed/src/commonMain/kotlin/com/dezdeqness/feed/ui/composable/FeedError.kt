@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables
+package com.dezdeqness.feed.ui.composable
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
@@ -19,7 +19,7 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 
 @Composable
-fun HomeError(
+fun FeedError(
     modifier: Modifier = Modifier,
     onAction: () -> Unit,
 ) {
@@ -35,7 +35,7 @@ fun HomeError(
 
     ErrorState(
         modifier = modifier.padding(16.dp),
-        title = "Что-то пошло не так...",
+        title = "Во время загрузки списка произошла ошибка",
         buttonTitle = "Повторить",
         onClick = onAction,
         image = {

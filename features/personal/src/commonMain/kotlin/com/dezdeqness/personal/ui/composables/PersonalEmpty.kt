@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables
+package com.dezdeqness.personal.ui.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
@@ -8,7 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.designsystem.state.ErrorState
+import com.dezdeqness.designsystem.state.EmptyState
 import com.dezdeqness.designsystem.utils.LottieFiles
 import com.dezdeqness.designsystem.utils.LottieRes
 import io.github.alexzhirkevich.compottie.Compottie
@@ -19,13 +19,13 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 
 @Composable
-fun HomeError(
+fun PersonalEmpty(
     modifier: Modifier = Modifier,
     onAction: () -> Unit,
 ) {
     val composition by rememberLottieComposition {
         LottieCompositionSpec.DotLottie(
-            LottieRes.readBytes(LottieFiles.LottieErrorV2)
+            LottieRes.readBytes(LottieFiles.LottieEmptyV1)
         )
     }
     val progress by animateLottieCompositionAsState(
@@ -33,10 +33,11 @@ fun HomeError(
         composition = composition,
     )
 
-    ErrorState(
+    EmptyState(
         modifier = modifier.padding(16.dp),
-        title = "Что-то пошло не так...",
-        buttonTitle = "Повторить",
+        title = "Избранное пусто",
+        message = "Добавьте аниме в избранное на странице деталей",
+        buttonTitle = "Перейти на поиск",
         onClick = onAction,
         image = {
             Image(

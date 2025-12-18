@@ -26,18 +26,17 @@ fun HomePage(
     val isError = state.status == StateStatus.Error
 
     Box(
-        modifier
-            .fillMaxSize()
+        modifier.fillMaxSize()
     ) {
-        if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-        } else if (isError) {
-            HomeError(
+        when {
+            isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
+            isError -> HomeError(
                 modifier = Modifier.align(Alignment.Center),
                 onAction = actions::onRetryClicked,
             )
-        } else {
-            LazyColumn(
+
+            else -> LazyColumn(
                 modifier = modifier,
             ) {
                 item {
@@ -68,6 +67,7 @@ fun HomePage(
                     )
                 }
             }
+
         }
     }
 }

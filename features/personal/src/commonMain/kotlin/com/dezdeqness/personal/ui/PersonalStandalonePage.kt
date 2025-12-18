@@ -10,6 +10,7 @@ fun PersonalStandalonePage(
     modifier: Modifier = Modifier,
     personalViewModel: PersonalViewModel = koinViewModel(),
     onItemClicked: (Long) -> Unit,
+    onEmptyListActionClicked: () -> Unit,
 ) {
     val actions = remember {
         object : PersonalActions {
@@ -19,6 +20,10 @@ fun PersonalStandalonePage(
 
             override fun onItemUnFavouriteClicked(id: Long) {
                 personalViewModel.onItemUnFavouriteClicked(id)
+            }
+
+            override fun onEmptyListActionClicked() {
+                onEmptyListActionClicked()
             }
 
         }

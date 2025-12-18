@@ -8,12 +8,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
-import com.dezdeqness.personal.ui.composables.PersonalEmptyState
+import com.dezdeqness.personal.ui.composables.PersonalEmpty
 import com.dezdeqness.personal.ui.composables.PersonalGrid
 import kotlinx.coroutines.flow.StateFlow
 
@@ -39,7 +40,10 @@ fun PersonalPage(
     ) { paddingValues ->
         Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
             if (state.list.isEmpty()) {
-                PersonalEmptyState(modifier = Modifier.fillMaxSize())
+                PersonalEmpty(
+                    modifier = Modifier.align(Alignment.Center),
+                    onAction = actions::onEmptyListActionClicked,
+                )
             } else {
                 PersonalGrid(
                     modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp),

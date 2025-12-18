@@ -134,6 +134,10 @@ class FeedViewModel(
         }
     }
 
+    fun onRetryClicked() {
+        loadEvents.tryEmit(LoadEvent.Refresh(input = feedStateFlow.value.input))
+    }
+
     private sealed class LoadEvent(
         open val input: FeedUserInput,
         open val page: Int,

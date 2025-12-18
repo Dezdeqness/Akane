@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables
+package com.dezdeqness.details.ui.composables
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
@@ -19,7 +19,7 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 
 @Composable
-fun HomeError(
+fun ReleaseError(
     modifier: Modifier = Modifier,
     onAction: () -> Unit,
 ) {

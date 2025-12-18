@@ -96,6 +96,10 @@ class ReleaseDetailsViewModel(
         }
     }
 
+    fun onRetryClicked() {
+        loadEvents.tryEmit(LoadEvent.Initial)
+    }
+
     private sealed class LoadEvent {
         data object Initial : LoadEvent()
     }

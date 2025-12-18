@@ -61,7 +61,7 @@ val networkModule = module {
         get<Ktorfit>().createCatalogService()
     }
 
-    single<FranchiseService>{
+    single<FranchiseService> {
         get<Ktorfit>().createFranchiseService()
     }
 

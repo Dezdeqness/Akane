@@ -15,6 +15,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.feed.ui.composable.FeedEmpty
+import com.dezdeqness.feed.ui.composable.FeedError
 import com.dezdeqness.feed.ui.composable.FeedGrid
 import com.dezdeqness.feed.ui.composable.FeedSearch
 import com.dezdeqness.feed.ui.filter.composables.FeedFilterBottomSheet
@@ -41,33 +43,46 @@ fun FeedPage(
             )
         }
     ) { contentPadding ->
-        Box(modifier = Modifier.padding(contentPadding)) {
-            if (state.status == Status.Initial || state.status == Status.Loading) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    CircularProgressIndicator()
-                }
-            } else {
-                var isPageLoading by remember {
-                    mutableStateOf(false)
+        Box(modifier = Modifier.padding(contentPadding).fillMaxSize()) {
+            when (state.status) {
+                Status.Initial, Status.Loading -> {
+                    CircularProgressIndicator(Modifier.align(Alignment.Center))
                 }
 
-                LaunchedEffect(state.items) {
-                    isPageLoading = false
+                Status.Error -> {
+                    FeedError(
+                        modifier = Modifier.align(Alignment.Center),
+                        onAction = viewModel::onRetryClicked,
+                    )
                 }
 
-                FeedGrid(
-                    list = state.items,
-                    hasNextPage = hasNextPage,
-                    isPageLoading = isPageLoading,
-                    onLoadMore = {
-                        viewModel.onLoadMore()
-                        isPageLoading = true
-                    },
-                    onReleaseClicked = onReleaseClicked,
-                )
+                Status.Empty -> {
+                    FeedEmpty(
+                        modifier = Modifier.align(Alignment.Center),
+                        onAction = viewModel::onFilterClicked,
+                    )
+                }
+
+                Status.Loaded -> {
+                    var isPageLoading by remember {
+                        mutableStateOf(false)
+                    }
+
+                    LaunchedEffect(state.items) {
+                        isPageLoading = false
+                    }
+
+                    FeedGrid(
+                        list = state.items,
+                        hasNextPage = hasNextPage,
+                        isPageLoading = isPageLoading,
+                        onLoadMore = {
+                            viewModel.onLoadMore()
+                            isPageLoading = true
+                        },
+                        onReleaseClicked = onReleaseClicked,
+                    )
+                }
             }
         }
 

@@ -38,7 +38,7 @@ fun EmptyState(
     title: String,
     message: String? = null,
     image: @Composable () -> Unit,
-    buttonsContent: @Composable () -> Unit,
+    buttonsContent: @Composable (() -> Unit)? = null,
 ) {
     StateView(
         modifier = modifier,

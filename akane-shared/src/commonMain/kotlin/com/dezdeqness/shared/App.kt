@@ -21,6 +21,7 @@ import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.details.navigation.detailsScreen
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
+import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.home.navigation.HOME_ROUTE
 import com.dezdeqness.home.navigation.homeScreen
@@ -87,7 +88,18 @@ fun App() {
                         ) {
                             homeScreen(rootController::navigateToDetailsScreen)
                             feedScreen(rootController::navigateToDetailsScreen)
-                            personalScreen(rootController::navigateToDetailsScreen)
+                            personalScreen(
+                                onItemClicked = rootController::navigateToDetailsScreen,
+                                onEmptyListActionClicked = {
+                                    navController.navigate(FEED_ROUTE) {
+                                        popUpTo(navController.graph.startDestinationId) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            )
                         }
                     }
                 }
