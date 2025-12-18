@@ -13,7 +13,8 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
-
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }

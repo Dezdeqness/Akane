@@ -15,6 +15,9 @@ kotlin {
             implementation(libs.kermit)
             implementation(project(":features:feed"))
             implementation(project(":features:calendar"))
+
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
         }
 
         val desktopMain by getting

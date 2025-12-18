@@ -12,7 +12,8 @@ kotlin {
             api(libs.bundles.ktorfit.common)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
-
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
             implementation(project(":features:personal"))
         }
         val desktopMain by getting

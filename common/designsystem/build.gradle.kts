@@ -14,6 +14,8 @@ kotlin {
         commonMain.dependencies {
             implementation(libs.compose.material3)
             implementation(libs.material.icons.core)
+            implementation(compose.components.resources)
+
             api(libs.core.ui)
 
             implementation(libs.coil.kt)
