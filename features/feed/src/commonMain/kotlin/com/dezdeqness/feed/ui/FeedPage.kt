@@ -3,7 +3,6 @@ package com.dezdeqness.feed.ui
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -18,6 +17,7 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.feed.ui.composable.FeedEmpty
 import com.dezdeqness.feed.ui.composable.FeedError
 import com.dezdeqness.feed.ui.composable.FeedGrid
+import com.dezdeqness.feed.ui.composable.FeedLoading
 import com.dezdeqness.feed.ui.composable.FeedSearch
 import com.dezdeqness.feed.ui.filter.composables.FeedFilterBottomSheet
 import org.koin.compose.viewmodel.koinViewModel
@@ -46,7 +46,7 @@ fun FeedPage(
         Box(modifier = Modifier.padding(contentPadding).fillMaxSize()) {
             when (state.status) {
                 Status.Initial, Status.Loading -> {
-                    CircularProgressIndicator(Modifier.align(Alignment.Center))
+                    FeedLoading(Modifier.fillMaxSize())
                 }
 
                 Status.Error -> {

@@ -6,14 +6,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.dezdeqness.core.ui.views.rememberShimmerOffset
 import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 private const val PAGINATION_LOAD_FACTOR = 0.75
@@ -29,6 +30,8 @@ fun FeedGrid(
     onReleaseClicked: (Long) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
+
+    val shimmerOffset by rememberShimmerOffset()
 
     val shouldStartPaginate = remember {
         derivedStateOf {
@@ -71,8 +74,8 @@ fun FeedGrid(
             repeat(CELL_GRID_COUNT) { index ->
                 val padding = calculateItemPadding(index, CELL_GRID_COUNT)
                 item {
-                    CircularProgressIndicator(
-                        modifier = Modifier.padding(padding),
+                    FeedItemLoading(
+                        modifier = Modifier.padding(padding), shimmerOffset = shimmerOffset,
                     )
                 }
             }
@@ -81,7 +84,7 @@ fun FeedGrid(
 
 }
 
-private fun calculateItemPadding(index: Int, cellCount: Int): PaddingValues {
+fun calculateItemPadding(index: Int, cellCount: Int): PaddingValues {
     val column = index % cellCount
     val left = 8.dp - column * 8.dp / cellCount
     val right = (column + 1) * 8.dp / cellCount
