@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
@@ -103,7 +103,7 @@ fun ReleaseDetailsLoaded(
                         }
                     )
 
-                    ScrollableTabRow(
+                    PrimaryScrollableTabRow(
                         selectedTabIndex = selectedTabIndex,
                         containerColor = AppTheme.colors.background,
                         contentColor = AppTheme.colors.textPrimary,
