@@ -16,6 +16,6 @@ actual fun getDeviceConfiguration(): DeviceConfiguration {
         aspectRatio = if (screenWidthPx > 0 && screenHeightPx > 0) {
             screenWidthPx.toFloat() / screenHeightPx
         } else null,
-        isPortrait =   configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+        isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
     )
 }

@@ -26,7 +26,7 @@ import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.home.navigation.HOME_ROUTE
 import com.dezdeqness.home.navigation.homeScreen
 import com.dezdeqness.personal.navigation.personalScreen
-import com.dezdeqness.videoplayer.core.videoController
+import com.dezdeqness.videoplayer.navigation.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
 
 @Composable
