@@ -8,10 +8,6 @@ import android.view.MotionEvent
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -19,16 +15,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
 import com.dezdeqness.designsystem.imageloader.getImageLoader
-import com.dezdeqness.designsystem.utils.noRippleClickable
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
@@ -69,27 +61,13 @@ class VideoPlayerActivity : ComponentActivity() {
                 LocalAstImageLoader provides getImageLoader()
             ) {
                 AppTheme {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        modifier = Modifier
-                            .background(Color.Black)
-                            .fillMaxSize()
-                            .noRippleClickable {
-                                if (systemBarsControllerState.isSystemBarVisible) {
-                                    systemBarsControllerState.hideSystemBar()
-                                } else {
-                                    systemBarsControllerState.showSystemBar()
-                                }
-                            }
-                    ) {
                         VideoPlayerScreen(
-                            systemBarsControllerState = systemBarsControllerState,
                             onBackButtonClicked = {
                                 finish()
                             }
                         )
                     }
-                }
+
             }
         }
     }

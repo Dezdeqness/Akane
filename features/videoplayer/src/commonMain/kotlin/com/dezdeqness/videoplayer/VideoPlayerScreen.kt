@@ -13,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,12 +23,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
-import com.dezdeqness.videoplayer.core.FullScreenState
-import com.dezdeqness.videoplayer.core.player.VideoPlayerView
-import com.dezdeqness.videoplayer.core.player.rememberVideoPlayerState
 import com.dezdeqness.videoplayer.ui.Status
+import com.dezdeqness.videoplayer.ui.VideoPlayerView
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
-import com.dezdeqness.videoplayer.ui.VideoQuality
 import com.dezdeqness.videoplayer.ui.composables.ActionPlayerView
 import com.dezdeqness.videoplayer.ui.composables.ControlPlayerView
 import com.dezdeqness.videoplayer.ui.composables.ProgressSlider
@@ -43,20 +39,27 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun VideoPlayerScreen(
     videoPlayerViewModel: VideoPlayerViewModel = koinViewModel(),
-    systemBarsControllerState: FullScreenState,
     onBackButtonClicked: () -> Unit = {},
 ) {
-    val state by videoPlayerViewModel.videoPlayerStateFlow.collectAsStateWithLifecycle()
+    val screenState by videoPlayerViewModel.screenState.collectAsStateWithLifecycle()
+    val overlayState by videoPlayerViewModel.overlay.collectAsStateWithLifecycle()
 
-    val videoData = state.videoData
+    val videoData = screenState.videoData
 
-    val videoSpeedData = state.videoSpeedData
+    val featuresModifier = remember(videoPlayerViewModel) {
+        videoPlayerViewModel.featuresModifier
+    }
 
-    val playerState = rememberVideoPlayerState()
+    val isControlsVisible = remember(screenState, overlayState) {
+        overlayState.controlsVisible || screenState.isPlaylistVisible ||
+                screenState.videoSpeedData.isVideoSpeedDropdownVisible ||
+                screenState.qualityData.isQualityDropdownVisible
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .then(featuresModifier)
             .background(Color.Black)
     ) {
         if (videoData.status == Status.Initial || videoData.status == Status.Loading) {
@@ -67,48 +70,13 @@ fun VideoPlayerScreen(
             return@Box
         }
 
-        val currentEpisode = remember(videoData.episodes, state.currentEpisodeId) {
-            videoData.episodes.first { it.id == state.currentEpisodeId }
-        }
-
-        LaunchedEffect(videoData.episodes, state.qualityData.currentVideoQuality) {
-            if (videoData.episodes.isEmpty()) return@LaunchedEffect
-            val mediaItems = videoData.episodes.map {
-                when (state.qualityData.currentVideoQuality) {
-                    VideoQuality.q480 -> it.hls480.orEmpty()
-                    VideoQuality.q720 -> it.hls720.orEmpty()
-                    VideoQuality.q1080 -> it.hls1080.orEmpty()
-                }
-            }
-            val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
-            playerState.setVideoItems(mediaItems, startIndex, playerState.currentPositionPlayer)
-            playerState.play()
-        }
-
-        LaunchedEffect(videoData.episodes, state.currentEpisodeId) {
-            if (videoData.episodes.isEmpty()) return@LaunchedEffect
-            val startIndex = videoData.episodes.indexOfFirst { it.id == state.currentEpisodeId }
-            playerState.seekByTimestamp(0)
-            if (startIndex >= 0) {
-                val mediaItems = videoData.episodes.map {
-                    when (state.qualityData.currentVideoQuality) {
-                        VideoQuality.q480 -> it.hls480.orEmpty()
-                        VideoQuality.q720 -> it.hls720.orEmpty()
-                        VideoQuality.q1080 -> it.hls1080.orEmpty()
-                    }
-                }
-                playerState.setVideoItems(mediaItems, startIndex, 0)
-            }
-            playerState.play()
-        }
-
-        LaunchedEffect(videoSpeedData) {
-            playerState.setSpeed(videoSpeedData.videoSpeed.speed)
+        val currentEpisode = remember(videoData.episodes, screenState.currentEpisodeId) {
+            videoData.episodes.first { it.id == screenState.currentEpisodeId }
         }
 
         VideoLayout(
             modifier = Modifier.fillMaxSize(),
-            isSystemBarVisible = systemBarsControllerState.isSystemBarVisible,
+            isControlsVisible = isControlsVisible,
             appbar = {
                 AppToolbar(
                     modifier = Modifier.fillMaxWidth(),
@@ -153,35 +121,34 @@ fun VideoPlayerScreen(
             videoPlayerView = { modifier ->
                 VideoPlayerView(
                     modifier = modifier.aspectRatio(16 / 9F),
-                    playerState = playerState,
+                    controller = videoPlayerViewModel.controller
                 )
             },
             actionPlayerView = {
+                val playerState by videoPlayerViewModel.playerState.collectAsStateWithLifecycle()
                 ActionPlayerView(
                     progressSlider = { modifier ->
                         ProgressSlider(
                             modifier = modifier,
-                            totalDuration = playerState.durationPlayer,
-                            currentTime = playerState.currentPositionPlayer,
-                            cachedTime = playerState.bufferedDuration,
-                            onSeekTo = {
-                                playerState.seekByTimestamp(it)
-                            }
+                            totalDuration = playerState.duration,
+                            currentTime = playerState.position,
+                            cachedTime = playerState.buffered,
+                            onSeekTo = { ms ->
+                                videoPlayerViewModel.seekTo(ms)
+                            },
                         )
                     },
                     qualityAction = {
                         Box {
-                            TextButton(
-                                onClick = videoPlayerViewModel::onQualityActionClicked
-                            ) {
+                            TextButton(onClick = videoPlayerViewModel::onQualityActionClicked) {
                                 Text(
-                                    "${state.qualityData.currentVideoQuality.quality}",
+                                    "${screenState.qualityData.currentVideoQuality.quality}",
                                     color = Color.White,
                                 )
                             }
                             QualityDropdownMenu(
-                                isExpanded = state.qualityData.isQualityDropdownVisible,
-                                currentQuality = state.qualityData.currentVideoQuality,
+                                isExpanded = screenState.qualityData.isQualityDropdownVisible,
+                                currentQuality = screenState.qualityData.currentVideoQuality,
                                 onQualityChange = videoPlayerViewModel::onVideoQualitySelect,
                                 onDismiss = videoPlayerViewModel::onQualityActionClosed,
                             )
@@ -189,17 +156,15 @@ fun VideoPlayerScreen(
                     },
                     speedAction = {
                         Box {
-                            TextButton(
-                                onClick = videoPlayerViewModel::onVideoSpeedActionClicked,
-                            ) {
+                            TextButton(onClick = videoPlayerViewModel::onVideoSpeedActionClicked) {
                                 Text(
-                                    "${videoSpeedData.videoSpeed.speed}x",
+                                    "${screenState.videoSpeedData.videoSpeed.speed}x",
                                     color = Color.White,
                                 )
                             }
                             VideoSpeedDropdownMenu(
-                                isExpanded = videoSpeedData.isVideoSpeedDropdownVisible,
-                                currentSpeed = videoSpeedData.videoSpeed,
+                                isExpanded = screenState.videoSpeedData.isVideoSpeedDropdownVisible,
+                                currentSpeed = screenState.videoSpeedData.videoSpeed,
                                 onSpeedChange = videoPlayerViewModel::onVideoSpeedSelect,
                                 onDismiss = videoPlayerViewModel::onVideoSpeedActionClosed,
                             )
@@ -208,47 +173,43 @@ fun VideoPlayerScreen(
                     playlistAction = {
                         AppIconButton(
                             icon = AkaneIcons.Menu,
-                            onClick = videoPlayerViewModel::onPlaylistActionClicked,
+                            onClick = videoPlayerViewModel::openPlaylist,
                             tint = Color.White,
                         )
                     }
                 )
             },
             controlPlayerView = {
+                val playerState by videoPlayerViewModel.playerState.collectAsStateWithLifecycle()
+
                 ControlPlayerView(
                     modifier = Modifier.fillMaxSize().background(Color.Black.copy(0.2f)),
                     isPlaying = playerState.isPlaying,
                     isLoading = playerState.isBuffering,
                     onSeekForward = {
-                        playerState.seekForward()
+                        videoPlayerViewModel.seekForward()
                     },
                     onSeekBackward = {
-                        playerState.seekBack()
+                        videoPlayerViewModel.seekBack()
                     },
                     onPlayPauseToggle = {
                         if (it) {
-                            playerState.pause()
+                            videoPlayerViewModel.pause()
                         } else {
-                            playerState.play()
+                            videoPlayerViewModel.play()
                         }
                     }
                 )
             }
         )
+    }
 
-        if (state.isPlaylistBottomSheetVisible) {
-            PlaylistBottomSheet(
-                modifier = Modifier,
-                episodes = state.videoData.episodes,
-                currentEpisodeId = state.currentEpisodeId,
-                onSelected = { id ->
-                    videoPlayerViewModel.onSelectEpisode(id)
-                },
-                onDismiss = {
-                    videoPlayerViewModel.onPlaylistActionClosed()
-                }
-            )
-        }
-
+    if (screenState.isPlaylistVisible) {
+        PlaylistBottomSheet(
+            episodes = screenState.videoData.episodes,
+            currentEpisodeId = screenState.currentEpisodeId,
+            onSelected = { id -> videoPlayerViewModel.selectEpisode(id) },
+            onDismiss = { videoPlayerViewModel.closePlaylist() }
+        )
     }
 }

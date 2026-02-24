@@ -63,8 +63,4 @@ class VideoPlayerController(
 
     fun showControls() = _overlay.update { it.copy(controlsVisible = true) }
     fun hideControls() = _overlay.update { it.copy(controlsVisible = false) }
-    fun setBufferingIndicatorVisible(visible: Boolean) =
-        _overlay.update { it.copy(bufferingIndicatorVisible = visible) }
-
-    fun setHud(text: String?) = _overlay.update { it.copy(hudText = text) }
 }

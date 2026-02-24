@@ -6,7 +6,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dezdeqness.videoplayer.VideoPlayerScreen
-import com.dezdeqness.videoplayer.core.rememberFullScreenState
 
 @Composable
 fun VideoPlayerPage(
@@ -18,7 +17,6 @@ fun VideoPlayerPage(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         VideoPlayerScreen(
-            systemBarsControllerState = rememberFullScreenState(),
             onBackButtonClicked = onBackPressed,
         )
     }
