@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import kotlin.math.abs
@@ -98,19 +97,24 @@ fun ProgressSlider(
                 SliderDefaults.Thumb(interactionSource = interactionSource, modifier = modifier)
             },
             track = { sliderPositions ->
+                val end = sliderPositions.valueRange.endInclusive.coerceAtLeast(1f)
+
+                val currentPct = (sliderPositions.value / end).coerceIn(0f, 1f)
+                val cachedPct = (localCachedTime / end).coerceIn(0f, 1f)
+
                 SliderDefaults.Track(
                     sliderState = sliderPositions,
                     modifier = Modifier
                         .height(4.dp)
-                        .pulsatingEffect(
-                            if (sliderPositions.value == 0f) 0f else sliderPositions.value / sliderPositions.valueRange.endInclusive,
-                            if (localCachedTime == 0f) 0f else localCachedTime / sliderPositions.valueRange.endInclusive,
+                        .bufferedEffect(
+                            currentPercentage = currentPct,
+                            cachedPercentage = cachedPct,
                         ),
                     thumbTrackGapSize = 0.dp,
                     trackInsideCornerSize = 0.dp,
                     drawStopIndicator = null,
                 )
-            },
+            }
         )
     }
 }
@@ -124,38 +128,31 @@ fun formatTime(duration: Long): String {
 }
 
 @Composable
-fun Modifier.pulsatingEffect(
+fun Modifier.bufferedEffect(
     currentPercentage: Float,
     cachedPercentage: Float,
     color: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.7f),
 ): Modifier = composed {
-    var trackWidth by remember { mutableFloatStateOf(0f) }
-    val thumbX by remember(currentPercentage) {
-        mutableFloatStateOf(trackWidth * currentPercentage)
+    this.drawWithContent {
+        drawContent()
+
+        val cur = currentPercentage.coerceIn(0f, 1f)
+        val cache = cachedPercentage.coerceIn(0f, 1f)
+
+        val startX = size.width * cur
+        val endX = size.width * cache
+
+        if (endX <= startX) return@drawWithContent
+
+        val strokeWidth = size.height
+        val y = size.height / 2f
+
+        drawLine(
+            color = color,
+            start = Offset(startX, y),
+            end = Offset(endX, y),
+            cap = StrokeCap.Round,
+            strokeWidth = strokeWidth,
+        )
     }
-
-    val endProgress by remember(cachedPercentage) {
-        mutableFloatStateOf(trackWidth * cachedPercentage)
-    }
-
-    this then Modifier
-        .onGloballyPositioned { coordinates ->
-            trackWidth = coordinates.size.width.toFloat()
-        }
-        .drawWithContent {
-            drawContent()
-
-            val strokeWidth = size.height
-            val y = size.height / 2f
-            val startOffset = thumbX
-            val endOffset = thumbX + endProgress
-
-            drawLine(
-                color = color,
-                start = Offset(startOffset, y),
-                end = Offset(endOffset, y),
-                cap = StrokeCap.Round,
-                strokeWidth = strokeWidth
-            )
-        }
 }

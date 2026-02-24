@@ -13,7 +13,8 @@ interface VideoPlayer {
     fun seekTo(positionMs: Long)
     fun setVolume(volume: Float)
     fun setPlaybackSpeed(speed: Float)
-
+    fun seekBack()
+    fun seekForward()
     fun setMediaItems(
         mediaItems: List<String>,
         startIndex: Int,

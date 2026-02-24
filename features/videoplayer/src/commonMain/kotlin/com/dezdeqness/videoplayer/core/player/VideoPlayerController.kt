@@ -1,5 +1,6 @@
 package com.dezdeqness.videoplayer.core.player
 
+import com.dezdeqness.videoplayer.core.OverlayState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -55,6 +56,8 @@ class VideoPlayerController(
     fun release() = player.release()
 
     fun seekTo(ms: Long) = player.seekTo(ms)
+    fun seekBack() = player.seekBack()
+    fun seekForward() = player.seekForward()
     fun setSpeed(speed: Float) = player.setPlaybackSpeed(speed.coerceIn(0.25f, 3f))
     fun setVolume(volume: Float) = player.setVolume(volume.coerceIn(0f, 1f))
 

@@ -36,7 +36,7 @@ private val standardExit = fadeOut(
 @Composable
 fun VideoLayout(
     modifier: Modifier = Modifier,
-    isSystemBarVisible: Boolean,
+    isControlsVisible: Boolean,
     appbar: @Composable () -> Unit,
     videoPlayerView: @Composable (Modifier) -> Unit,
     actionPlayerView: @Composable () -> Unit,
@@ -64,7 +64,7 @@ fun VideoLayout(
 
         AnimatedVisibility(
             modifier = Modifier.align(Alignment.Center),
-            visible = isSystemBarVisible,
+            visible = isControlsVisible,
             enter = standardEnter,
             exit = standardExit,
         ) {
@@ -73,7 +73,7 @@ fun VideoLayout(
 
         AnimatedVisibility(
             modifier = Modifier.padding(padding).align(Alignment.TopCenter),
-            visible = isSystemBarVisible,
+            visible = isControlsVisible,
             enter = standardEnter,
             exit = standardExit,
         ) {
@@ -82,7 +82,7 @@ fun VideoLayout(
 
         AnimatedVisibility(
             modifier = Modifier.padding(padding).align(Alignment.BottomCenter),
-            visible = isSystemBarVisible,
+            visible = isControlsVisible,
             enter = standardEnter,
             exit = standardExit,
         ) {

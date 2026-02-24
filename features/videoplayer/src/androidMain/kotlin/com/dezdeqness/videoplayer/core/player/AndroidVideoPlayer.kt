@@ -1,34 +1,110 @@
 package com.dezdeqness.videoplayer.core.player
 
+import android.content.Context
 import androidx.media3.common.MediaItem
+import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
+import androidx.media3.common.Timeline
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
-class AndroidVideoPlayer(
-    private val exoPlayer: ExoPlayer
-) : Player by exoPlayer, VideoPlayer {
-    override fun addListener(listener: VideoPlayerListener) {
+@UnstableApi
+class AndroidVideoPlayer(context: Context) : VideoPlayer {
+
+    val exoPlayer = ExoPlayer.Builder(context)
+        .setMediaSourceFactory(DefaultMediaSourceFactory(context))
+        .setSeekForwardIncrementMs(10000L)
+        .setSeekBackIncrementMs(10000L)
+        .build()
+
+
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 64)
+    override val events: Flow<PlayerEvent> = _events.asSharedFlow()
+
+    private var tickerJob: Job? = null
+
+    init {
         exoPlayer.addListener(object : Player.Listener {
             override fun onIsPlayingChanged(isPlaying: Boolean) {
-                listener.onIsPlayingChanged(isPlaying)
+                _events.tryEmit(PlayerEvent.IsPlaying(isPlaying))
+                if (isPlaying) startTicker() else stopTicker()
             }
 
-            override fun onIsLoadingChanged(isLoading: Boolean) {
-                listener.onIsLoadingChanged(isLoading)
+            override fun onPlaybackStateChanged(state: Int) {
+                when (state) {
+                    Player.STATE_BUFFERING -> _events.tryEmit(PlayerEvent.IsBuffering(true))
+                    Player.STATE_READY -> _events.tryEmit(PlayerEvent.IsBuffering(false))
+                    Player.STATE_ENDED -> _events.tryEmit(PlayerEvent.PlaybackEnded)
+                }
+                _events.tryEmit(PlayerEvent.DurationChanged(exoPlayer.duration.coerceAtLeast(0)))
             }
 
-            override fun onPlaybackStateChanged(playbackState: Int) {
-                listener.isBuffering(playbackState == Player.STATE_BUFFERING)
+            override fun onPlayerError(error: PlaybackException) {
+                _events.tryEmit(PlayerEvent.Error(error.message ?: "Playback error"))
+            }
+
+            override fun onTimelineChanged(timeline: Timeline, reason: Int) {
+                _events.tryEmit(PlayerEvent.DurationChanged(exoPlayer.duration.coerceAtLeast(0)))
             }
         })
     }
 
-    override fun setVideoItems(
-        mediaItems: List<String>,
-        startIndex: Int,
-        startPositionMs: Long
-    ) {
-        exoPlayer.setMediaItems(mediaItems.map { MediaItem.fromUri(it) }, startIndex, startPositionMs)
+    private fun startTicker() {
+        tickerJob?.cancel()
+        tickerJob = scope.launch {
+            while (isActive) {
+                _events.emit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
+                _events.emit(PlayerEvent.BufferedChanged(exoPlayer.bufferedPosition))
+                delay(500)
+            }
+        }
+    }
+
+    private fun stopTicker() {
+        tickerJob?.cancel(); tickerJob = null
+    }
+
+    override fun play() = exoPlayer.play()
+    override fun pause() = exoPlayer.pause()
+    override fun stop() {
+        exoPlayer.stop(); stopTicker(); _events.tryEmit(PlayerEvent.IsPlaying(false))
+    }
+
+    override fun release() {
+        stopTicker(); exoPlayer.release(); scope.cancel()
+    }
+
+    override fun seekBack() = exoPlayer.seekBack()
+    override fun seekForward() = exoPlayer.seekForward()
+    override fun seekTo(positionMs: Long) = exoPlayer.seekTo(positionMs.coerceAtLeast(0))
+    override fun setVolume(volume: Float) {
+        exoPlayer.volume = volume.coerceIn(0f, 1f)
+    }
+
+    override fun setPlaybackSpeed(speed: Float) {
+        exoPlayer.setPlaybackSpeed(speed.coerceIn(0.25f, 3f))
+    }
+
+    override fun setMediaItems(mediaItems: List<String>, startIndex: Int, startPositionMs: Long) {
+        val items = mediaItems.map { uri ->
+            val builder = MediaItem.Builder().setUri(uri)
+            builder.build()
+        }
+        exoPlayer.setMediaItems(items, startIndex, startPositionMs)
         exoPlayer.prepare()
+        exoPlayer.play()
     }
 }
