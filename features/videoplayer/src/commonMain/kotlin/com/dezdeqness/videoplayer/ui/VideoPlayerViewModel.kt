@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
+import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.videoplayer.core.player.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.VideoPlayerController
@@ -55,6 +56,10 @@ class VideoPlayerViewModel(
 
     private val videoSpeedFlow = MutableStateFlow(VideoSpeedData())
     private val qualityDataFlow = MutableStateFlow(QualityData())
+
+    private val aspectRatioModeFlow = MutableStateFlow(AspectRatioMode.Fit16_9)
+    val aspectRatioMode: StateFlow<AspectRatioMode> =
+        aspectRatioModeFlow.stateIn(viewModelScope, SharingStarted.Eagerly, aspectRatioModeFlow.value)
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val videoData: StateFlow<VideoData> = reloadEvents
@@ -188,20 +193,23 @@ class VideoPlayerViewModel(
         qualityDataFlow.tryEmit(qualityDataFlow.value.copy(currentVideoQuality = videoQuality))
     }
 
+    fun onAspectRatioClick() {
+        aspectRatioModeFlow.value = when (aspectRatioModeFlow.value) {
+            AspectRatioMode.Fit16_9 -> AspectRatioMode.Fit4_3
+            AspectRatioMode.Fit4_3 -> AspectRatioMode.Fill
+            AspectRatioMode.Fill -> AspectRatioMode.Fit16_9
+        }
+    }
+
+
     override fun onCleared() {
         features.disposeAll()
         controller.release()
     }
 }
 
-private fun EpisodeUiItem.urlByQualityOrNull(quality: VideoQuality): String? =
-    when (quality) {
-        VideoQuality.q1080 -> hls1080?.takeIf { it.isNotBlank() }
-        VideoQuality.q720 -> hls720?.takeIf { it.isNotBlank() }
-        VideoQuality.q480 -> hls480?.takeIf { it.isNotBlank() }
-    } ?: bestUrlOrNull()
+
+private fun EpisodeUiItem.urlByQualityOrNull(quality: VideoQuality): String? = episodeUrls[quality] ?: bestUrlOrNull()
 
 private fun EpisodeUiItem.bestUrlOrNull(): String? =
-    hls1080?.takeIf { it.isNotBlank() }
-        ?: hls720?.takeIf { it.isNotBlank() }
-        ?: hls480?.takeIf { it.isNotBlank() }
+    episodeUrls.toList().lastOrNull()?.second

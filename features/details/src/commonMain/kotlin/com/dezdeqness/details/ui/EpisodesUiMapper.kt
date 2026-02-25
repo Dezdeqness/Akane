@@ -12,6 +12,5 @@ class EpisodesUiMapper {
             name = item.name,
             previewUrl = if (item.previewUrl.isNotEmpty()) BaseUrl.BASE_URL_IMAGES + item.previewUrl else "",
             ordinal = item.ordinal,
-            hls720 = item.hls720.orEmpty(),
         )
 }

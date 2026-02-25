@@ -1,6 +1,7 @@
 package com.dezdeqness.videoplayer.ui
 
 import androidx.compose.runtime.Immutable
+import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 
 @Immutable
@@ -31,14 +32,14 @@ enum class Status {
     Error
 }
 
-enum class VideoSpeed(val speed: Float) {
-    Slowest(0.5f),
-    Slower(0.75f),
-    Normal(1f),
-    Faster(1.25f),
-    Fast(1.5f),
-    VeryFast(1.75f),
-    Fastest(2f)
+enum class VideoSpeed(val speed: Float, val speedName: String) {
+    Slowest(0.5f, "0.5x"),
+    Slower(0.75f, "0.75x"),
+    Normal(1f, "1x"),
+    Faster(1.25f, "1.25x"),
+    Fast(1.5f, "1.5x"),
+    VeryFast(1.75f, "1.75x"),
+    Fastest(2f, "2x")
 }
 
 data class QualityData(
@@ -46,8 +47,4 @@ data class QualityData(
     val isQualityDropdownVisible: Boolean = false,
 )
 
-enum class VideoQuality(val quality: Int) {
-    q480(480),
-    q720(720),
-    q1080(1080)
-}
+enum class AspectRatioMode { Fit16_9, Fit4_3, Fill }

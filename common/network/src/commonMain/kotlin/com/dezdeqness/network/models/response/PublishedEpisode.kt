@@ -1,8 +1,7 @@
 package com.dezdeqness.network.models.response
 
-import com.dezdeqness.network.models.core.Ending
-import com.dezdeqness.network.models.core.Opening
 import com.dezdeqness.network.models.core.Preview
+import com.dezdeqness.network.models.core.Timing
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -11,8 +10,8 @@ data class PublishedEpisode(
     val id: String,
     val name: String?,
     val ordinal: Double,
-    val opening: Opening,
-    val ending: Ending,
+    val opening: Timing,
+    val ending: Timing,
     val preview: Preview,
     @SerialName("hls_480")
     val hls480: String?,

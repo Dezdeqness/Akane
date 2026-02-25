@@ -7,7 +7,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.dezdeqness.designsystem.icons.AkaneIcons
-import com.dezdeqness.videoplayer.ui.VideoQuality
+import com.dezdeqness.details.domain.model.VideoQuality
 
 @Composable
 fun QualityDropdownMenu(
@@ -22,7 +22,7 @@ fun QualityDropdownMenu(
     ) {
         VideoQuality.entries.toTypedArray().forEach { item ->
             DropdownMenuItem(
-                text = { Text("${item.quality}", color = Color.Black) },
+                text = { Text(item.nameQuality, color = Color.Black) },
                 onClick = {
                     onQualityChange(item)
                     onDismiss()

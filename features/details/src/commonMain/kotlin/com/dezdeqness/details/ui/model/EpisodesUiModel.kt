@@ -5,5 +5,4 @@ data class EpisodesUiModel(
     val name: String,
     val previewUrl: String,
     val ordinal: Long,
-    val hls720: String?,
 )

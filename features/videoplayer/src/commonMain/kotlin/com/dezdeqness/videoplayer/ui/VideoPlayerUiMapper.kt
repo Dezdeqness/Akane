@@ -1,7 +1,10 @@
 package com.dezdeqness.videoplayer.ui
 
 import com.dezdeqness.details.domain.model.EpisodeEntity
+import com.dezdeqness.details.domain.model.TimingEntity
+import com.dezdeqness.network.models.core.Timing
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
+import com.dezdeqness.videoplayer.ui.model.TimingUiItem
 
 class VideoPlayerUiMapper {
 
@@ -9,9 +12,21 @@ class VideoPlayerUiMapper {
         id = item.id,
         name = item.name,
         ordinal = item.ordinal,
-        hls480 = item.hls480,
-        hls720 = item.hls720,
-        hls1080 = item.hls1080,
+        episodeUrls = item.episodeUrls,
         nameEnglish = item.nameEnglish,
+        opening = mapTiming(item.opening),
+        ending = mapTiming(item.ending),
     )
+
+    private fun mapTiming(timing: TimingEntity?): TimingUiItem? {
+        return if (timing == null) {
+            null
+        } else {
+            TimingUiItem(
+                start = timing.start,
+                end = timing.end,
+            )
+        }
+    }
+
 }
