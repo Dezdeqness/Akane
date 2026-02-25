@@ -9,8 +9,8 @@ data class Episode(
     val id: String,
     val name: String?,
     val ordinal: Long,
-    val opening: Opening,
-    val ending: Ending,
+    val opening: Timing,
+    val ending: Timing,
     val preview: Preview,
     @SerialName("hls_480")
     val hls480: String?,
@@ -32,13 +32,7 @@ data class Episode(
 )
 
 @Serializable
-data class Opening(
-    val stop: Long?,
-    val start: Long?,
-)
-
-@Serializable
-data class Ending(
+data class Timing(
     val stop: Long?,
     val start: Long?,
 )
