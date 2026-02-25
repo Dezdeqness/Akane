@@ -49,8 +49,13 @@ class AutoHideControlsFeature(
                 val isPressed = event.changes.any { it.pressed }
 
                 if (!wasPressed && isPressed) {
-                    controller?.showControls()
-                    timerJob?.cancel()
+                    if (controller?.overlay?.value?.controlsVisible == true) {
+                        controller?.hideControls()
+                        timerJob?.cancel()
+                    } else {
+                        controller?.showControls()
+                        timerJob?.cancel()
+                    }
                 }
 
                 if (wasPressed && !isPressed) {
