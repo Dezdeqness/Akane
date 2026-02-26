@@ -1,5 +1,6 @@
-package com.dezdeqness.videoplayer.core.player
+package com.dezdeqness.videoplayer.core.player.api
 
+import com.dezdeqness.videoplayer.core.player.PlayerEvent
 import kotlinx.coroutines.flow.Flow
 
 interface VideoPlayer {
