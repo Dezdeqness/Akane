@@ -1,3 +1,5 @@
 package com.dezdeqness.videoplayer.core.player.feature
 
-expect fun platformFeatures(): List<PlayerFeature>
+import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
+
+expect fun VideoPlayerManager.installPlatformFeatures()
