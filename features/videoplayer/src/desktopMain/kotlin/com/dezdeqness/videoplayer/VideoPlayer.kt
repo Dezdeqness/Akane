@@ -32,7 +32,7 @@ import java.util.Locale
 import kotlin.math.roundToInt
 
 @Composable
-actual fun VideoPlayerScreen(
+ fun VideoPlayerScreen(
     videoUrl: String,
     systemBarsControllerState: FullScreenState,
     onBackButtonClicked: () -> Unit,
