@@ -1,9 +1,17 @@
 package com.dezdeqness.videoplayer.core.player
 
-import co.touchlab.kermit.Logger
+import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
+import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
-import platform.AVFoundation.AVPlayerItem
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
+import platform.AVFoundation.AVPlayerTimeControlStatusPaused
+import platform.AVFoundation.AVPlayerTimeControlStatusPlaying
+import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
 import platform.AVFoundation.AVQueuePlayer
+import platform.AVFoundation.addPeriodicTimeObserverForInterval
 import platform.AVFoundation.currentItem
 import platform.AVFoundation.currentTime
 import platform.AVFoundation.duration
@@ -11,124 +19,169 @@ import platform.AVFoundation.pause
 import platform.AVFoundation.play
 import platform.AVFoundation.rate
 import platform.AVFoundation.seekToTime
+import platform.AVFoundation.timeControlStatus
+import platform.AVFoundation.volume
+import platform.AVKit.AVPlayerViewController
+import platform.CoreMedia.CMTimeAdd
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
-import platform.Foundation.NSURL
-import platform.AVFoundation.volume
+import platform.Foundation.NSKeyValueObservingOptionNew
 import platform.Foundation.NSNotificationCenter
-import platform.CoreMedia.CMTimeAdd
-import platform.CoreMedia.CMTimeSubtract
+import platform.Foundation.NSURL
+import platform.UIKit.UIView
+import platform.darwin.NSObject
+import platform.AVFoundation.AVPlayerItem
+import platform.AVFoundation.loadedTimeRanges
+import platform.AVFoundation.removeTimeObserver
+import platform.CoreMedia.CMTimeRange
+import platform.Foundation.addObserver
+import platform.Foundation.removeObserver
+import platform.darwin.NSObjectProtocol
+
+private const val SEEK_INCREMENT_MS = 10_000L
 
 @OptIn(ExperimentalForeignApi::class)
-class IosVideoPlayer(
-    val avPlayer: AVQueuePlayer
-) : VideoPlayer {
-    private var isPlayingState = false
-    private var isLoadingState = false
-    private var playbackState = 0 // 0: idle, 1: ready, 2: ended, 3: buffering
+class IosVideoPlayer : NSObject(), VideoPlayer {
 
-    private var mediaItems: List<String> = listOf()
-    private var speedBackRate = 1f
+    internal val avPlayer = AVQueuePlayer()
 
-    private var listeners: ArrayList<VideoPlayerListener> = ArrayList()
+    private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 64)
+    override val events: Flow<PlayerEvent> = _events.asSharedFlow()
+
+    private var timeObserver: Any? = null
+    private var endObserver: NSObjectProtocol? = null
+
+    init {
+        observeTime()
+        observeTimeControlStatus()
+        observeEnded()
+    }
+
+    fun makePlayerView(): UIView {
+        val vc = AVPlayerViewController()
+        vc.player = avPlayer
+        vc.showsPlaybackControls = false
+        return vc.view
+    }
+
+    private fun observeTime() {
+        val interval = CMTimeMake(value = 1, timescale = 2)
+        timeObserver =
+            avPlayer.addPeriodicTimeObserverForInterval(interval = interval, queue = null) { time ->
+                val posMs = (CMTimeGetSeconds(time) * 1000.0).toLong().coerceAtLeast(0)
+                val item = avPlayer.currentItem
+                val durMs = item?.duration?.let { (CMTimeGetSeconds(it) * 1000.0).toLong() } ?: 0L
+                _events.tryEmit(PlayerEvent.PositionChanged(posMs))
+                _events.tryEmit(PlayerEvent.DurationChanged(durMs.coerceAtLeast(0)))
+
+                val bufferedMs = item?.loadedTimeRanges?.firstObject?.let { obj ->
+                    @Suppress("UNCHECKED_CAST")
+                    val range = obj as CMTimeRange
+                    val end = CMTimeAdd(range.start, range.duration)
+                    (CMTimeGetSeconds(end) * 1000.0).toLong()
+                } ?: 0L
+                _events.tryEmit(PlayerEvent.BufferedChanged(bufferedMs.coerceAtLeast(0)))
+            }
+    }
+
+    private fun observeTimeControlStatus() {
+        addObserver(
+            observer = this,
+            forKeyPath = "avPlayer.timeControlStatus",
+            options = NSKeyValueObservingOptionNew,
+            context = null
+        )
+    }
+
+    override fun observeValueForKeyPath(
+        keyPath: String?,
+        ofObject: Any?,
+        change: Map<Any?, *>?,
+        context: CPointer<*>?,
+    ) {
+        if (keyPath == "avPlayer.timeControlStatus") {
+            when (avPlayer.timeControlStatus) {
+                AVPlayerTimeControlStatusPlaying -> {
+                    _events.tryEmit(PlayerEvent.IsBuffering(false))
+                    _events.tryEmit(PlayerEvent.IsPlaying(true))
+                }
+
+                AVPlayerTimeControlStatusPaused -> {
+                    _events.tryEmit(PlayerEvent.IsBuffering(false))
+                    _events.tryEmit(PlayerEvent.IsPlaying(false))
+                }
+
+                AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate -> {
+                    _events.tryEmit(PlayerEvent.IsBuffering(true))
+                }
+            }
+        }
+    }
+
+    private fun observeEnded() {
+        endObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+            name = AVPlayerItemDidPlayToEndTimeNotification,
+            `object` = null,
+            queue = null
+        ) { _ ->
+            _events.tryEmit(PlayerEvent.PlaybackEnded)
+            _events.tryEmit(PlayerEvent.IsPlaying(false))
+        }
+    }
 
     override fun play() {
-        avPlayer.rate = speedBackRate
         avPlayer.play()
-        isPlayingState = true
-        listeners.forEach { it.onIsPlayingChanged(true) }
+        _events.tryEmit(PlayerEvent.IsPlaying(true))
     }
 
     override fun pause() {
         avPlayer.pause()
-        isPlayingState = false
-        listeners.forEach { it.onIsPlayingChanged(false) }
+        _events.tryEmit(PlayerEvent.IsPlaying(false))
     }
 
     override fun stop() {
         avPlayer.pause()
         avPlayer.seekToTime(CMTimeMake(0, 1))
-        isPlayingState = false
-        playbackState = 0
-        listeners.forEach { it.onIsPlayingChanged(false) }
-        listeners.forEach { it.onIsLoadingChanged(false) }
+        _events.tryEmit(PlayerEvent.IsPlaying(false))
     }
 
     override fun release() {
         avPlayer.pause()
-        NSNotificationCenter.defaultCenter.removeObserver(avPlayer)
+        timeObserver?.let { avPlayer.removeTimeObserver(it) }
+        timeObserver = null
+        endObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+        endObserver = null
+        removeObserver(this, forKeyPath = "avPlayer.timeControlStatus")
     }
 
     override fun seekTo(positionMs: Long) {
-        val time = CMTimeMake(positionMs, 1000)
-        avPlayer.seekToTime(time)
+        avPlayer.seekToTime(CMTimeMake(positionMs.coerceAtLeast(0), 1000))
     }
 
     override fun seekForward() {
-        val currentTime = avPlayer.currentTime()
-        val newTime = CMTimeAdd(currentTime, CMTimeMake(10000, 1000))
-        avPlayer.seekToTime(newTime)
+        val currentMs = (CMTimeGetSeconds(avPlayer.currentTime()) * 1000.0).toLong()
+        seekTo(currentMs + SEEK_INCREMENT_MS)
     }
 
     override fun seekBack() {
-        val currentTime = avPlayer.currentTime()
-        val newTime = CMTimeSubtract(currentTime, CMTimeMake(10000, 1000))
-        avPlayer.seekToTime(newTime)
+        val currentMs = (CMTimeGetSeconds(avPlayer.currentTime()) * 1000.0).toLong()
+        seekTo((currentMs - SEEK_INCREMENT_MS).coerceAtLeast(0))
     }
 
     override fun setVolume(volume: Float) {
-        avPlayer.volume = volume
+        avPlayer.volume = volume.coerceIn(0f, 1f)
     }
-
-    override fun getVolume(): Float = avPlayer.volume
 
     override fun setPlaybackSpeed(speed: Float) {
-        speedBackRate = speed
-        avPlayer.rate = speed
+        avPlayer.rate = speed.coerceIn(0.25f, 3f)
     }
 
-    override fun getCurrentPosition(): Long {
-        return (CMTimeGetSeconds(avPlayer.currentTime()) * 1000).toLong()
-    }
-
-    override fun getDuration(): Long {
-        val duration = avPlayer.currentItem()?.duration ?: return 0L
-        return (CMTimeGetSeconds(duration) * 1000).toLong()
-    }
-
-    override fun getTotalBufferedDuration(): Long {
-        // no op
-        return 0
-    }
-
-    override fun addListener(listener: VideoPlayerListener) {
-        listeners.add(listener)
-        listener.isBuffering(false)
-        listener.onIsPlayingChanged(false)
-    }
-
-    override fun setVideoItems(
-        mediaItems: List<String>,
-        startIndex: Int,
-        startPositionMs: Long
-    ) {
-        this.mediaItems = mediaItems
-
-        val items = mediaItems.map { AVPlayerItem(uRL = NSURL.URLWithString(it)!!) }
-        playByIndex(startIndex, items)
-
-        if (startPositionMs > 0) {
-            avPlayer.seekToTime(CMTimeMake(startPositionMs, 1000))
-        }
-    }
-
-    private fun playByIndex(index: Int, list: List<AVPlayerItem>) {
+    override fun setMediaItems(mediaItems: List<String>, startIndex: Int, startPositionMs: Long) {
         avPlayer.removeAllItems()
-        val items = list.drop(index)
-        items.forEach { item ->
-            if (avPlayer.canInsertItem(item, null)) {
-                avPlayer.insertItem(item, null)
-            }
+        mediaItems.drop(startIndex).forEach { url ->
+            val nsUrl = NSURL.URLWithString(url) ?: return@forEach
+            avPlayer.insertItem(AVPlayerItem(nsUrl), null)
         }
+        if (startPositionMs > 0) seekTo(startPositionMs)
     }
 }
