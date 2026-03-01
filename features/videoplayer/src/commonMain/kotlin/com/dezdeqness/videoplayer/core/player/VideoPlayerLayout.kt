@@ -17,8 +17,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
@@ -37,8 +37,8 @@ fun VideoPlayerLayout(
     modifier: Modifier = Modifier,
     appBarContent: @Composable () -> Unit = {},
 ) {
-    val controlsVisible by engine.controlsVisible.collectAsState()
-    val isLocked by engine.isLocked.collectAsState()
+    val controlsVisible by engine.controlsVisible.collectAsStateOnLifecycle()
+    val isLocked by engine.isLocked.collectAsStateOnLifecycle()
 
     val safePadding = WindowInsets.safeDrawing.asPaddingValues()
     val isPortrait = getDeviceConfiguration().isPortrait
@@ -132,8 +132,8 @@ private fun BottomRow(
     isPortrait: Boolean,
     modifier: Modifier = Modifier,
 ) {
-    val playerState by engine.playerState.collectAsState()
-    val currentItem by engine.currentItem.collectAsState()
+    val playerState by engine.playerState.collectAsStateOnLifecycle()
+    val currentItem by engine.currentItem.collectAsStateOnLifecycle()
 
     if (isPortrait) {
         Column(

@@ -20,8 +20,8 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,7 +37,7 @@ fun VideoPlayerControls(
     context: PlayerContext,
     modifier: Modifier = Modifier,
 ) {
-    val state by context.playerState.collectAsState()
+    val state by context.playerState.collectAsStateOnLifecycle()
 
     Row(
         modifier = modifier

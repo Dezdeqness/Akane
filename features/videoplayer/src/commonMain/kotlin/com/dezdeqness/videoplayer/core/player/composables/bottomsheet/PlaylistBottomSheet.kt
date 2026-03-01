@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer.ui.composables.bottomsheet
+package com.dezdeqness.videoplayer.core.player.composables.bottomsheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -20,14 +20,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.designsystem.icons.AkaneIcons
-import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
+import com.dezdeqness.videoplayer.core.player.data.MediaItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PlaylistBottomSheet(
     modifier: Modifier = Modifier,
-    episodes: List<EpisodeUiItem>,
-    currentEpisodeId: String,
+    items: List<MediaItem>,
+    currentItemId: String?,
     onSelected: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -48,7 +48,7 @@ fun PlaylistBottomSheet(
                 modifier = Modifier.fillMaxWidth(),
                 contentPadding = PaddingValues(bottom = 32.dp)
             ) {
-                itemsIndexed(episodes, key = { index, item -> item.id }) { index, item ->
+                items(items, key = MediaItem::id) { item ->
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -60,12 +60,12 @@ fun PlaylistBottomSheet(
                         horizontalArrangement = Arrangement.SpaceBetween,
                     ) {
                         Text(
-                           "${item.ordinal} эпизод: ${item.name}",
+                            item.title.ifBlank { item.id },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
                         )
 
-                        if (item.id == currentEpisodeId) {
+                        if (item.id == currentItemId) {
                             Icon(AkaneIcons.Check, contentDescription = null)
                         }
                     }

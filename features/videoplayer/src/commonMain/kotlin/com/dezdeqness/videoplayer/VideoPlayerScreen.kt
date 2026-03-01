@@ -11,8 +11,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,10 +23,10 @@ import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
-import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatio
-import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatioFeature
 import com.dezdeqness.videoplayer.core.player.VideoPlayerLayout
 import com.dezdeqness.videoplayer.core.player.VideoSurface
+import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatio
+import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatioFeature
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -36,13 +36,13 @@ fun VideoPlayerScreen(
     videoPlayerViewModel: VideoPlayerViewModel = koinViewModel(),
     onBackButtonClicked: () -> Unit = {},
 ) {
-    val screenState by videoPlayerViewModel.screenState.collectAsState()
+    val screenState by videoPlayerViewModel.screenState.collectAsStateOnLifecycle()
     val engine = videoPlayerViewModel.manager
 
     val aspectRatioFeature = remember(engine) {
         engine.registry.getFeature<AspectRatioFeature>(FeatureKey.AspectRatio)
     }
-    val aspectRatio by aspectRatioFeature?.selectedAspectRatio?.collectAsState()
+    val aspectRatio by aspectRatioFeature?.selectedAspectRatio?.collectAsStateOnLifecycle()
         ?: remember { mutableStateOf(AspectRatio.Fit16x9) }
 
     val aspectModifier = when (aspectRatio) {
@@ -77,7 +77,7 @@ fun VideoPlayerScreen(
             }
 
             else -> {
-                val currentItem by engine.currentItem.collectAsState()
+                val currentItem by engine.currentItem.collectAsStateOnLifecycle()
 
                 VideoPlayerLayout(
                     engine = engine,

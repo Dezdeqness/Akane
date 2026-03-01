@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer.ui.composables.dropdown
+package com.dezdeqness.videoplayer.core.player.composables.dropdown
 
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
@@ -7,28 +7,32 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.dezdeqness.designsystem.icons.AkaneIcons
-import com.dezdeqness.details.domain.model.VideoQuality
+import com.dezdeqness.videoplayer.core.player.data.MediaQuality
+import com.dezdeqness.videoplayer.core.player.data.QualityVariant
 
 @Composable
 fun QualityDropdownMenu(
     isExpanded: Boolean,
-    currentQuality: VideoQuality,
-    onQualityChange: (VideoQuality) -> Unit,
+    variants: List<QualityVariant>,
+    currentQuality: MediaQuality?,
+    onQualityChange: (MediaQuality) -> Unit,
     onDismiss: () -> Unit,
 ) {
     DropdownMenu(
         expanded = isExpanded,
         onDismissRequest = { onDismiss() }
     ) {
-        VideoQuality.entries.toTypedArray().forEach { item ->
+        variants.forEach { variant ->
             DropdownMenuItem(
-                text = { Text(item.nameQuality, color = Color.Black) },
+                text = { Text(variant.quality.nameQuality, color = Color.Black) },
                 onClick = {
-                    onQualityChange(item)
+                    onQualityChange(variant.quality)
                     onDismiss()
                 },
                 trailingIcon = {
-                    if (item == currentQuality) Icon(AkaneIcons.Check, contentDescription = null)
+                    if (variant.quality == currentQuality) {
+                        Icon(AkaneIcons.Check, contentDescription = null)
+                    }
                 }
             )
         }

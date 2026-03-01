@@ -5,6 +5,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.LockOpen
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
@@ -35,4 +37,6 @@ object AkaneIcons {
     val Close = Icons.Default.Close
     val Filter = Icons.Rounded.FilterList
     val ArrowDropDown = Icons.Filled.KeyboardArrowDown
+    val Locked = Icons.Filled.Lock
+    val Unlocked = Icons.Filled.LockOpen
 }
