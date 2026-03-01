@@ -9,16 +9,7 @@ android {
 kotlin {
     iosArm64()
     iosSimulatorArm64()
-
-    listOf(
-        iosArm64(),
-        iosSimulatorArm64(),
-        iosX64(),
-    ).forEach { target ->
-        target.compilations.getByName("main") {
-            val nskeyvalueobserving by cinterops.creating
-        }
-    }
+    iosX64()
 
     sourceSets {
         commonMain.dependencies {

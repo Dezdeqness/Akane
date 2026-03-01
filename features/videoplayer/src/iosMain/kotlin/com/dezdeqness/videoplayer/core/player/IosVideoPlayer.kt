@@ -1,7 +1,6 @@
 package com.dezdeqness.videoplayer.core.player
 
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
-import kotlinx.cinterop.CPointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,38 +21,39 @@ import platform.AVFoundation.seekToTime
 import platform.AVFoundation.timeControlStatus
 import platform.AVFoundation.volume
 import platform.AVKit.AVPlayerViewController
-import platform.CoreMedia.CMTimeAdd
 import platform.CoreMedia.CMTimeGetSeconds
 import platform.CoreMedia.CMTimeMake
-import platform.Foundation.NSKeyValueObservingOptionNew
 import platform.Foundation.NSNotificationCenter
 import platform.Foundation.NSURL
 import platform.UIKit.UIView
-import platform.darwin.NSObject
 import platform.AVFoundation.AVPlayerItem
 import platform.AVFoundation.loadedTimeRanges
 import platform.AVFoundation.removeTimeObserver
+import kotlinx.cinterop.alloc
+import kotlinx.cinterop.memScoped
+import kotlinx.cinterop.ptr
+import kotlinx.cinterop.sizeOf
 import platform.CoreMedia.CMTimeRange
-import platform.Foundation.addObserver
-import platform.Foundation.removeObserver
-import platform.darwin.NSObjectProtocol
+import platform.Foundation.NSValue
 
 private const val SEEK_INCREMENT_MS = 10_000L
 
 @OptIn(ExperimentalForeignApi::class)
-class IosVideoPlayer : NSObject(), VideoPlayer {
+class IosVideoPlayer : VideoPlayer {
 
     internal val avPlayer = AVQueuePlayer()
+    private var playerViewController: AVPlayerViewController? = null
 
     private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 64)
     override val events: Flow<PlayerEvent> = _events.asSharedFlow()
 
     private var timeObserver: Any? = null
-    private var endObserver: NSObjectProtocol? = null
+    private var endObserver: platform.darwin.NSObjectProtocol? = null
+
+    private var lastTimeControlStatus: Long = -1
 
     init {
         observeTime()
-        observeTimeControlStatus()
         observeEnded()
     }
 
@@ -61,11 +61,12 @@ class IosVideoPlayer : NSObject(), VideoPlayer {
         val vc = AVPlayerViewController()
         vc.player = avPlayer
         vc.showsPlaybackControls = false
+        playerViewController = vc
         return vc.view
     }
 
     private fun observeTime() {
-        val interval = CMTimeMake(value = 1, timescale = 2)
+        val interval = CMTimeMake(value = 1L, timescale = 2)
         timeObserver =
             avPlayer.addPeriodicTimeObserverForInterval(interval = interval, queue = null) { time ->
                 val posMs = (CMTimeGetSeconds(time) * 1000.0).toLong().coerceAtLeast(0)
@@ -74,48 +75,37 @@ class IosVideoPlayer : NSObject(), VideoPlayer {
                 _events.tryEmit(PlayerEvent.PositionChanged(posMs))
                 _events.tryEmit(PlayerEvent.DurationChanged(durMs.coerceAtLeast(0)))
 
-                val bufferedMs = item?.loadedTimeRanges?.firstObject?.let { obj ->
-                    @Suppress("UNCHECKED_CAST")
-                    val range = obj as CMTimeRange
-                    val end = CMTimeAdd(range.start, range.duration)
-                    (CMTimeGetSeconds(end) * 1000.0).toLong()
+                val bufferedMs = item?.loadedTimeRanges?.firstOrNull()?.let { obj ->
+                    memScoped {
+                        val range = alloc<CMTimeRange>()
+                        (obj as NSValue).getValue(range.ptr, sizeOf<CMTimeRange>().toULong())
+                        val startSec = range.start.value.toDouble() / range.start.timescale.toDouble()
+                        val durSec = range.duration.value.toDouble() / range.duration.timescale.toDouble()
+                        ((startSec + durSec) * 1000.0).toLong()
+                    }
                 } ?: 0L
                 _events.tryEmit(PlayerEvent.BufferedChanged(bufferedMs.coerceAtLeast(0)))
-            }
-    }
 
-    private fun observeTimeControlStatus() {
-        addObserver(
-            observer = this,
-            forKeyPath = "avPlayer.timeControlStatus",
-            options = NSKeyValueObservingOptionNew,
-            context = null
-        )
-    }
+                val status = avPlayer.timeControlStatus
+                if (status != lastTimeControlStatus) {
+                    lastTimeControlStatus = status
+                    when (status) {
+                        AVPlayerTimeControlStatusPlaying -> {
+                            _events.tryEmit(PlayerEvent.IsBuffering(false))
+                            _events.tryEmit(PlayerEvent.IsPlaying(true))
+                        }
 
-    override fun observeValueForKeyPath(
-        keyPath: String?,
-        ofObject: Any?,
-        change: Map<Any?, *>?,
-        context: CPointer<*>?,
-    ) {
-        if (keyPath == "avPlayer.timeControlStatus") {
-            when (avPlayer.timeControlStatus) {
-                AVPlayerTimeControlStatusPlaying -> {
-                    _events.tryEmit(PlayerEvent.IsBuffering(false))
-                    _events.tryEmit(PlayerEvent.IsPlaying(true))
-                }
+                        AVPlayerTimeControlStatusPaused -> {
+                            _events.tryEmit(PlayerEvent.IsBuffering(false))
+                            _events.tryEmit(PlayerEvent.IsPlaying(false))
+                        }
 
-                AVPlayerTimeControlStatusPaused -> {
-                    _events.tryEmit(PlayerEvent.IsBuffering(false))
-                    _events.tryEmit(PlayerEvent.IsPlaying(false))
-                }
-
-                AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate -> {
-                    _events.tryEmit(PlayerEvent.IsBuffering(true))
+                        AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate -> {
+                            _events.tryEmit(PlayerEvent.IsBuffering(true))
+                        }
+                    }
                 }
             }
-        }
     }
 
     private fun observeEnded() {
@@ -141,7 +131,7 @@ class IosVideoPlayer : NSObject(), VideoPlayer {
 
     override fun stop() {
         avPlayer.pause()
-        avPlayer.seekToTime(CMTimeMake(0, 1))
+        avPlayer.seekToTime(CMTimeMake(value = 0L, timescale = 1))
         _events.tryEmit(PlayerEvent.IsPlaying(false))
     }
 
@@ -151,7 +141,7 @@ class IosVideoPlayer : NSObject(), VideoPlayer {
         timeObserver = null
         endObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
         endObserver = null
-        removeObserver(this, forKeyPath = "avPlayer.timeControlStatus")
+        playerViewController = null
     }
 
     override fun seekTo(positionMs: Long) {
