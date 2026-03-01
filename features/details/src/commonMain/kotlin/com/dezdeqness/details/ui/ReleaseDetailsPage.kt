@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.details.ui.composables.ReleaseDetailsLoaded
 import com.dezdeqness.details.ui.composables.ReleaseError
@@ -24,7 +24,7 @@ fun DetailsPage(
     onEpisodeClick: (Long, String) -> Unit,
     onBackPressed: () -> Unit,
 ) {
-    val state by viewModel.releaseDetailsStateFlow.collectAsStateWithLifecycle()
+    val state by viewModel.releaseDetailsStateFlow.collectAsStateOnLifecycle()
 
     Box(
         modifier = modifier

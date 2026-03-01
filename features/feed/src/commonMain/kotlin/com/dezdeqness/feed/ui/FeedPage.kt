@@ -7,12 +7,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.feed.ui.composable.FeedEmpty
 import com.dezdeqness.feed.ui.composable.FeedError
@@ -28,8 +28,8 @@ fun FeedPage(
     viewModel: FeedViewModel = koinViewModel(),
     onReleaseClicked: (Long) -> Unit,
 ) {
-    val state by viewModel.feedStateFlow.collectAsStateWithLifecycle()
-    val isFeedFilterShownState by viewModel.isFeedFilterShownState.collectAsStateWithLifecycle()
+    val state by viewModel.feedStateFlow.collectAsStateOnLifecycle()
+    val isFeedFilterShownState by viewModel.isFeedFilterShownState.collectAsStateOnLifecycle()
 
     val hasNextPage = state.hasNextPage
 

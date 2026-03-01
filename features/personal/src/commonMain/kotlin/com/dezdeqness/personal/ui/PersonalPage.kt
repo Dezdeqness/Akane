@@ -8,10 +8,10 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.personal.ui.composables.PersonalEmpty
@@ -25,7 +25,7 @@ fun PersonalPage(
     stateFlow: StateFlow<PersonalState>,
     actions: PersonalActions,
 ) {
-    val state by stateFlow.collectAsStateWithLifecycle()
+    val state by stateFlow.collectAsStateOnLifecycle()
 
     Scaffold(
         modifier = modifier,

@@ -13,10 +13,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.dezdeqness.core.ui.views.buttons.AppButton
 import com.dezdeqness.core.ui.views.buttons.AppOutlinedButton
 import com.dezdeqness.feed.ui.filter.ChipFilterSectionUiModel
@@ -36,7 +36,7 @@ fun FeedFilterBottomSheetContent(
     stateFlow: StateFlow<FeedFilterState>,
     onAction: (FeedFilterSectionAction) -> Unit,
 ) {
-    val state by stateFlow.collectAsStateWithLifecycle()
+    val state by stateFlow.collectAsStateOnLifecycle()
 
     Box(
         modifier = modifier.fillMaxSize()
