@@ -18,7 +18,6 @@ import androidx.compose.material3.carousel.CarouselDefaults
 import androidx.compose.material3.carousel.HorizontalMultiBrowseCarousel
 import androidx.compose.material3.carousel.rememberCarouselState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
@@ -30,8 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.LocalLifecycleOwner
-import com.dezdeqness.foundation.utils.repeatOnResumedState
+import com.dezdeqness.foundation.utils.LifecycleResumedEffect
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.header.Header
 import com.dezdeqness.core.ui.views.image.AppImage
@@ -83,11 +81,8 @@ fun FreshUpdatesSection(
             )
         }
 
-        val lifecycle = LocalLifecycleOwner.current.lifecycle
-        LaunchedEffect(carouselState, lifecycle, items.size) {
-            if (items.size <= 1) return@LaunchedEffect
-
-            lifecycle.repeatOnResumedState {
+        if (items.size > 1) {
+            LifecycleResumedEffect(carouselState, items.size) {
                 while (currentCoroutineContext().isActive) {
                     snapshotFlow { carouselState.isScrollInProgress }
                         .first { isScrolling -> !isScrolling }

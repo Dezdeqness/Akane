@@ -29,3 +29,14 @@ fun <T> Flow<T>.collectEvents(
 expect fun <T> StateFlow<T>.collectAsStateOnLifecycle(): State<T>
 
 expect suspend fun Lifecycle.repeatOnResumedState(block: suspend kotlinx.coroutines.CoroutineScope.() -> Unit)
+
+@Composable
+fun LifecycleResumedEffect(
+    vararg keys: Any?,
+    block: suspend kotlinx.coroutines.CoroutineScope.() -> Unit,
+) {
+    val lifecycle = LocalLifecycleOwner.current.lifecycle
+    LaunchedEffect(keys, lifecycle) {
+        lifecycle.repeatOnResumedState(block)
+    }
+}
