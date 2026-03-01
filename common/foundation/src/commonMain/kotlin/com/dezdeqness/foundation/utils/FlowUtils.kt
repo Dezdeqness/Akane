@@ -27,3 +27,5 @@ fun <T> Flow<T>.collectEvents(
 
 @Composable
 expect fun <T> StateFlow<T>.collectAsStateOnLifecycle(): State<T>
+
+expect suspend fun Lifecycle.repeatOnResumedState(block: suspend kotlinx.coroutines.CoroutineScope.() -> Unit)

@@ -30,9 +30,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
-import androidx.lifecycle.repeatOnLifecycle
+import com.dezdeqness.foundation.utils.repeatOnResumedState
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.header.Header
 import com.dezdeqness.core.ui.views.image.AppImage
@@ -88,7 +87,7 @@ fun FreshUpdatesSection(
         LaunchedEffect(carouselState, lifecycle, items.size) {
             if (items.size <= 1) return@LaunchedEffect
 
-            lifecycle.repeatOnLifecycle(Lifecycle.State.RESUMED) {
+            lifecycle.repeatOnResumedState {
                 while (currentCoroutineContext().isActive) {
                     snapshotFlow { carouselState.isScrollInProgress }
                         .first { isScrolling -> !isScrolling }
