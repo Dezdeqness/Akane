@@ -1,10 +1,14 @@
 package com.dezdeqness.videoplayer.player
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.compose.ui.graphics.toComposeImageBitmap
+import androidx.compose.ui.graphics.asComposeImageBitmap
 import com.dezdeqness.videoplayer.core.player.PlayerEvent
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import kotlinx.coroutines.flow.*
+import org.jetbrains.skia.Bitmap
+import org.jetbrains.skia.ColorAlphaType
+import org.jetbrains.skia.ColorType
+import org.jetbrains.skia.ImageInfo
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory
 import uk.co.caprica.vlcj.player.base.MediaPlayer
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter
@@ -14,12 +18,12 @@ import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormat
 import uk.co.caprica.vlcj.player.embedded.videosurface.callback.BufferFormatCallback
 import uk.co.caprica.vlcj.player.embedded.videosurface.callback.RenderCallbackAdapter
 import uk.co.caprica.vlcj.player.embedded.videosurface.callback.format.RV32BufferFormat
-import java.awt.image.BufferedImage
 import java.nio.ByteBuffer
+import java.nio.ByteOrder
 
 class DesktopVideoPlayer : VideoPlayer {
 
-    private val factory = MediaPlayerFactory(listOf("--no-input-fast-seek"))
+    private val factory = MediaPlayerFactory(listOf("--input-fast-seek"))
     internal val mediaPlayer = factory.mediaPlayers().newEmbeddedMediaPlayer()
 
     private val _videoFrame = MutableStateFlow<ImageBitmap?>(null)
@@ -27,13 +31,23 @@ class DesktopVideoPlayer : VideoPlayer {
 
     private var videoWidth = 0
     private var videoHeight = 0
-    private var bufferedImage: BufferedImage? = null
+    @Volatile
+    private var writeBuffer: Bitmap? = null
+    @Volatile
+    private var displayBuffer: Bitmap? = null
+    private var pixelBytes: ByteArray? = null
+
+    private fun allocBitmap(w: Int, h: Int): Bitmap = Bitmap().apply {
+        allocPixels(ImageInfo(w, h, ColorType.BGRA_8888, ColorAlphaType.PREMUL))
+    }
 
     private val bufferFormatCallback = object : BufferFormatCallback {
         override fun getBufferFormat(sourceWidth: Int, sourceHeight: Int): BufferFormat {
             videoWidth = sourceWidth
             videoHeight = sourceHeight
-            bufferedImage = BufferedImage(sourceWidth, sourceHeight, BufferedImage.TYPE_INT_RGB)
+            writeBuffer = allocBitmap(sourceWidth, sourceHeight)
+            displayBuffer = allocBitmap(sourceWidth, sourceHeight)
+            pixelBytes = ByteArray(sourceWidth * sourceHeight * 4)
             renderCallback.setBuffer(IntArray(sourceWidth * sourceHeight))
             return RV32BufferFormat(sourceWidth, sourceHeight)
         }
@@ -54,9 +68,17 @@ class DesktopVideoPlayer : VideoPlayer {
 
     private val renderCallback = object : RenderCallbackAdapter() {
         override fun onDisplay(mediaPlayer: MediaPlayer, rgbBuffer: IntArray) {
-            val image = bufferedImage ?: return
-            image.setRGB(0, 0, videoWidth, videoHeight, rgbBuffer, 0, videoWidth)
-            _videoFrame.value = image.toComposeImageBitmap()
+            val bytes = pixelBytes ?: return
+            val wb = writeBuffer ?: return
+
+            val bb = ByteBuffer.wrap(bytes).order(ByteOrder.LITTLE_ENDIAN)
+            bb.asIntBuffer().put(rgbBuffer)
+            wb.installPixels(bytes)
+
+            val prev = displayBuffer
+            displayBuffer = wb
+            writeBuffer = prev
+            _videoFrame.value = wb.asComposeImageBitmap()
         }
     }
 
