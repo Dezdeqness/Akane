@@ -2,7 +2,6 @@ package com.dezdeqness.downloads.data.repository
 
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.data.db.SyncDownloadEpisodeDao
-import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.domain.model.DownloadStatus
 import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
 
