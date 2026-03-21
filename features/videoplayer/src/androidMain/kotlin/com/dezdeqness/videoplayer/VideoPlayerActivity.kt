@@ -23,6 +23,8 @@ import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
+import com.dezdeqness.videoplayer.navigation.DOWNLOAD_RELEASE_ID
+import com.dezdeqness.videoplayer.navigation.DOWNLOAD_START_EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
 import kotlinx.coroutines.delay
@@ -82,6 +84,15 @@ class VideoPlayerActivity : ComponentActivity() {
             val intent = Intent(context, VideoPlayerActivity::class.java).apply {
                 putExtra(ID, id)
                 putExtra(EPISODE_ID, episodeId)
+                addFlags(FLAG_ACTIVITY_NEW_TASK)
+            }
+            context.startActivity(intent)
+        }
+
+        fun startActivityForDownload(context: Context, releaseId: Long, startEpisodeId: String) {
+            val intent = Intent(context, VideoPlayerActivity::class.java).apply {
+                putExtra(DOWNLOAD_RELEASE_ID, releaseId)
+                putExtra(DOWNLOAD_START_EPISODE_ID, startEpisodeId)
                 addFlags(FLAG_ACTIVITY_NEW_TASK)
             }
             context.startActivity(intent)

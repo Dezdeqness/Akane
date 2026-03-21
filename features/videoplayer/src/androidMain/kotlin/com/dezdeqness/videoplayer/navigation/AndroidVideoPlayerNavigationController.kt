@@ -10,4 +10,9 @@ class AndroidVideoPlayerNavigationController : VideoPlayerNavigationController {
         val context = inject<Context>(Context::class.java)
         VideoPlayerActivity.startActivity(context.value, id, episodeId)
     }
+
+    override fun navigateToDownloadedPlaylist(controller: NavHostController, releaseId: Long, startEpisodeId: String) {
+        val context = inject<Context>(Context::class.java)
+        VideoPlayerActivity.startActivityForDownload(context.value, releaseId, startEpisodeId)
+    }
 }

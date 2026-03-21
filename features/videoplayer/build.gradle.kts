@@ -24,6 +24,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(project(":features:details"))
+            implementation(project(":features:downloads"))
         }
 
         androidMain.dependencies {

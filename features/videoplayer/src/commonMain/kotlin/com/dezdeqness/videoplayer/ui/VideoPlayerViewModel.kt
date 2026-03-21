@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
+import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
@@ -14,23 +15,25 @@ import com.dezdeqness.videoplayer.core.player.data.MediaSource
 import com.dezdeqness.videoplayer.core.player.data.QualityVariant
 import com.dezdeqness.videoplayer.core.player.data.SkipRange
 import com.dezdeqness.videoplayer.core.player.feature.installPlatformFeatures
+import com.dezdeqness.videoplayer.navigation.DOWNLOAD_RELEASE_ID
+import com.dezdeqness.videoplayer.navigation.DOWNLOAD_START_EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import io.ktor.http.decodeURLPart
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class VideoPlayerViewModel(
     player: VideoPlayer,
     private val releaseRepository: ReleaseRepository,
+    private val downloadEpisodeRepository: DownloadEpisodeRepository,
     private val uiMapper: VideoPlayerUiMapper,
     savedStateHandle: SavedStateHandle,
     private val dispatchers: CoroutineDispatcherProvider,
@@ -40,6 +43,11 @@ class VideoPlayerViewModel(
 
     private val releaseId: Long = savedStateHandle.get<Long>(ID) ?: -1
     private val initialEpisodeId: String = savedStateHandle.get<String>(EPISODE_ID).orEmpty()
+    private val downloadReleaseId: Long = savedStateHandle.get<Long>(DOWNLOAD_RELEASE_ID) ?: -1L
+    private val downloadStartEpisodeId: String =
+        savedStateHandle.get<String>(DOWNLOAD_START_EPISODE_ID).orEmpty().decodeURLPart()
+
+    private val isDownloadedPlaylist: Boolean = downloadReleaseId > 0
 
     data class ScreenState(
         val title: String = "",
@@ -47,41 +55,66 @@ class VideoPlayerViewModel(
         val isError: Boolean = false,
     )
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val screenState: StateFlow<ScreenState> = flow { emit(Unit) }
-        .onStart { emit(Unit) }
-        .flatMapLatest {
-            flow { emit(releaseRepository.getReleaseById(releaseId)) }
-                .flowOn(dispatchers.io())
-        }
-        .map { result ->
-            val episodes = result.getOrNull()
-                ?.episodes
-                ?.map(uiMapper::map)
-                ?.sortedBy { it.ordinal }
-
-            if (episodes == null) {
-                ScreenState(isLoading = false, isError = true)
-            } else {
-                val items = episodes.toMediaItems()
-                val startIdx = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
-                manager.setPlaylist(items, startIdx)
-                ScreenState(
-                    title = result.getOrNull()?.name.orEmpty(),
-                    isLoading = false,
-                )
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, ScreenState())
+    val screenState: StateFlow<ScreenState> =
+        if (isDownloadedPlaylist) loadDownloadedPlaylist() else loadStreamingRelease()
 
     init {
         manager.installPlatformFeatures()
-
-        viewModelScope.launch { screenState.collect {} }
     }
 
     override fun onCleared() {
         manager.release()
+    }
+
+    private fun loadStreamingRelease(): StateFlow<ScreenState> =
+        flow { emit(releaseRepository.getReleaseById(releaseId)) }
+            .flowOn(dispatchers.io())
+            .map { result ->
+                val episodes = result.getOrNull()
+                    ?.episodes
+                    ?.map(uiMapper::map)
+                    ?.sortedBy { it.ordinal }
+
+                if (episodes == null) {
+                    ScreenState(isLoading = false, isError = true)
+                } else {
+                    val items = episodes.toMediaItems()
+                    val startIdx = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
+                    manager.setPlaylist(items, startIdx)
+                    ScreenState(
+                        title = result.getOrNull()?.name.orEmpty(),
+                        isLoading = false,
+                    )
+                }
+            }
+            .stateIn(viewModelScope, SharingStarted.Eagerly, ScreenState())
+
+    private fun loadDownloadedPlaylist(): StateFlow<ScreenState> {
+        val state = MutableStateFlow(ScreenState())
+        viewModelScope.launch {
+            val downloads = downloadEpisodeRepository.getCompletedByReleaseId(downloadReleaseId)
+            if (downloads.isEmpty()) {
+                state.value = ScreenState(isLoading = false, isError = true)
+                return@launch
+            }
+
+            val items = downloads.filter { it.filePath != null }.map { item ->
+                MediaItem(
+                    id = item.id.toString(),
+                    title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
+                    source = MediaSource.FilePath(item.filePath!!),
+                )
+            }
+            val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }
+                .coerceAtLeast(0)
+
+            manager.setPlaylist(items, startIndex)
+            state.value = ScreenState(
+                title = downloads.firstOrNull()?.releaseTitle.orEmpty(),
+                isLoading = false,
+            )
+        }
+        return state
     }
 }
 
