@@ -45,6 +45,13 @@ class DownloadFileManager(
     fun getTempSegmentPath(segmentsDir: Path, index: Int): Path =
         segmentsDir / "segment_$index.ts.part"
 
+    fun fileExists(path: Path): Boolean = fileSystem.exists(path)
+
+    fun getMp4Path(tsPath: Path): Path {
+        val mp4Name = tsPath.name.removeSuffix(".ts") + ".mp4"
+        return (tsPath.parent ?: tsPath) / mp4Name
+    }
+
     fun segmentExists(path: Path): Boolean {
         if (!fileSystem.exists(path)) return false
         return (fileSystem.metadata(path).size ?: 0L) > 0L
@@ -127,12 +134,14 @@ class DownloadFileManager(
             false
         }
 
-        return if (success) {
-            Logger.d(TAG) { "Remux successful, deleting .ts file" }
+        val mp4Exists = fileSystem.exists(mp4Path.toPath())
+
+        return if (success && mp4Exists) {
+            Logger.d(TAG) { "Remux successful, mp4 exists, deleting .ts file" }
             deleteIfExists(tsOutputPath)
             RemuxResult(filePath = mp4Path, success = true)
         } else {
-            Logger.w(TAG) { "Remux failed, keeping .ts file" }
+            Logger.w(TAG) { "Remux failed or mp4 not found (success=$success, mp4Exists=$mp4Exists), keeping .ts file" }
             RemuxResult(filePath = tsPath, success = false)
         }
     }
@@ -163,7 +172,7 @@ class DownloadFileManager(
         fileSystem.createDirectories(path)
     }
 
-    private fun deleteIfExists(path: Path) {
+    fun deleteIfExists(path: Path) {
         runCatching {
             if (fileSystem.exists(path)) {
                 fileSystem.delete(path)

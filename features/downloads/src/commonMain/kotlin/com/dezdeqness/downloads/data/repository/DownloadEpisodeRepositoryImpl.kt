@@ -4,6 +4,7 @@ import com.dezdeqness.downloads.data.db.DownloadEpisodeDao
 import com.dezdeqness.downloads.data.db.SyncDownloadEpisodeDao
 import com.dezdeqness.downloads.data.mapper.DownloadMapper
 import com.dezdeqness.downloads.domain.model.DownloadEntity
+import com.dezdeqness.downloads.domain.model.DownloadStatus
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -60,6 +61,11 @@ class DownloadEpisodeRepositoryImpl(
         return downloadEpisodeDao.getCompletedByReleaseIdAsFlow(releaseId).map { list ->
             list.map(downloadMapper::toEntity)
         }
+    }
+
+    override suspend fun getByStatuses(statuses: List<DownloadStatus>): List<DownloadEntity> {
+        return downloadEpisodeDao.getByStatuses(statuses.map { it.name })
+            .map(downloadMapper::toEntity)
     }
 
     override suspend fun deleteRecord(id: Long) {

@@ -34,6 +34,10 @@ interface DownloadEpisodeDao {
     @Query("SELECT * FROM download_episodes WHERE releaseId = :releaseId AND id IN (SELECT episodeDownloadId FROM download_progress WHERE status = 'COMPLETED') ORDER BY episodeOrdinal ASC")
     fun getCompletedByReleaseIdAsFlow(releaseId: Long): Flow<List<DownloadWithProgress>>
 
+    @Transaction
+    @Query("SELECT * FROM download_episodes WHERE id IN (SELECT episodeDownloadId FROM download_progress WHERE status IN (:statuses))")
+    suspend fun getByStatuses(statuses: List<String>): List<DownloadWithProgress>
+
     @Query("DELETE FROM download_episodes WHERE id = :id")
     suspend fun delete(id: Long)
 }

@@ -41,6 +41,83 @@ class DownloadManager(
     private val pausedIds = mutableSetOf<Long>()
     private val downloadSemaphore = Semaphore(MAX_CONCURRENT_DOWNLOADS)
 
+    suspend fun recoverStaleDownloads() {
+        val staleStatuses = listOf(
+            DownloadStatus.REMUXING,
+            DownloadStatus.DOWNLOADING,
+            DownloadStatus.QUEUED,
+            DownloadStatus.PAUSED,
+        )
+        val staleDownloads = downloadEpisodeRepository.getByStatuses(staleStatuses)
+
+        Logger.d(TAG) { "Recovery: found ${staleDownloads.size} stale downloads" }
+
+        for (download in staleDownloads) {
+            when (download.status) {
+                DownloadStatus.REMUXING -> {
+                    Logger.d(TAG) { "Recovering stale REMUXING id=${download.id}, restarting remux" }
+                    coroutineScope.launch(coroutineDispatcherProvider.io()) {
+                        recoverRemux(download)
+                    }
+                }
+
+                DownloadStatus.DOWNLOADING,
+                DownloadStatus.QUEUED -> {
+                    Logger.d(TAG) { "Recovering stale ${download.status} id=${download.id}, re-enqueuing" }
+                    syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
+                    enqueue(download.id)
+                }
+
+                DownloadStatus.PAUSED -> {
+                    Logger.d(TAG) { "Recovering PAUSED id=${download.id}, resuming" }
+                    enqueue(download.id)
+                }
+
+                else -> Unit
+            }
+        }
+    }
+
+    private suspend fun recoverRemux(download: DownloadEntity) {
+        try {
+            val outputPath = fileManager.getOutputPath(download)
+            val mp4Path = fileManager.getMp4Path(outputPath)
+
+            if (fileManager.fileExists(mp4Path)) {
+                Logger.d(TAG) { "[${download.id}] .mp4 already exists at $mp4Path, marking completed" }
+                fileManager.deleteIfExists(outputPath) // cleanup leftover .ts
+                syncRepository.updateFilePath(download.id, mp4Path.toString())
+                syncRepository.markCompleted(download.id)
+                return
+            }
+
+            if (fileManager.fileExists(outputPath)) {
+                syncRepository.updateStatus(download.id, DownloadStatus.REMUXING)
+                Logger.d(TAG) { "[${download.id}] .ts file found, restarting remux" }
+
+                val remuxResult = fileManager.remux(outputPath)
+
+                if (remuxResult.success) {
+                    syncRepository.updateFilePath(download.id, remuxResult.filePath)
+                    syncRepository.markCompleted(download.id)
+                    Logger.d(TAG) { "[${download.id}] Recovery remux successful: ${remuxResult.filePath}" }
+                } else {
+                    Logger.w(TAG) { "[${download.id}] Recovery remux failed, saving .ts as completed" }
+                    syncRepository.updateFilePath(download.id, remuxResult.filePath)
+                    syncRepository.markCompleted(download.id)
+                }
+                return
+            }
+
+            Logger.w(TAG) { "[${download.id}] No .ts or .mp4 found, re-enqueuing" }
+            syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
+            enqueue(download.id)
+        } catch (e: Exception) {
+            Logger.e(TAG, e) { "[${download.id}] Recovery remux error: ${e.message}" }
+            syncRepository.updateStatus(download.id, DownloadStatus.FAILED)
+        }
+    }
+
     fun enqueue(downloadId: Long) {
         coroutineScope.launch {
             val job = jobsMutex.withLock {

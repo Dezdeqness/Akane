@@ -1,6 +1,7 @@
 package com.dezdeqness.downloads.domain.repository
 
 import com.dezdeqness.downloads.domain.model.DownloadEntity
+import com.dezdeqness.downloads.domain.model.DownloadStatus
 import kotlinx.coroutines.flow.Flow
 
 interface DownloadEpisodeRepository {
@@ -12,5 +13,6 @@ interface DownloadEpisodeRepository {
     suspend fun insert(entity: DownloadEntity): Long
     suspend fun getCompletedByReleaseId(releaseId: Long): List<DownloadEntity>
     fun getCompletedByReleaseIdAsFlow(releaseId: Long): Flow<List<DownloadEntity>>
+    suspend fun getByStatuses(statuses: List<DownloadStatus>): List<DownloadEntity>
     suspend fun deleteRecord(id: Long)
 }

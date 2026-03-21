@@ -8,8 +8,15 @@ import com.dezdeqness.foundation.di.coreModule
 import com.dezdeqness.home.di.homeModule
 import com.dezdeqness.network.di.networkModule
 import com.dezdeqness.personal.di.personalModule
+import com.dezdeqness.shared.AppViewModel
 import com.dezdeqness.videoplayer.di.videoPlayerModule
 import org.koin.core.context.startKoin
+import org.koin.core.module.dsl.viewModelOf
+import org.koin.dsl.module
+
+private val appModule = module {
+    viewModelOf(::AppViewModel)
+}
 
 object KoinModules {
 
@@ -23,6 +30,7 @@ object KoinModules {
         homeModule,
         calendarModule,
         downloadsModule,
+        appModule,
     )
 
     fun initKoinModules() {

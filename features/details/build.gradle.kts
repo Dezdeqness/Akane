@@ -11,10 +11,12 @@ kotlin {
         commonMain.dependencies {
             api(libs.bundles.ktorfit.common)
             implementation(libs.compose.material3)
+            implementation(libs.material.icons.core)
             implementation(libs.kermit)
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":features:personal"))
+            implementation(project(":features:downloads"))
         }
         val desktopMain by getting
 

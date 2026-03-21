@@ -16,13 +16,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.navigation.activeDownloadsScreen
 import com.dezdeqness.downloads.navigation.downloadsScreen
 import com.dezdeqness.downloads.navigation.navigateToActiveDownloads
 import com.dezdeqness.downloads.navigation.navigateToReleaseEpisodes
 import com.dezdeqness.downloads.navigation.releaseEpisodesScreen
-import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -63,9 +62,8 @@ fun App() {
                     val currentDestination =
                         navController.currentBackStackEntryAsState().value?.destination?.route
 
-                    val downloadEpisodeRepository: DownloadEpisodeRepository = koinInject()
-                    val activeDownloadsCountFlow = downloadEpisodeRepository.getActiveDownloadsCountAsFlow()
-                    val activeDownloadsCount by activeDownloadsCountFlow.collectAsState(initial = 0)
+                    val appViewModel: AppViewModel = koinViewModel()
+                    val activeDownloadsCount by appViewModel.activeDownloadsCount.collectAsState()
 
                     Scaffold(
                         bottomBar = {
@@ -140,7 +138,7 @@ fun App() {
                                 onReleaseClicked = { releaseId ->
                                     rootController.navigateToReleaseEpisodes(releaseId)
                                 },
-                                activeDownloadsCountFlow = activeDownloadsCountFlow,
+                                activeDownloadsCountFlow = appViewModel.activeDownloadsCount,
                                 onActiveDownloadsClicked = {
                                     rootController.navigateToActiveDownloads()
                                 },
