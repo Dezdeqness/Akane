@@ -75,12 +75,6 @@ class ActiveDownloadsViewModel(
         }
     }
 
-    fun onRemoveFromHistory(id: Long) {
-        viewModelScope.launch {
-            syncRepository.delete(id)
-        }
-    }
-
     fun onRetryClicked(id: Long) {
         viewModelScope.launch {
             syncRepository.updateStatus(id, DownloadStatus.QUEUED)

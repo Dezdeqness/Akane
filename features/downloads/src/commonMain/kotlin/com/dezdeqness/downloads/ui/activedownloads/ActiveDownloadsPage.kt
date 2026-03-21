@@ -67,7 +67,6 @@ fun ActiveDownloadsPage(
                 onRetryClicked = viewModel::onRetryClicked,
                 onCancelClicked = viewModel::onCancelClicked,
                 onPauseClicked = viewModel::onPauseClicked,
-                onRemoveFromHistory = viewModel::onRemoveFromHistory,
                 modifier = contentModifier,
             )
         }

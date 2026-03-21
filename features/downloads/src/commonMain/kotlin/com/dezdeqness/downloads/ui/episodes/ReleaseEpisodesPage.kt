@@ -38,7 +38,10 @@ fun ReleaseEpisodesPage(
                     )
                 },
                 navigation = {
-                    AppIconButton(onClick = onBackPressed, contentColor = AppTheme.colors.background) {
+                    AppIconButton(
+                        onClick = onBackPressed,
+                        contentColor = AppTheme.colors.background
+                    ) {
                         Icon(
                             imageVector = AkaneIcons.Back,
                             contentDescription = null,
@@ -53,19 +56,13 @@ fun ReleaseEpisodesPage(
         },
         containerColor = AppTheme.colors.background,
     ) { padding ->
-        val contentModifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-
-        if (state.episodes.isEmpty()) {
-            EpisodesEmptyState(modifier = contentModifier)
-        } else {
-            EpisodesList(
-                episodes = state.episodes,
-                onPlayClicked = onPlayClicked,
-                onDeleteClicked = viewModel::onDeleteClicked,
-                modifier = contentModifier,
-            )
-        }
+        EpisodesList(
+            modifier =  Modifier
+                .fillMaxSize()
+                .padding(padding),
+            episodes = state.episodes,
+            onPlayClicked = onPlayClicked,
+            onDeleteClicked = viewModel::onDeleteClicked,
+        )
     }
 }

@@ -1,4 +1,4 @@
-package com.dezdeqness.downloads.ui.activedownloads
+package com.dezdeqness.downloads.ui.library
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.offset
@@ -19,7 +19,7 @@ import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
 
 @Composable
-internal fun DownloadsEmptyState(
+internal fun LibraryEmptyState(
     modifier: Modifier = Modifier,
 ) {
     val composition by rememberLottieComposition {
@@ -34,8 +34,7 @@ internal fun DownloadsEmptyState(
 
     EmptyState(
         modifier = modifier.padding(16.dp),
-        title = "Нет загрузок",
-        message = "Активные загрузки появятся здесь",
+        title = "Нет скачанных аниме",
         image = {
             Image(
                 modifier = Modifier.size(120.dp).offset(y = 24.dp),
