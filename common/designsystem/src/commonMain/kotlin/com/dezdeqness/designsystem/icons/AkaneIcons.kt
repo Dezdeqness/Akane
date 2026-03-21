@@ -18,7 +18,11 @@ import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.outlined.VideoLibrary
+import androidx.compose.material.icons.rounded.Download
+import androidx.compose.material.icons.rounded.DownloadDone
 import androidx.compose.material.icons.rounded.Star
+import androidx.compose.material.icons.rounded.VideoLibrary
 
 object AkaneIcons {
     val Home = Icons.Rounded.Home
@@ -39,4 +43,8 @@ object AkaneIcons {
     val ArrowDropDown = Icons.Filled.KeyboardArrowDown
     val Locked = Icons.Filled.Lock
     val Unlocked = Icons.Filled.LockOpen
+    val Download = Icons.Rounded.Download
+    val DownloadDone = Icons.Rounded.DownloadDone
+    val Library = Icons.Rounded.VideoLibrary
+    val LibraryBorder = Icons.Outlined.VideoLibrary
 }

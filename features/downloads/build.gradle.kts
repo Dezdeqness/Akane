@@ -20,6 +20,9 @@ kotlin {
             implementation(libs.okio)
             implementation(libs.ktor.core)
             implementation(libs.bundles.ktorfit.common)
+
+            implementation(libs.compottie)
+            implementation(libs.compottie.dot)
         }
         androidMain.dependencies {
             implementation(libs.media3.transformer)

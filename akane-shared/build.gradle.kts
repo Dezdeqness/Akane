@@ -30,6 +30,7 @@ kotlin {
             implementation(projects.features.personal)
             implementation(projects.features.home)
             implementation(projects.features.calendar)
+            implementation(projects.features.downloads)
 
             implementation(compose.runtime)
             implementation(compose.material3)
@@ -40,6 +41,8 @@ kotlin {
 
             implementation(libs.androidx.navigation.compose)
             implementation(compose.components.uiToolingPreview)
+
+            implementation(libs.koin.compose)
         }
     }
 }
