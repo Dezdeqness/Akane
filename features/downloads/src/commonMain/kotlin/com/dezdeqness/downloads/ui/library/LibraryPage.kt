@@ -54,7 +54,7 @@ fun LibraryPage(
                             }
                         } else {
                             Icon(
-                                imageVector = AkaneIcons.DownloadDone,
+                                imageVector = AkaneIcons.Download,
                                 contentDescription = null,
                             )
                         }

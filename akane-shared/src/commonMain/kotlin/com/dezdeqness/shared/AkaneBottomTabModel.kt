@@ -2,6 +2,7 @@ package com.dezdeqness.shared
 
 import androidx.compose.ui.graphics.vector.ImageVector
 import com.dezdeqness.designsystem.icons.AkaneIcons
+import com.dezdeqness.downloads.navigation.DOWNLOADS_ROUTE
 import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.home.navigation.HOME_ROUTE
 import com.dezdeqness.personal.navigation.PERSONAL_ROUTE
@@ -25,5 +26,10 @@ internal enum class AkaneBottomTabModel(
         route = FEED_ROUTE,
         selectedIcon = AkaneIcons.Search,
         unselectedIcon = AkaneIcons.SearchBorder,
+    ),
+    DOWNLOADS(
+        route = DOWNLOADS_ROUTE,
+        selectedIcon = AkaneIcons.Library,
+        unselectedIcon = AkaneIcons.LibraryBorder,
     ),
 }

@@ -2,15 +2,27 @@ package com.dezdeqness.shared
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.navigation.activeDownloadsScreen
+import com.dezdeqness.downloads.navigation.downloadsScreen
+import com.dezdeqness.downloads.navigation.navigateToActiveDownloads
+import com.dezdeqness.downloads.navigation.navigateToReleaseEpisodes
+import com.dezdeqness.downloads.navigation.releaseEpisodesScreen
+import org.koin.compose.koinInject
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -26,6 +38,7 @@ import com.dezdeqness.feed.navigation.feedScreen
 import com.dezdeqness.home.navigation.HOME_ROUTE
 import com.dezdeqness.home.navigation.homeScreen
 import com.dezdeqness.personal.navigation.personalScreen
+import com.dezdeqness.videoplayer.navigation.downloadedPlaylistScreen
 import com.dezdeqness.videoplayer.navigation.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
 
@@ -50,6 +63,10 @@ fun App() {
                     val currentDestination =
                         navController.currentBackStackEntryAsState().value?.destination?.route
 
+                    val downloadEpisodeRepository: DownloadEpisodeRepository = koinInject()
+                    val activeDownloadsCountFlow = downloadEpisodeRepository.getActiveDownloadsCountAsFlow()
+                    val activeDownloadsCount by activeDownloadsCountFlow.collectAsState(initial = 0)
+
                     Scaffold(
                         bottomBar = {
                             NavigationBar(
@@ -57,10 +74,16 @@ fun App() {
                                 tonalElevation = 0.dp,
                             ) {
                                 AkaneBottomTabModel.entries.forEach { item ->
+                                    val isSelected = currentDestination == item.route
+                                    val icon = if (isSelected) item.selectedIcon else item.unselectedIcon
+                                    val showBadge = item == AkaneBottomTabModel.DOWNLOADS
+                                            && !isSelected
+                                            && activeDownloadsCount > 0
+
                                     NavigationBarItem(
-                                        selected = currentDestination == item.route,
+                                        selected = isSelected,
                                         onClick = {
-                                            if (currentDestination != item.route) {
+                                            if (!isSelected) {
                                                 navController.navigate(item.route) {
                                                     popUpTo(navController.graph.startDestinationId) {
                                                         saveState = true
@@ -71,10 +94,23 @@ fun App() {
                                             }
                                         },
                                         icon = {
-                                            Icon(
-                                                imageVector = if (currentDestination == item.route) item.selectedIcon else item.unselectedIcon,
-                                                contentDescription = null,
-                                            )
+                                            if (showBadge) {
+                                                BadgedBox(
+                                                    badge = {
+                                                        Badge { Text(activeDownloadsCount.toString()) }
+                                                    }
+                                                ) {
+                                                    Icon(
+                                                        imageVector = icon,
+                                                        contentDescription = null,
+                                                    )
+                                                }
+                                            } else {
+                                                Icon(
+                                                    imageVector = icon,
+                                                    contentDescription = null,
+                                                )
+                                            }
                                         },
                                     )
                                 }
@@ -86,7 +122,7 @@ fun App() {
                             startDestination = HOME_ROUTE,
                             modifier = Modifier.fillMaxSize().padding(padding)
                         ) {
-                            homeScreen(rootController::navigateToDetailsScreen)
+                            homeScreen(onItemClicked = rootController::navigateToDetailsScreen)
                             feedScreen(rootController::navigateToDetailsScreen)
                             personalScreen(
                                 onItemClicked = rootController::navigateToDetailsScreen,
@@ -100,6 +136,15 @@ fun App() {
                                     }
                                 }
                             )
+                            downloadsScreen(
+                                onReleaseClicked = { releaseId ->
+                                    rootController.navigateToReleaseEpisodes(releaseId)
+                                },
+                                activeDownloadsCountFlow = activeDownloadsCountFlow,
+                                onActiveDownloadsClicked = {
+                                    rootController.navigateToActiveDownloads()
+                                },
+                            )
                         }
                     }
                 }
@@ -111,6 +156,20 @@ fun App() {
                     },
                 )
                 videoPlayerScreen(onBackPressed = rootController::navigateUp)
+                downloadedPlaylistScreen(onBackPressed = rootController::navigateUp)
+                releaseEpisodesScreen(
+                    onBackPressed = rootController::navigateUp,
+                    onPlayClicked = { releaseId, episodeId ->
+                        controller.navigateToDownloadedPlaylist(
+                            controller = rootController,
+                            releaseId = releaseId,
+                            startEpisodeId = episodeId,
+                        )
+                    },
+                )
+                activeDownloadsScreen(
+                    onBackPressed = rootController::navigateUp,
+                )
             }
 
         }

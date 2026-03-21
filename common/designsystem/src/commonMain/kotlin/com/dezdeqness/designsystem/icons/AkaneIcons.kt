@@ -44,7 +44,6 @@ object AkaneIcons {
     val Locked = Icons.Filled.Lock
     val Unlocked = Icons.Filled.LockOpen
     val Download = Icons.Rounded.Download
-    val DownloadDone = Icons.Rounded.DownloadDone
     val Library = Icons.Rounded.VideoLibrary
     val LibraryBorder = Icons.Outlined.VideoLibrary
 }

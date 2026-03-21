@@ -2,6 +2,7 @@ package com.dezdeqness.shared.di
 
 import com.dezdeqness.calendar.di.calendarModule
 import com.dezdeqness.details.di.detailsModule
+import com.dezdeqness.downloads.di.downloadsModule
 import com.dezdeqness.feed.di.feedModule
 import com.dezdeqness.foundation.di.coreModule
 import com.dezdeqness.home.di.homeModule
@@ -21,6 +22,7 @@ object KoinModules {
         personalModule,
         homeModule,
         calendarModule,
+        downloadsModule,
     )
 
     fun initKoinModules() {
