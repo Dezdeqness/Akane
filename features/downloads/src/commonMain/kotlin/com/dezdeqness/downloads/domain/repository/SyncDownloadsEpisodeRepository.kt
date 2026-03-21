@@ -14,5 +14,7 @@ interface SyncDownloadsEpisodeRepository {
 
     suspend fun markCompleted(id: Long)
 
+    suspend fun hideFromHistory(id: Long)
+
     suspend fun delete(id: Long)
 }

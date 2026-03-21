@@ -41,4 +41,5 @@ data class DownloadProgressLocal(
     val progress: Float,
     val totalSegments: Int,
     val downloadedSegments: Int,
+    val hiddenFromHistory: Boolean = false,
 )

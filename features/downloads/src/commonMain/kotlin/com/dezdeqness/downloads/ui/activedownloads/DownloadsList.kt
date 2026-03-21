@@ -25,6 +25,7 @@ internal fun DownloadsList(
     onRetryClicked: (Long) -> Unit,
     onCancelClicked: (Long) -> Unit,
     onPauseClicked: (Long) -> Unit,
+    onHideFromHistoryClicked: (Long) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     LazyColumn(
@@ -84,7 +85,7 @@ internal fun DownloadsList(
             ) { download ->
                 DownloadItem(
                     download = download,
-                    onDeleteClicked = { },
+                    onDeleteClicked = { onHideFromHistoryClicked(download.id) },
                     onRetryClicked = { },
                     onCancelClicked = { },
                     onPauseClicked = { },

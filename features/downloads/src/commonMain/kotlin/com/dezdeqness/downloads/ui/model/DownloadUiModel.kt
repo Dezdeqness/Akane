@@ -14,4 +14,5 @@ data class DownloadUiModel(
     val status: DownloadStatus,
     val previewUrl: String,
     val filePath: String?,
+    val hiddenFromHistory: Boolean = false,
 )

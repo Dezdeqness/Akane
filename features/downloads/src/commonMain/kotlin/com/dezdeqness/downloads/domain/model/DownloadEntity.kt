@@ -16,4 +16,5 @@ data class DownloadEntity(
     val downloadedSegments: Int = 0,
     val createdAt: Long = 0,
     val previewUrl: String = "",
+    val hiddenFromHistory: Boolean = false,
 )

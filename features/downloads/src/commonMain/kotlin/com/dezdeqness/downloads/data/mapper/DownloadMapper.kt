@@ -27,6 +27,7 @@ class DownloadMapper {
             downloadedSegments = progress?.downloadedSegments ?: 0,
             createdAt = episode.createdAt,
             previewUrl = episode.previewUrl,
+            hiddenFromHistory = progress?.hiddenFromHistory ?: false,
         )
     }
 

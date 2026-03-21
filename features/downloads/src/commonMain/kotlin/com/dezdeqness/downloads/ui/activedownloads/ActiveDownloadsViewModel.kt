@@ -41,6 +41,7 @@ class ActiveDownloadsViewModel(
                     status = entity.status,
                     previewUrl = entity.previewUrl,
                     filePath = entity.filePath,
+                    hiddenFromHistory = entity.hiddenFromHistory,
                 )
             }
 
@@ -57,9 +58,13 @@ class ActiveDownloadsViewModel(
             )
 
             ActiveDownloadsState(
-                activeDownloads = uiModels.filter { it.status in activeStatuses },
-                historyDownloads = uiModels.filter { it.status in historyStatuses },
-                completedDownloads = uiModels.filter { it.status == DownloadStatus.COMPLETED },
+                activeDownloads = uiModels.filter { it.status in activeStatuses }
+                    .sortedBy { it.episodeOrdinal },
+                historyDownloads = uiModels.filter { it.status in historyStatuses }
+                    .sortedBy { it.episodeOrdinal },
+                completedDownloads = uiModels
+                    .filter { it.status == DownloadStatus.COMPLETED && !it.hiddenFromHistory }
+                    .sortedBy { it.episodeOrdinal },
             )
         }
         .stateIn(
@@ -86,6 +91,12 @@ class ActiveDownloadsViewModel(
         viewModelScope.launch {
             downloadManager.cancel(id)
             syncRepository.updateStatus(id, DownloadStatus.CANCELLED)
+        }
+    }
+
+    fun onHideFromHistoryClicked(id: Long) {
+        viewModelScope.launch {
+            syncRepository.hideFromHistory(id)
         }
     }
 

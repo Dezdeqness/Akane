@@ -30,6 +30,10 @@ class SyncDownloadsEpisodeRepositoryImpl(
         syncDownloadEpisodeDao.markCompleted(id)
     }
 
+    override suspend fun hideFromHistory(id: Long) {
+        syncDownloadEpisodeDao.hideFromHistory(id)
+    }
+
     override suspend fun delete(id: Long) {
         downloadEpisodeRepository.deleteRecord(id)
     }

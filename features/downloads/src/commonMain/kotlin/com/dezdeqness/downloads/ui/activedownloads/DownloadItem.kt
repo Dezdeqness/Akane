@@ -101,7 +101,13 @@ internal fun DownloadItem(
 
         when (download.status) {
             DownloadStatus.COMPLETED -> {
-                // No actions — managed from library screen
+                AppIconButton(onClick = onDeleteClicked, contentColor = AppTheme.colors.background) {
+                    Icon(
+                        Icons.Default.Close,
+                        contentDescription = null,
+                        tint = AppTheme.colors.textSecondary,
+                    )
+                }
             }
 
             DownloadStatus.DOWNLOADING,

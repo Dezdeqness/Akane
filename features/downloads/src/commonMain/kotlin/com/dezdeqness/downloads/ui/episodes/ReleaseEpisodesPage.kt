@@ -1,5 +1,6 @@
 package com.dezdeqness.downloads.ui.episodes
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
 import com.dezdeqness.core.ui.theme.AppTheme
@@ -56,13 +58,19 @@ fun ReleaseEpisodesPage(
         },
         containerColor = AppTheme.colors.background,
     ) { padding ->
-        EpisodesList(
-            modifier =  Modifier
-                .fillMaxSize()
-                .padding(padding),
-            episodes = state.episodes,
-            onPlayClicked = onPlayClicked,
-            onDeleteClicked = viewModel::onDeleteClicked,
-        )
+        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+            if (state.episodes.isEmpty()) {
+                EpisodesEmptyState(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                EpisodesList(
+                    modifier = Modifier.fillMaxSize(),
+                    episodes = state.episodes,
+                    onPlayClicked = onPlayClicked,
+                    onDeleteClicked = viewModel::onDeleteClicked,
+                )
+            }
+        }
     }
 }

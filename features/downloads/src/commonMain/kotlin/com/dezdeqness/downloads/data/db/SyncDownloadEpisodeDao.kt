@@ -24,4 +24,7 @@ interface SyncDownloadEpisodeDao {
 
     @Query("UPDATE download_progress SET status = 'COMPLETED' WHERE episodeDownloadId = :episodeDownloadId")
     suspend fun markCompleted(episodeDownloadId: Long)
+
+    @Query("UPDATE download_progress SET hiddenFromHistory = 1 WHERE episodeDownloadId = :episodeDownloadId")
+    suspend fun hideFromHistory(episodeDownloadId: Long)
 }
