@@ -1,6 +1,8 @@
 package com.dezdeqness.videoplayer.core.player.feature.raw
 
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -28,7 +30,16 @@ class KeyboardShortcutsFeature : PlayerFeature {
     }
 
     override fun modifier(): Modifier = Modifier.composed {
+        val context = playerContext ?: return@composed this
+
         val focusRequester = remember { FocusRequester() }
+        val controlsVisible by context.controlsVisible.collectAsState()
+
+        LaunchedEffect(controlsVisible) {
+            if (!controlsVisible) {
+                focusRequester.requestFocus()
+            }
+        }
 
         LaunchedEffect(Unit) {
             focusRequester.requestFocus()
