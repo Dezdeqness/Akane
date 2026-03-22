@@ -14,6 +14,8 @@ import com.dezdeqness.details.ui.composables.ReleaseDetailsLoaded
 import com.dezdeqness.details.ui.composables.ReleaseError
 import com.dezdeqness.details.ui.composables.ReleaseLoading
 import com.dezdeqness.details.ui.composables.ReleaseToolbarInitial
+import com.dezdeqness.details.ui.composables.episodes.EpisodeQualitySelectionDialog
+import com.dezdeqness.details.ui.composables.episodes.QualitySelectionDialogBatch
 import org.koin.compose.viewmodel.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,6 +60,18 @@ fun DetailsPage(
                 ReleaseDetailsLoaded(
                     details = details,
                     onEpisodeClick = onEpisodeClick,
+                    onDownloadClick = { episode ->
+                        viewModel.onShowDownloadDialog(episode)
+                    },
+                    onCancelDownloadClick = { episodeId ->
+                        viewModel.onCancelDownload(episodeId)
+                    },
+                    onDownloadAllClick = {
+                        viewModel.onShowBatchDownloadDialog()
+                    },
+                    onCancelAllDownloadsClick = {
+                        viewModel.onCancelAllDownloads()
+                    },
                     onBackPressed = onBackPressed,
                     isFavourite = state.isFavourite,
                 ) {
@@ -66,5 +80,32 @@ fun DetailsPage(
             }
         }
 
+        when (val dialog = state.dialogState) {
+            is DownloadDialogState.SingleEpisode -> {
+                EpisodeQualitySelectionDialog(
+                    availableQualities = dialog.episode.episodeUrls,
+                    onQualitySelected = { quality, url ->
+                        viewModel.onDownloadEpisode(
+                            episodeId = dialog.episode.id,
+                            quality = quality,
+                            hlsUrl = url,
+                        )
+                    },
+                    onDismiss = viewModel::onDismissDialog,
+                )
+            }
+
+            is DownloadDialogState.BatchQuality -> {
+                QualitySelectionDialogBatch(
+                    availableQualities = state.commonQualities,
+                    onQualitySelected = { quality ->
+                        viewModel.onDownloadAllEpisodes(quality)
+                    },
+                    onDismiss = viewModel::onDismissDialog,
+                )
+            }
+
+            DownloadDialogState.None -> Unit
+        }
     }
 }

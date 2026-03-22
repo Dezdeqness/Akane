@@ -33,11 +33,20 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.designsystem.nestedscroll.CollapsingAppBarNestedScrollConnection
 import com.dezdeqness.designsystem.nestedscroll.ExpandedHeader
 import com.dezdeqness.designsystem.nestedscroll.LocalNestedScrollConnection
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material3.Icon
+import com.dezdeqness.core.ui.views.buttons.AppErrorButton
+import com.dezdeqness.core.ui.views.buttons.AppPrimaryButton
 import com.dezdeqness.details.ui.composables.episodes.EpisodeItem
 import com.dezdeqness.details.ui.composables.franchise.FranchiseTabContent
 import com.dezdeqness.details.ui.composables.info.InfoTabContent
 import com.dezdeqness.details.ui.composables.stats.StatisticsTabContent
 import com.dezdeqness.details.ui.model.DetailsTab
+import com.dezdeqness.details.ui.model.DownloadStatusUi
+import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
 @Composable
@@ -45,6 +54,10 @@ fun ReleaseDetailsLoaded(
     modifier: Modifier = Modifier,
     details: ReleaseDetailsUiModel,
     onEpisodeClick: (Long, String) -> Unit,
+    onDownloadClick: (EpisodesUiModel) -> Unit,
+    onCancelDownloadClick: (String) -> Unit,
+    onDownloadAllClick: () -> Unit,
+    onCancelAllDownloadsClick: () -> Unit,
     onBackPressed: () -> Unit,
     isFavourite: Boolean,
     onFavouriteClicked: () -> Unit,
@@ -136,12 +149,58 @@ fun ReleaseDetailsLoaded(
                             }
 
                             is DetailsTab.EpisodesTab -> {
+                                val activeStatuses = setOf(
+                                    DownloadStatusUi.QUEUED,
+                                    DownloadStatusUi.DOWNLOADING,
+                                    DownloadStatusUi.PAUSED,
+                                )
+                                val hasActiveDownloads = item.episodes.any {
+                                    it.downloadStatus in activeStatuses
+                                }
+
+                                item {
+                                    if (hasActiveDownloads) {
+                                        AppErrorButton(
+                                            title = "Отменить все",
+                                            onClick = onCancelAllDownloadsClick,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.Default.Cancel,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        )
+                                    } else {
+                                        AppPrimaryButton(
+                                            title = "Скачать все",
+                                            onClick = onDownloadAllClick,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp, vertical = 8.dp),
+                                            leadingIcon = {
+                                                Icon(
+                                                    Icons.Default.Download,
+                                                    contentDescription = null,
+                                                )
+                                            }
+                                        )
+                                    }
+                                }
                                 items(item.episodes.size) { index ->
                                     EpisodeItem(
                                         episode = item.episodes[index],
                                         onClick = {
                                             onEpisodeClick(details.id, item.episodes[index].id)
-                                        }
+                                        },
+                                        onDownloadClick = {
+                                            onDownloadClick(item.episodes[index])
+                                        },
+                                        onCancelDownloadClick = {
+                                            onCancelDownloadClick(item.episodes[index].id)
+                                        },
                                     )
                                 }
                             }

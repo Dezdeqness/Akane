@@ -5,14 +5,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
+import com.dezdeqness.details.domain.model.FranchiseEntity
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
 import com.dezdeqness.details.domain.repository.FranchiseRepository
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.details.navigation.RELEASE_ID
+import com.dezdeqness.details.ui.model.DetailsTab
+import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.domain.usecase.CancelAllDownloadsUseCase
+import com.dezdeqness.downloads.domain.usecase.CancelDownloadUseCase
+import com.dezdeqness.downloads.domain.usecase.EnqueueDownloadUseCase
 import com.dezdeqness.personal.domain.models.PersonalEntity
 import com.dezdeqness.personal.domain.repository.PersonalRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -28,18 +36,23 @@ class ReleaseDetailsViewModel(
     private val releaseRepository: ReleaseRepository,
     private val franchiseRepository: FranchiseRepository,
     private val personalRepository: PersonalRepository,
+    downloadEpisodeRepository: DownloadEpisodeRepository,
+    private val enqueueDownloadUseCase: EnqueueDownloadUseCase,
+    private val cancelDownloadUseCase: CancelDownloadUseCase,
+    private val cancelAllDownloadsUseCase: CancelAllDownloadsUseCase,
     private val releaseDetailsUiMapper: ReleaseDetailsUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
-    private val savedStateHandle: SavedStateHandle,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private var releaseId = savedStateHandle.get<Long>(RELEASE_ID) ?: -1
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
+    private val _dialogState = MutableStateFlow<DownloadDialogState>(DownloadDialogState.None)
+
     @OptIn(ExperimentalCoroutinesApi::class)
-    val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = combine(
-        loadEvents
+    private val detailsFlow = loadEvents
         .onStart { emit(LoadEvent.Initial) }
         .flatMapLatest { event ->
             flow {
@@ -48,15 +61,15 @@ class ReleaseDetailsViewModel(
                 emit(LoadResult(event, releaseResult, franchiseResult))
             }.flowOn(coroutineDispatcherProvider.io())
         }
-        .scan(ReleaseDetailsState()) { previous, result ->
+        .scan(LoadResultCache()) { previous, result ->
             result
                 .releaseResult
                 .onSuccess { details ->
                     val franchise = result.franchiseResult.getOrNull()
-                    val details = releaseDetailsUiMapper.map(details, franchise)
-                    return@scan previous.copy(
+                    return@scan LoadResultCache(
                         status = Status.Loaded,
-                        details = details
+                        release = details,
+                        franchise = franchise,
                     )
                 }
                 .onFailure { throwable ->
@@ -66,13 +79,32 @@ class ReleaseDetailsViewModel(
                     )
                     return@scan previous.copy(status = Status.Error)
                 }
-
             previous
-        },
-        personalRepository.getPersonalAsFlow()
-    ) { detailsState, personalList ->
+        }
+
+    val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = combine(
+        detailsFlow,
+        personalRepository.getPersonalAsFlow(),
+        downloadEpisodeRepository.getAllDownloadsAsFlow(),
+        _dialogState,
+    ) { cache, personalList, downloads, dialogState ->
         val isFavourite = personalList.any { it.id == releaseId }
-        detailsState.copy(isFavourite = isFavourite)
+        if (cache.status != Status.Loaded || cache.release == null) {
+            ReleaseDetailsState(
+                status = cache.status,
+                isFavourite = isFavourite,
+                dialogState = dialogState,
+            )
+        } else {
+            val mapped = releaseDetailsUiMapper.map(cache.release, cache.franchise, downloads)
+            ReleaseDetailsState(
+                status = Status.Loaded,
+                details = mapped.details,
+                isFavourite = isFavourite,
+                dialogState = dialogState,
+                commonQualities = mapped.commonQualities,
+            )
+        }
     }
         .stateIn(
             scope = viewModelScope,
@@ -100,6 +132,86 @@ class ReleaseDetailsViewModel(
         loadEvents.tryEmit(LoadEvent.Initial)
     }
 
+    fun onShowDownloadDialog(episode: EpisodesUiModel) {
+        _dialogState.value = DownloadDialogState.SingleEpisode(episode)
+    }
+
+    fun onShowBatchDownloadDialog() {
+        if (releaseDetailsStateFlow.value.commonQualities.isEmpty()) return
+        _dialogState.value = DownloadDialogState.BatchQuality
+    }
+
+    fun onDismissDialog() {
+        _dialogState.value = DownloadDialogState.None
+    }
+
+    fun onDownloadEpisode(episodeId: String, quality: String, hlsUrl: String) {
+        _dialogState.value = DownloadDialogState.None
+        viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            val details = releaseDetailsStateFlow.value.details ?: return@launch
+            val episode = findEpisode(episodeId) ?: return@launch
+
+            enqueueDownloadUseCase(
+                EnqueueDownloadUseCase.Params(
+                    releaseId = details.id,
+                    releaseTitle = details.header.title,
+                    episodeId = episode.id,
+                    episodeName = episode.name,
+                    episodeOrdinal = episode.ordinal,
+                    quality = quality,
+                    hlsUrl = hlsUrl,
+                    previewUrl = episode.previewUrl,
+                )
+            )
+        }
+    }
+
+    fun onDownloadAllEpisodes(quality: String) {
+        _dialogState.value = DownloadDialogState.None
+        viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            val details = releaseDetailsStateFlow.value.details ?: return@launch
+            val episodes = getEpisodes().sortedBy { it.ordinal }
+
+            episodes.forEach { episode ->
+                val url = episode.episodeUrls[quality] ?: return@forEach
+                enqueueDownloadUseCase(
+                    EnqueueDownloadUseCase.Params(
+                        releaseId = details.id,
+                        releaseTitle = details.header.title,
+                        episodeId = episode.id,
+                        episodeName = episode.name,
+                        episodeOrdinal = episode.ordinal,
+                        quality = quality,
+                        hlsUrl = url,
+                        previewUrl = episode.previewUrl,
+                    )
+                )
+            }
+        }
+    }
+
+    fun onCancelDownload(episodeId: String) {
+        viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            cancelDownloadUseCase(episodeId)
+        }
+    }
+
+    fun onCancelAllDownloads() {
+        viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            cancelAllDownloadsUseCase(releaseId)
+        }
+    }
+
+    private fun getEpisodes(): List<EpisodesUiModel> {
+        val details = releaseDetailsStateFlow.value.details ?: return emptyList()
+        return details.tabs.filterIsInstance<DetailsTab.EpisodesTab>()
+            .firstOrNull()?.episodes.orEmpty()
+    }
+
+    private fun findEpisode(episodeId: String): EpisodesUiModel? {
+        return getEpisodes().find { it.id == episodeId }
+    }
+
     private sealed class LoadEvent {
         data object Initial : LoadEvent()
     }
@@ -107,7 +219,13 @@ class ReleaseDetailsViewModel(
     private data class LoadResult(
         val event: LoadEvent,
         val releaseResult: Result<ReleaseDetailsEntity>,
-        val franchiseResult: Result<com.dezdeqness.details.domain.model.FranchiseEntity>,
+        val franchiseResult: Result<FranchiseEntity>,
+    )
+
+    private data class LoadResultCache(
+        val status: Status = Status.Loading,
+        val release: ReleaseDetailsEntity? = null,
+        val franchise: FranchiseEntity? = null,
     )
 
     companion object {

@@ -6,13 +6,27 @@ import com.dezdeqness.details.ui.model.DetailsTab
 import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsHeaderUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
+import com.dezdeqness.downloads.domain.model.DownloadEntity
 
 class ReleaseDetailsUiMapper(
     private val episodesUiMapper: EpisodesUiMapper,
 ) {
 
-    fun map(item: ReleaseDetailsEntity, franchise: FranchiseEntity? = null): ReleaseDetailsUiModel {
-        return ReleaseDetailsUiModel(
+    fun map(
+        item: ReleaseDetailsEntity,
+        franchise: FranchiseEntity? = null,
+        downloads: List<DownloadEntity> = emptyList(),
+    ): MappedReleaseDetails {
+        val tabs = composeTabs(item, franchise, downloads)
+        val episodes = tabs.filterIsInstance<DetailsTab.EpisodesTab>()
+            .firstOrNull()?.episodes.orEmpty()
+        val commonQualities = episodes
+            .map { it.episodeUrls.keys.toSet() }
+            .reduceOrNull { acc, keys -> acc.intersect(keys) }
+            ?.toList()
+            .orEmpty()
+
+        val details = ReleaseDetailsUiModel(
             id = item.id,
             header = ReleaseDetailsHeaderUiModel(
                 id = item.id,
@@ -21,24 +35,31 @@ class ReleaseDetailsUiMapper(
                 year = item.year.toString(),
                 imageUrl = item.poster,
             ),
-            tabs = composeTabs(item, franchise),
+            tabs = tabs,
         )
+        return MappedReleaseDetails(details, commonQualities)
     }
+
+    data class MappedReleaseDetails(
+        val details: ReleaseDetailsUiModel,
+        val commonQualities: List<String>,
+    )
 
     private fun composeTabs(
         entity: ReleaseDetailsEntity,
         franchise: FranchiseEntity?,
+        downloads: List<DownloadEntity>,
     ): List<DetailsTab> {
         return buildList {
             add(mapInfo(entity))
-            add(mapEpisodes(entity))
+            add(mapEpisodes(entity, downloads))
             if (franchise != null) add(mapFranchise(franchise))
             add(mapStats(entity))
         }
     }
 
-    private fun mapEpisodes(item: ReleaseDetailsEntity) = DetailsTab.EpisodesTab(
-        episodes = item.episodes.map(episodesUiMapper::map)
+    private fun mapEpisodes(item: ReleaseDetailsEntity, downloads: List<DownloadEntity>) = DetailsTab.EpisodesTab(
+        episodes = item.episodes.map { episodesUiMapper.map(it, downloads) }
     )
 
     private fun mapInfo(item: ReleaseDetailsEntity) = DetailsTab.InfoTab(
