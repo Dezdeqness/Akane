@@ -17,7 +17,12 @@ data class ActiveDownloadsState(
     val activeDownloads: List<DownloadUiModel> = emptyList(),
     val historyDownloads: List<DownloadUiModel> = emptyList(),
     val completedDownloads: List<DownloadUiModel> = emptyList(),
-)
+) {
+    val isEmptyState
+        get() = activeDownloads.isEmpty()
+                && historyDownloads.isEmpty()
+                && completedDownloads.isEmpty()
+}
 
 class ActiveDownloadsViewModel(
     downloadEpisodeRepository: DownloadEpisodeRepository,

@@ -1,5 +1,6 @@
 package com.dezdeqness.downloads.ui.activedownloads
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -9,6 +10,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
@@ -24,10 +26,6 @@ fun ActiveDownloadsPage(
     viewModel: ActiveDownloadsViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateOnLifecycle()
-
-    val isEmpty = state.activeDownloads.isEmpty()
-            && state.historyDownloads.isEmpty()
-            && state.completedDownloads.isEmpty()
 
     Scaffold(
         topBar = {
@@ -52,24 +50,24 @@ fun ActiveDownloadsPage(
         },
         containerColor = AppTheme.colors.background,
     ) { padding ->
-        val contentModifier = Modifier
-            .fillMaxSize()
-            .padding(padding)
-
-        if (isEmpty) {
-            DownloadsEmptyState(modifier = contentModifier)
-        } else {
-            DownloadsList(
-                activeDownloads = state.activeDownloads,
-                historyDownloads = state.historyDownloads,
-                completedDownloads = state.completedDownloads,
-                onDeleteClicked = viewModel::onDeleteClicked,
-                onRetryClicked = viewModel::onRetryClicked,
-                onCancelClicked = viewModel::onCancelClicked,
-                onPauseClicked = viewModel::onPauseClicked,
-                onHideFromHistoryClicked = viewModel::onHideFromHistoryClicked,
-                modifier = contentModifier,
-            )
+        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+            if (state.isEmptyState) {
+                DownloadsEmptyState(
+                    modifier = Modifier.align(Alignment.Center),
+                )
+            } else {
+                DownloadsList(
+                    modifier = Modifier.fillMaxSize(),
+                    activeDownloads = state.activeDownloads,
+                    historyDownloads = state.historyDownloads,
+                    completedDownloads = state.completedDownloads,
+                    onDeleteClicked = viewModel::onDeleteClicked,
+                    onRetryClicked = viewModel::onRetryClicked,
+                    onCancelClicked = viewModel::onCancelClicked,
+                    onPauseClicked = viewModel::onPauseClicked,
+                    onHideFromHistoryClicked = viewModel::onHideFromHistoryClicked,
+                )
+            }
         }
     }
 }
