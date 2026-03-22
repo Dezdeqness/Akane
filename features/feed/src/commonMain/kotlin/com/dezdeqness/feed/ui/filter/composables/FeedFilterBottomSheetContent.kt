@@ -17,8 +17,10 @@ import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.core.ui.views.buttons.AppButton
-import com.dezdeqness.core.ui.views.buttons.AppOutlinedButton
+import com.dezdeqness.core.ui.views.buttons.AppErrorButton
+import com.dezdeqness.core.ui.views.buttons.AppPrimaryButton
+import com.dezdeqness.core.ui.views.buttons.AppSecondaryButton
+import com.dezdeqness.core.ui.views.buttons.AppTextButton
 import com.dezdeqness.feed.ui.filter.ChipFilterSectionUiModel
 import com.dezdeqness.feed.ui.filter.FeedFilterSectionAction
 import com.dezdeqness.feed.ui.filter.FeedFilterState
@@ -125,14 +127,14 @@ fun FeedFilterBottomSheetContent(
                     .padding(horizontal = 16.dp, vertical = 12.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                AppOutlinedButton(
+                AppErrorButton(
                     title = "Сбросить",
                     modifier = Modifier.weight(1f),
                     onClick = {
                         onAction(FeedFilterSectionAction.Reset)
                     },
                 )
-                AppButton(
+                AppPrimaryButton(
                     title = "Применить",
                     modifier = Modifier.weight(1f),
                     onClick = {

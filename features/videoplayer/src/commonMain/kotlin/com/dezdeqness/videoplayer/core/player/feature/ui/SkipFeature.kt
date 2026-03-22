@@ -7,13 +7,14 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
-import com.dezdeqness.core.ui.views.buttons.AppOutlinedButton
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.core.ui.views.buttons.AppTextButton
+import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.buttons.AppPrimaryButton
+import com.dezdeqness.core.ui.views.buttons.AppSecondaryButton
 import com.dezdeqness.videoplayer.core.player.api.PlayerContext
 import com.dezdeqness.videoplayer.core.player.data.SkipRange
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
@@ -63,7 +64,6 @@ class SkipFeature : UiFeature {
         }
 
         val currentSkip = resolveSkipState(pos, openingRange, endingRange)
-
         AnimatedVisibility(
             visible = currentSkip != null,
             enter = slideInHorizontally(tween(300)) { it },
@@ -72,7 +72,7 @@ class SkipFeature : UiFeature {
             val label = currentSkip?.first ?: skipState?.first ?: return@AnimatedVisibility
             val targetMs = currentSkip?.second ?: skipState?.second ?: return@AnimatedVisibility
 
-            AppOutlinedButton(
+            AppSecondaryButton(
                 title = label,
                 onClick = { context.seekTo(targetMs) },
                 modifier = Modifier.padding(16.dp),

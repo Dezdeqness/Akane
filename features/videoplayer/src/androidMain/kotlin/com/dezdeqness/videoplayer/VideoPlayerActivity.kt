@@ -18,8 +18,8 @@ import androidx.compose.runtime.setValue
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
+import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
@@ -62,13 +62,13 @@ class VideoPlayerActivity : ComponentActivity() {
             CompositionLocalProvider(
                 LocalAstImageLoader provides getImageLoader()
             ) {
-                AppTheme {
-                        VideoPlayerScreen(
-                            onBackButtonClicked = {
-                                finish()
-                            }
-                        )
-                    }
+                AkaneTheme {
+                    VideoPlayerScreen(
+                        onBackButtonClicked = {
+                            finish()
+                        }
+                    )
+                }
 
             }
         }

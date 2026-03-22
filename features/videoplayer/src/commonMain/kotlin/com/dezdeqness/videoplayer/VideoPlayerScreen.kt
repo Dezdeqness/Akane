@@ -25,8 +25,8 @@ import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
 import com.dezdeqness.videoplayer.core.player.VideoPlayerLayout
 import com.dezdeqness.videoplayer.core.player.VideoSurface
-import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatio
-import com.dezdeqness.videoplayer.engine.feature.aspect.AspectRatioFeature
+import com.dezdeqness.videoplayer.core.player.feature.ui.AspectRatio
+import com.dezdeqness.videoplayer.core.player.feature.ui.AspectRatioFeature
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import org.koin.compose.viewmodel.koinViewModel
 

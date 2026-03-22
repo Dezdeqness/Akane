@@ -1,8 +1,8 @@
-package com.dezdeqness.videoplayer.engine.feature.aspect
+package com.dezdeqness.videoplayer.core.player.feature.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.dezdeqness.core.ui.views.buttons.AppOutlinedButton
+import com.dezdeqness.core.ui.views.buttons.AppSecondaryButton
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import com.dezdeqness.videoplayer.core.player.api.PlayerContext
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
@@ -41,7 +41,7 @@ class AspectRatioFeature(
     @Composable
     override fun Content(slot: ControlSlot) {
         val ratio by selectedAspectRatio.collectAsStateOnLifecycle()
-        AppOutlinedButton(
+        AppSecondaryButton(
             title = ratio.label,
             onClick = ::cycleAspectRatio,
         )
