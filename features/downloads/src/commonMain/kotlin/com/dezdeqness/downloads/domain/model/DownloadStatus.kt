@@ -8,4 +8,8 @@ enum class DownloadStatus {
     COMPLETED,
     FAILED,
     CANCELLED,
+    ;
+
+    val isRetryable: Boolean
+        get() = this == CANCELLED || this == FAILED
 }
