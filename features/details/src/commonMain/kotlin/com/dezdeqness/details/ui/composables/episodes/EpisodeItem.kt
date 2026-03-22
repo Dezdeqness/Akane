@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -94,10 +95,9 @@ fun EpisodeItem(
                     null,
                     DownloadStatusUi.FAILED,
                         -> {
-                        AppIconButton(
+                        IconButton(
                             onClick = onDownloadClick,
                             modifier = Modifier.align(Alignment.TopEnd),
-                            contentColor = Color.Transparent,
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Download,

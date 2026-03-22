@@ -35,6 +35,7 @@ class DownloadManager(
     private val fileManager: DownloadFileManager,
     private val coroutineScope: CoroutineScope,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val remuxEnabled: Boolean = false,
 ) {
     private val jobsMutex = Mutex()
     private val activeJobs = mutableMapOf<Long, Job>()
@@ -85,35 +86,32 @@ class DownloadManager(
 
             if (fileManager.fileExists(mp4Path)) {
                 Logger.d(TAG) { "[${download.id}] .mp4 already exists at $mp4Path, marking completed" }
-                fileManager.deleteIfExists(outputPath) // cleanup leftover .ts
+                fileManager.deleteIfExists(outputPath)
                 syncRepository.updateFilePath(download.id, mp4Path.toString())
                 syncRepository.markCompleted(download.id)
                 return
             }
 
             if (fileManager.fileExists(outputPath)) {
-                syncRepository.updateStatus(download.id, DownloadStatus.REMUXING)
-                Logger.d(TAG) { "[${download.id}] .ts file found, restarting remux" }
-
-                val remuxResult = fileManager.remux(outputPath)
-
-                if (remuxResult.success) {
+                if (remuxEnabled) {
+                    Logger.d(TAG) { "[${download.id}] .ts file found, attempting remux" }
+                    syncRepository.updateStatus(download.id, DownloadStatus.REMUXING)
+                    val remuxResult = fileManager.remux(outputPath)
                     syncRepository.updateFilePath(download.id, remuxResult.filePath)
                     syncRepository.markCompleted(download.id)
-                    Logger.d(TAG) { "[${download.id}] Recovery remux successful: ${remuxResult.filePath}" }
                 } else {
-                    Logger.w(TAG) { "[${download.id}] Recovery remux failed, saving .ts as completed" }
-                    syncRepository.updateFilePath(download.id, remuxResult.filePath)
+                    Logger.d(TAG) { "[${download.id}] .ts file found, marking completed" }
+                    syncRepository.updateFilePath(download.id, outputPath.toString())
                     syncRepository.markCompleted(download.id)
                 }
                 return
             }
 
-            Logger.w(TAG) { "[${download.id}] No .ts or .mp4 found, re-enqueuing" }
+            Logger.w(TAG) { "[${download.id}] No .ts found, re-enqueuing" }
             syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
             enqueue(download.id)
         } catch (e: Exception) {
-            Logger.e(TAG, e) { "[${download.id}] Recovery remux error: ${e.message}" }
+            Logger.e(TAG, e) { "[${download.id}] Recovery error: ${e.message}" }
             syncRepository.updateStatus(download.id, DownloadStatus.FAILED)
         }
     }
@@ -435,17 +433,22 @@ class DownloadManager(
                     DownloadFileManager.formatSize(totalBytesWritten)
         }
 
-        syncRepository.updateStatus(downloadId, DownloadStatus.REMUXING)
-        Logger.d(TAG) { "[$downloadId] Remuxing..." }
+        if (remuxEnabled) {
+            syncRepository.updateStatus(downloadId, DownloadStatus.REMUXING)
+            Logger.d(TAG) { "[$downloadId] Remuxing..." }
 
-        val remuxResult = fileManager.remux(outputPath)
-        syncRepository.updateFilePath(downloadId, remuxResult.filePath)
-        syncRepository.markCompleted(downloadId)
+            val remuxResult = fileManager.remux(outputPath)
+            syncRepository.updateFilePath(downloadId, remuxResult.filePath)
+            syncRepository.markCompleted(downloadId)
 
-        if (remuxResult.success) {
-            Logger.d(TAG) { "[$downloadId] Remux successful: ${remuxResult.filePath}" }
+            if (remuxResult.success) {
+                Logger.d(TAG) { "[$downloadId] Remux successful: ${remuxResult.filePath}" }
+            } else {
+                Logger.w(TAG) { "[$downloadId] Remux failed, keeping .ts: ${remuxResult.filePath}" }
+            }
         } else {
-            Logger.w(TAG) { "[$downloadId] Remux failed, keeping .ts: ${remuxResult.filePath}" }
+            syncRepository.updateFilePath(downloadId, outputPath.toString())
+            syncRepository.markCompleted(downloadId)
         }
     }
 
