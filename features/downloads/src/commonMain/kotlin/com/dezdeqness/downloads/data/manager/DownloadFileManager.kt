@@ -17,6 +17,16 @@ class DownloadFileManager(
     private val fileSystem: FileSystem = FileSystem.SYSTEM,
 ) {
 
+    fun toRelativePath(absolutePath: String): String {
+        val root = downloadDirectoryProvider.getDownloadDirectory()
+        return absolutePath.removePrefix("$root/")
+    }
+
+    fun resolveFilePath(relativePath: String): String {
+        if (relativePath.startsWith("/")) return relativePath
+        return "${downloadDirectoryProvider.getDownloadDirectory()}/$relativePath"
+    }
+
     fun getOutputPath(download: DownloadEntity): Path {
         val releaseFolder = getReleaseFolder(download)
         ensureDirectory(releaseFolder)
@@ -146,11 +156,72 @@ class DownloadFileManager(
         }
     }
 
+    fun getEpisodeDir(download: DownloadEntity): Path {
+        val rootDir = downloadDirectoryProvider.getDownloadDirectory().toPath()
+        val dir = rootDir / "${download.releaseId}" / "${download.episodeOrdinal}_${download.quality}"
+        ensureDirectory(dir)
+        return dir
+    }
+
+    fun moveSegmentsToEpisodeDir(
+        segmentsDir: Path,
+        totalSegments: Int,
+        episodeDir: Path,
+    ) {
+        for (index in 0 until totalSegments) {
+            val src = getSegmentPath(segmentsDir, index)
+            val dst = episodeDir / "segment_$index.ts"
+            if (fileSystem.exists(src)) {
+                move(src, dst)
+            }
+        }
+    }
+
+    fun generateLocalPlaylist(
+        episodeDir: Path,
+        totalSegments: Int,
+        segmentDurations: List<Double> = emptyList(),
+        targetDuration: Int = 12,
+    ): Path {
+        val playlistPath = episodeDir / "playlist.m3u8"
+        val content = buildString {
+            appendLine("#EXTM3U")
+            appendLine("#EXT-X-VERSION:3")
+            appendLine("#EXT-X-TARGETDURATION:$targetDuration")
+            appendLine("#EXT-X-MEDIA-SEQUENCE:0")
+            appendLine("#EXT-X-PLAYLIST-TYPE:VOD")
+            for (index in 0 until totalSegments) {
+                val duration = segmentDurations.getOrElse(index) { targetDuration.toDouble() }
+                appendLine("#EXTINF:$duration,")
+                appendLine("segment_$index.ts")
+            }
+            appendLine("#EXT-X-ENDLIST")
+        }
+        val sink = fileSystem.sink(playlistPath).buffer()
+        try {
+            sink.writeUtf8(content)
+        } finally {
+            sink.close()
+        }
+        return playlistPath
+    }
+
     fun deleteOutputFile(filePath: String) {
         val path = filePath.toPath()
-        deleteIfExists(path)
 
-        val parent = path.parent ?: return
+        if (path.name == "playlist.m3u8") {
+            val dir = path.parent ?: return
+            runCatching {
+                if (fileSystem.exists(dir)) {
+                    fileSystem.list(dir).forEach(::deleteIfExists)
+                    fileSystem.delete(dir)
+                }
+            }.onFailure { Logger.w(TAG) { "Failed to delete episode dir $dir: ${it.message}" } }
+        } else {
+            deleteIfExists(path)
+        }
+
+        val parent = path.parent?.parent ?: path.parent ?: return
         runCatching {
             if (fileSystem.exists(parent) && fileSystem.list(parent).isEmpty()) {
                 fileSystem.delete(parent)

@@ -1,11 +1,13 @@
 package com.dezdeqness.videoplayer.core.player
 
+import co.touchlab.kermit.Logger
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import platform.AVFoundation.AVPlayerItemDidPlayToEndTimeNotification
+import platform.AVFoundation.AVPlayerItemFailedToPlayToEndTimeNotification
 import platform.AVFoundation.AVPlayerTimeControlStatusPaused
 import platform.AVFoundation.AVPlayerTimeControlStatusPlaying
 import platform.AVFoundation.AVPlayerTimeControlStatusWaitingToPlayAtSpecifiedRate
@@ -35,6 +37,7 @@ import kotlinx.cinterop.ptr
 import kotlinx.cinterop.sizeOf
 import platform.CoreMedia.CMTimeRange
 import platform.Foundation.NSValue
+import platform.Foundation.NSFileManager
 
 private const val SEEK_INCREMENT_MS = 10_000L
 
@@ -49,12 +52,15 @@ class IosVideoPlayer : VideoPlayer {
 
     private var timeObserver: Any? = null
     private var endObserver: platform.darwin.NSObjectProtocol? = null
+    private var failedObserver: platform.darwin.NSObjectProtocol? = null
 
     private var lastTimeControlStatus: Long = -1
+    private var localFileServer: LocalFileServer? = null
 
     init {
         observeTime()
         observeEnded()
+        observeFailed()
     }
 
     fun makePlayerView(): UIView {
@@ -119,6 +125,18 @@ class IosVideoPlayer : VideoPlayer {
         }
     }
 
+    private fun observeFailed() {
+        failedObserver = NSNotificationCenter.defaultCenter.addObserverForName(
+            name = AVPlayerItemFailedToPlayToEndTimeNotification,
+            `object` = null,
+            queue = null
+        ) { notification ->
+            val item = notification?.`object` as? AVPlayerItem
+            Logger.e(TAG) { "AVPlayerItem failed to play: ${item?.error?.localizedDescription}" }
+            Logger.e(TAG) { "Error code: ${item?.error?.code}, domain: ${item?.error?.domain}" }
+        }
+    }
+
     override fun play() {
         avPlayer.play()
         _events.tryEmit(PlayerEvent.IsPlaying(true))
@@ -141,6 +159,10 @@ class IosVideoPlayer : VideoPlayer {
         timeObserver = null
         endObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
         endObserver = null
+        failedObserver?.let { NSNotificationCenter.defaultCenter.removeObserver(it) }
+        failedObserver = null
+        localFileServer?.stop()
+        localFileServer = null
         playerViewController = null
     }
 
@@ -168,10 +190,52 @@ class IosVideoPlayer : VideoPlayer {
 
     override fun setMediaItems(mediaItems: List<String>, startIndex: Int, startPositionMs: Long) {
         avPlayer.removeAllItems()
+
+        localFileServer?.stop()
+        localFileServer = null
+
         mediaItems.drop(startIndex).forEach { url ->
-            val nsUrl = NSURL.URLWithString(url) ?: return@forEach
-            avPlayer.insertItem(AVPlayerItem(nsUrl), null)
+            val isLocalFile = url.startsWith("/")
+
+            if (isLocalFile && url.endsWith(".m3u8")) {
+                // Serve local HLS via HTTP server (AVPlayer can't play m3u8/ts from file://)
+                val dir = url.substringBeforeLast("/")
+                val playlistName = url.substringAfterLast("/")
+                val server = LocalFileServer()
+                val baseUrl = server.start(dir)
+                if (baseUrl.isEmpty()) {
+                    Logger.e(TAG) { "Failed to start local file server for $dir" }
+                    return@forEach
+                }
+                localFileServer = server
+                val httpUrl = "$baseUrl/$playlistName"
+                Logger.d(TAG) { "Serving local HLS via HTTP: $httpUrl" }
+                val nsUrl = NSURL.URLWithString(httpUrl) ?: run {
+                    Logger.e(TAG) { "Invalid HTTP URL: $httpUrl" }
+                    return@forEach
+                }
+                avPlayer.insertItem(AVPlayerItem(nsUrl), null)
+            } else if (isLocalFile) {
+                if (!NSFileManager.defaultManager.fileExistsAtPath(url)) {
+                    Logger.e(TAG) { "File does not exist: $url" }
+                    return@forEach
+                }
+                val nsUrl = NSURL.fileURLWithPath(url)
+                Logger.d(TAG) { "Adding local file: $nsUrl" }
+                avPlayer.insertItem(AVPlayerItem(nsUrl), null)
+            } else {
+                val nsUrl = NSURL.URLWithString(url) ?: run {
+                    Logger.e(TAG) { "Invalid URL: $url" }
+                    return@forEach
+                }
+                Logger.d(TAG) { "Adding media item: $nsUrl" }
+                avPlayer.insertItem(AVPlayerItem(nsUrl), null)
+            }
         }
         if (startPositionMs > 0) seekTo(startPositionMs)
+    }
+
+    companion object {
+        private const val TAG = "IosVideoPlayer"
     }
 }

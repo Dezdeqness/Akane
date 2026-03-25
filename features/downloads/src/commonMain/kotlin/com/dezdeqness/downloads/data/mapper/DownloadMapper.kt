@@ -3,10 +3,13 @@ package com.dezdeqness.downloads.data.mapper
 import com.dezdeqness.downloads.data.db.DownloadEpisodeLocal
 import com.dezdeqness.downloads.data.db.DownloadProgressLocal
 import com.dezdeqness.downloads.data.db.DownloadWithProgress
+import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.domain.model.DownloadEntity
 import com.dezdeqness.downloads.domain.model.DownloadStatus
 
-class DownloadMapper {
+class DownloadMapper(
+    private val fileManager: DownloadFileManager,
+) {
 
     fun toEntity(withProgress: DownloadWithProgress): DownloadEntity {
         val episode = withProgress.episode
@@ -20,7 +23,7 @@ class DownloadMapper {
             episodeOrdinal = episode.episodeOrdinal,
             quality = episode.quality,
             hlsUrl = episode.hlsUrl,
-            filePath = episode.filePath,
+            filePath = episode.filePath?.let { fileManager.resolveFilePath(it) },
             status = progress?.let { DownloadStatus.valueOf(it.status) } ?: DownloadStatus.QUEUED,
             progress = progress?.progress ?: 0f,
             totalSegments = progress?.totalSegments ?: 0,
