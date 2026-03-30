@@ -32,7 +32,7 @@ internal val dataModule = module {
     single { get<DownloadDatabase>().downloadEpisodeDao() }
     single { get<DownloadDatabase>().syncDownloadEpisodeDao() }
     single { HlsParser() }
-    single { DownloadMapper() }
+    single { DownloadMapper(fileManager = get()) }
     single {
         DownloadFileManager(
             downloadDirectoryProvider = get(),
