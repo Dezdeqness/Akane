@@ -63,6 +63,7 @@ fun PlaylistBottomSheet(
                             item.title.ifBlank { item.id },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f),
                         )
 
                         if (item.id == currentItemId) {

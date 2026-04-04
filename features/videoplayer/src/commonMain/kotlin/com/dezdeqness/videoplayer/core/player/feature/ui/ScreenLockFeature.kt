@@ -41,7 +41,6 @@ class ScreenLockFeature : UiFeature {
         val context = playerContext ?: return
         val newLocked = !context.isLocked.value
         context.setLocked(newLocked)
-        context.showControls()
     }
 
     @Composable

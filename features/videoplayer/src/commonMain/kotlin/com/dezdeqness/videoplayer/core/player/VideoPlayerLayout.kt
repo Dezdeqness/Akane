@@ -38,6 +38,7 @@ fun VideoPlayerLayout(
     appBarContent: @Composable () -> Unit = {},
 ) {
     val controlsVisible by engine.controlsVisible.collectAsStateOnLifecycle()
+    val lockedControlsVisible by engine.lockedControlsVisible.collectAsStateOnLifecycle()
     val isLocked by engine.isLocked.collectAsStateOnLifecycle()
 
     val safePadding = WindowInsets.safeDrawing.asPaddingValues()
@@ -68,7 +69,7 @@ fun VideoPlayerLayout(
             Box(modifier = Modifier.fillMaxSize().padding(outerPadding)) {
 
                 Row(
-                    modifier = Modifier.fillMaxWidth().align(Alignment.TopCenter),
+                    modifier = Modifier.fillMaxWidth().align(Alignment.TopStart),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
                 ) {
@@ -76,8 +77,9 @@ fun VideoPlayerLayout(
                         modifier = Modifier.weight(1f, fill = false),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        appBarContent()
                         engine.registry.SlotContent(ControlSlot.TopStart)
+                        appBarContent()
+                        engine.registry.SlotContent(ControlSlot.TopEnd)
                     }
                 }
 
@@ -98,7 +100,7 @@ fun VideoPlayerLayout(
         }
 
         AnimatedVisibility(
-            visible = controlsVisible,
+            visible = if (isLocked) lockedControlsVisible else controlsVisible,
             enter = controlsEnter,
             exit = controlsExit,
             modifier = Modifier.align(Alignment.CenterEnd).padding(outerPadding),
@@ -153,7 +155,7 @@ private fun BottomRow(
             )
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.End,
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 engine.registry.SlotContent(ControlSlot.BottomActionsStart)

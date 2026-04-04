@@ -1,6 +1,5 @@
 package com.dezdeqness.videoplayer.core.player.composables
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -87,12 +86,10 @@ fun VideoProgressSlider(
                 isUserSliding = true
                 localPosition = it.roundToLong()
                 localBuffered = 0f
-                println("position: " + it.roundToLong())
             },
             onValueChangeFinished = {
                 isUserSliding = false
                 seekTarget = localPosition
-                println("localPosition: " + localPosition)
 
                 onSeek(localPosition)
             },

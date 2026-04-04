@@ -15,6 +15,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.material.icons.core)
             implementation(compose.components.resources)
+            api(libs.compose.ui.tooling.preview)
 
             api(libs.core.ui)
 

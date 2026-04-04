@@ -40,7 +40,6 @@ kotlin {
             implementation(libs.coil.network.ktor)
 
             implementation(libs.androidx.navigation.compose)
-            implementation(compose.components.uiToolingPreview)
 
             implementation(libs.koin.compose)
         }

@@ -3,6 +3,7 @@ package com.dezdeqness.videoplayer
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
@@ -12,7 +13,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -22,9 +22,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
-import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
+import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import com.dezdeqness.videoplayer.core.player.VideoPlayerLayout
 import com.dezdeqness.videoplayer.core.player.VideoSurface
+import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
 import com.dezdeqness.videoplayer.core.player.feature.ui.AspectRatio
 import com.dezdeqness.videoplayer.core.player.feature.ui.AspectRatioFeature
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
@@ -106,6 +107,7 @@ fun VideoPlayerScreen(
                                 titleContentColor = Color.White,
                                 containerColor = Color.Transparent,
                             ),
+                            windowInsets = WindowInsets(),
                             navigation = {
                                 AppIconButton(
                                     icon = AkaneIcons.Back,

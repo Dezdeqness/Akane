@@ -11,6 +11,8 @@ interface PlayerContext {
 
     val controlsVisible: StateFlow<Boolean>
 
+    val lockedControlsVisible: StateFlow<Boolean>
+
     val isLocked: StateFlow<Boolean>
 
     val autoHidePaused: StateFlow<Boolean>

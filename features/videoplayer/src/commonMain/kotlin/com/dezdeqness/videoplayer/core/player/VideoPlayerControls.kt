@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
@@ -27,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.dezdeqness.videoplayer.core.player.api.PlayerContext
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -43,16 +41,16 @@ fun VideoPlayerControls(
         modifier = modifier
             .fillMaxWidth()
             .padding(top = 8.dp),
-        horizontalArrangement = Arrangement.SpaceEvenly,
+        horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
     ) {
         SeekButton(
             iconRes = Res.drawable.ic_time_backward,
-            label = "10",
             onClick = context::seekBack,
         )
 
         PlayPauseButton(
+            modifier = Modifier.padding(horizontal = 16.dp),
             isPlaying = state.isPlaying,
             isBuffering = state.isBuffering,
             onClick = {
@@ -62,7 +60,6 @@ fun VideoPlayerControls(
 
         SeekButton(
             iconRes = Res.drawable.ic_time_forward,
-            label = "10",
             onClick = context::seekForward,
         )
     }
@@ -71,23 +68,21 @@ fun VideoPlayerControls(
 @Composable
 private fun SeekButton(
     iconRes: DrawableResource,
-    label: String,
     onClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier
-            .size(36.dp)
+            .size(28.dp)
             .clip(CircleShape)
             .background(Color.Black.copy(alpha = 0.5f))
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(label, color = Color.White, fontSize = 10.sp)
         Icon(
             painter = painterResource(iconRes),
             contentDescription = null,
             tint = Color.White,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(20.dp),
         )
     }
 }
@@ -97,8 +92,10 @@ private fun PlayPauseButton(
     isPlaying: Boolean,
     isBuffering: Boolean,
     onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     AnimatedContent(
+        modifier = modifier,
         targetState = isBuffering,
         transitionSpec = {
             fadeIn(tween(300)) togetherWith fadeOut(tween(300))

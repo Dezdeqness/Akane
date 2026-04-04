@@ -12,6 +12,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -28,11 +29,20 @@ class VideoPlayerManager(
     private val _playerState = MutableStateFlow(VideoPlayerUiState())
     override val playerState: StateFlow<VideoPlayerUiState> = _playerState
 
-    private val _controlsVisible = MutableStateFlow(true)
-    override val controlsVisible: StateFlow<Boolean> = _controlsVisible
+    private val _controlsOverlayState = MutableStateFlow(ControlsOverlayState.UnlockedVisible)
+    val controlsOverlayState: StateFlow<ControlsOverlayState> = _controlsOverlayState.asStateFlow()
 
-    private val _isLocked = MutableStateFlow(false)
-    override val isLocked: StateFlow<Boolean> = _isLocked
+    override val controlsVisible: StateFlow<Boolean> = controlsOverlayState
+        .map { it.controlsVisible }
+        .stateIn(scope, SharingStarted.Eagerly, true)
+
+    override val lockedControlsVisible: StateFlow<Boolean> = controlsOverlayState
+        .map { it.lockedControlsVisible }
+        .stateIn(scope, SharingStarted.Eagerly, false)
+
+    override val isLocked: StateFlow<Boolean> = controlsOverlayState
+        .map { it.isLocked }
+        .stateIn(scope, SharingStarted.Eagerly, false)
 
     private val _autoHidePauseCount = MutableStateFlow(0)
     override val autoHidePaused: StateFlow<Boolean> =
@@ -126,16 +136,36 @@ class VideoPlayerManager(
     override fun setVolume(volume: Float) = player.setVolume(volume.coerceIn(0f, 1f))
 
     override fun showControls() {
-        _controlsVisible.value = true
+        _controlsOverlayState.update { state ->
+            when (state) {
+                ControlsOverlayState.UnlockedHidden -> ControlsOverlayState.UnlockedVisible
+                ControlsOverlayState.LockedHidden -> ControlsOverlayState.LockedVisible
+                else -> state
+            }
+        }
     }
 
     override fun hideControls() {
-        _controlsVisible.value = false
+        _controlsOverlayState.update { state ->
+            when (state) {
+                ControlsOverlayState.UnlockedVisible -> ControlsOverlayState.UnlockedHidden
+                ControlsOverlayState.LockedVisible -> ControlsOverlayState.LockedHidden
+                else -> state
+            }
+        }
     }
 
     override fun setLocked(locked: Boolean) {
-        _isLocked.value = locked
-        if (locked) _controlsVisible.value = false
+        _controlsOverlayState.update { state ->
+            if (locked) {
+                ControlsOverlayState.LockedHidden
+            } else {
+                when (state) {
+                    ControlsOverlayState.LockedHidden -> ControlsOverlayState.UnlockedHidden
+                    else -> ControlsOverlayState.UnlockedVisible
+                }
+            }
+        }
     }
 
     override fun pauseAutoHide() {

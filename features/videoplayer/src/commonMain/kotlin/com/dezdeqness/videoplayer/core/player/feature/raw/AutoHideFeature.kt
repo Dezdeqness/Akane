@@ -37,8 +37,14 @@ class AutoHideFeature(
                 .distinctUntilChanged()
                 .collect { isPlaying ->
                     timerJob?.cancel()
-                    context.showControls()
-                    if (isPlaying) restartTimer()
+                    if (context.isLocked.value) {
+                        if (isPlaying && context.lockedControlsVisible.value) {
+                            restartTimer()
+                        }
+                    } else {
+                        context.showControls()
+                        if (isPlaying) restartTimer()
+                    }
                 }
         }
     }
@@ -57,7 +63,7 @@ class AutoHideFeature(
                         val anyConsumed = event.changes.any { it.isConsumed }
                         if (anyConsumed) {
                             timerJob?.cancel()
-                            if (context.playerState.value.isPlaying && !context.isLocked.value) {
+                            if (context.playerState.value.isPlaying) {
                                 restartTimer()
                             }
                             wasPressed = isPressed
@@ -65,6 +71,16 @@ class AutoHideFeature(
                         }
 
                         if (context.isLocked.value) {
+                            if (context.lockedControlsVisible.value) {
+                                context.hideControls()
+                                timerJob?.cancel()
+                            } else {
+                                context.showControls()
+                                timerJob?.cancel()
+                                if (context.playerState.value.isPlaying) {
+                                    restartTimer()
+                                }
+                            }
                             wasPressed = isPressed
                             continue
                         }
@@ -79,7 +95,7 @@ class AutoHideFeature(
 
                     if (wasPressed && !isPressed) {
                         val context = playerContext ?: run { wasPressed = isPressed; continue }
-                        if (!context.isLocked.value && context.playerState.value.isPlaying) {
+                        if (context.playerState.value.isPlaying) {
                             restartTimer()
                         }
                     }
@@ -120,7 +136,7 @@ class AutoHideFeature(
                     }
                 }
             }
-            if (context.playerState.value.isPlaying && !context.isLocked.value) {
+            if (context.playerState.value.isPlaying) {
                 context.hideControls()
             }
         }

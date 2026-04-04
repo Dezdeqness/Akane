@@ -21,7 +21,6 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(compose.components.resources)
-            implementation(compose.components.uiToolingPreview)
 
             implementation(project(":features:details"))
             implementation(project(":features:downloads"))
@@ -43,4 +42,8 @@ kotlin {
         }
     }
 
+}
+
+dependencies {
+    debugImplementation(libs.compose.ui.tooling)
 }
