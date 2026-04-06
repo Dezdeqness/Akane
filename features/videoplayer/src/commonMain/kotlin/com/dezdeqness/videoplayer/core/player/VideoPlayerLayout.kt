@@ -25,8 +25,8 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.videoplayer.core.getDeviceConfiguration
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
-import com.dezdeqness.videoplayer.core.player.composables.ProgressSliderState
-import com.dezdeqness.videoplayer.core.player.composables.VideoProgressSlider
+import com.dezdeqness.videoplayer.core.player.composables.slider.ProgressSliderState
+import com.dezdeqness.videoplayer.core.player.composables.slider.VideoProgressSlider
 
 private val controlsEnter = fadeIn(tween(250, easing = CubicBezierEasing(0.05f, 0.7f, 0.1f, 1f)))
 private val controlsExit = fadeOut(tween(200, easing = CubicBezierEasing(0.3f, 0f, 1f, 1f)))
