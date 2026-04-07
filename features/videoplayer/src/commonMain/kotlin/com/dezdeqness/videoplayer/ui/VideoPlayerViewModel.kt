@@ -103,6 +103,8 @@ class VideoPlayerViewModel(
                     id = item.id.toString(),
                     title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
                     source = MediaSource.FilePath(item.filePath!!),
+                    opening = item.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
+                    ending = item.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
                 )
             }
             val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }

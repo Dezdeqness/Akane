@@ -16,6 +16,7 @@ import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.domain.usecase.CancelAllDownloadsUseCase
 import com.dezdeqness.downloads.domain.usecase.CancelDownloadUseCase
 import com.dezdeqness.downloads.domain.usecase.EnqueueDownloadUseCase
+import com.dezdeqness.downloads.domain.model.DownloadTiming
 import com.dezdeqness.personal.domain.models.PersonalEntity
 import com.dezdeqness.personal.domain.repository.PersonalRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -161,6 +162,8 @@ class ReleaseDetailsViewModel(
                     quality = quality,
                     hlsUrl = hlsUrl,
                     previewUrl = episode.previewUrl,
+                    opening = episode.opening?.let { DownloadTiming(it.start, it.end) },
+                    ending = episode.ending?.let { DownloadTiming(it.start, it.end) },
                 )
             )
         }
@@ -184,6 +187,8 @@ class ReleaseDetailsViewModel(
                         quality = quality,
                         hlsUrl = url,
                         previewUrl = episode.previewUrl,
+                        opening = episode.opening?.let { DownloadTiming(it.start, it.end) },
+                        ending = episode.ending?.let { DownloadTiming(it.start, it.end) },
                     )
                 )
             }

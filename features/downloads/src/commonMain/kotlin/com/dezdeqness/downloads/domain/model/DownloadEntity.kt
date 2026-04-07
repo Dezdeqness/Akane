@@ -17,4 +17,11 @@ data class DownloadEntity(
     val createdAt: Long = 0,
     val previewUrl: String = "",
     val hiddenFromHistory: Boolean = false,
+    val opening: DownloadTiming? = null,
+    val ending: DownloadTiming? = null,
+)
+
+data class DownloadTiming(
+    val start: Long,
+    val end: Long,
 )

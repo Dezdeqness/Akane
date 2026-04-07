@@ -4,6 +4,7 @@ import com.dezdeqness.downloads.data.manager.DownloadManager
 import com.dezdeqness.downloads.data.platform.currentTimeMillis
 import com.dezdeqness.downloads.domain.model.DownloadEntity
 import com.dezdeqness.downloads.domain.model.DownloadStatus
+import com.dezdeqness.downloads.domain.model.DownloadTiming
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
 
@@ -31,6 +32,8 @@ class EnqueueDownloadUseCase(
             hlsUrl = params.hlsUrl,
             previewUrl = params.previewUrl,
             createdAt = currentTimeMillis(),
+            opening = params.opening,
+            ending = params.ending,
         )
         val id = downloadEpisodeRepository.insert(entity)
         downloadManager.enqueue(id)
@@ -45,5 +48,7 @@ class EnqueueDownloadUseCase(
         val quality: String,
         val hlsUrl: String,
         val previewUrl: String,
+        val opening: DownloadTiming? = null,
+        val ending: DownloadTiming? = null,
     )
 }

@@ -1,7 +1,9 @@
 package com.dezdeqness.details.ui
 
 import com.dezdeqness.details.domain.model.EpisodeEntity
+import com.dezdeqness.details.domain.model.TimingEntity
 import com.dezdeqness.details.ui.model.DownloadStatusUi
+import com.dezdeqness.details.ui.model.EpisodeTimingUiModel
 import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.downloads.domain.model.DownloadEntity
 import com.dezdeqness.downloads.domain.model.DownloadStatus
@@ -20,6 +22,8 @@ class EpisodesUiMapper {
                 quality.nameQuality to url
             }.toMap()),
             downloadStatus = download?.status?.toUi(),
+            opening = item.opening?.toUi(),
+            ending = item.ending?.toUi(),
         )
     }
 
@@ -30,5 +34,12 @@ class EpisodesUiMapper {
         DownloadStatus.COMPLETED -> DownloadStatusUi.COMPLETED
         DownloadStatus.FAILED -> DownloadStatusUi.FAILED
         DownloadStatus.CANCELLED -> null
+    }
+
+    private fun TimingEntity.toUi(): EpisodeTimingUiModel {
+        return EpisodeTimingUiModel(
+            start = start,
+            end = end,
+        )
     }
 }

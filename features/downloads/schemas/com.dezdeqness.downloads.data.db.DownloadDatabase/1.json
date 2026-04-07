@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5739ed6a6be3c15ed18abfbbdfa1fdc3",
+    "identityHash": "1ae7bdc9f2d5837369be9978e13cc5bc",
     "entities": [
       {
         "tableName": "download_episodes",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `releaseId` INTEGER NOT NULL, `releaseTitle` TEXT NOT NULL, `episodeId` TEXT NOT NULL, `episodeName` TEXT NOT NULL, `episodeOrdinal` INTEGER NOT NULL, `quality` TEXT NOT NULL, `hlsUrl` TEXT NOT NULL, `filePath` TEXT, `createdAt` INTEGER NOT NULL, `previewUrl` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `releaseId` INTEGER NOT NULL, `releaseTitle` TEXT NOT NULL, `episodeId` TEXT NOT NULL, `episodeName` TEXT NOT NULL, `episodeOrdinal` INTEGER NOT NULL, `quality` TEXT NOT NULL, `hlsUrl` TEXT NOT NULL, `filePath` TEXT, `createdAt` INTEGER NOT NULL, `previewUrl` TEXT NOT NULL, `openingStart` INTEGER, `openingEnd` INTEGER, `endingStart` INTEGER, `endingEnd` INTEGER)",
         "fields": [
           {
             "fieldPath": "id",
@@ -72,6 +72,26 @@
             "columnName": "previewUrl",
             "affinity": "TEXT",
             "notNull": true
+          },
+          {
+            "fieldPath": "openingStart",
+            "columnName": "openingStart",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "openingEnd",
+            "columnName": "openingEnd",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endingStart",
+            "columnName": "endingStart",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "endingEnd",
+            "columnName": "endingEnd",
+            "affinity": "INTEGER"
           }
         ],
         "primaryKey": {
@@ -162,7 +182,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5739ed6a6be3c15ed18abfbbdfa1fdc3')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '1ae7bdc9f2d5837369be9978e13cc5bc')"
     ]
   }
 }

@@ -19,6 +19,10 @@ data class DownloadEpisodeLocal(
     val filePath: String?,
     val createdAt: Long,
     val previewUrl: String,
+    val openingStart: Long? = null,
+    val openingEnd: Long? = null,
+    val endingStart: Long? = null,
+    val endingEnd: Long? = null,
 )
 
 @Entity(

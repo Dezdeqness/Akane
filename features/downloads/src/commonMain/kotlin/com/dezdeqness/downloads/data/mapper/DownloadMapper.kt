@@ -6,6 +6,7 @@ import com.dezdeqness.downloads.data.db.DownloadWithProgress
 import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.domain.model.DownloadEntity
 import com.dezdeqness.downloads.domain.model.DownloadStatus
+import com.dezdeqness.downloads.domain.model.DownloadTiming
 
 class DownloadMapper(
     private val fileManager: DownloadFileManager,
@@ -31,6 +32,8 @@ class DownloadMapper(
             createdAt = episode.createdAt,
             previewUrl = episode.previewUrl,
             hiddenFromHistory = progress?.hiddenFromHistory ?: false,
+            opening = toDownloadTiming(episode.openingStart, episode.openingEnd),
+            ending = toDownloadTiming(episode.endingStart, episode.endingEnd),
         )
     }
 
@@ -46,6 +49,10 @@ class DownloadMapper(
         filePath = entity.filePath,
         createdAt = entity.createdAt,
         previewUrl = entity.previewUrl,
+        openingStart = entity.opening?.start,
+        openingEnd = entity.opening?.end,
+        endingStart = entity.ending?.start,
+        endingEnd = entity.ending?.end,
     )
 
     fun toProgressLocal(episodeDownloadId: Long, entity: DownloadEntity) = DownloadProgressLocal(
@@ -55,4 +62,10 @@ class DownloadMapper(
         totalSegments = entity.totalSegments,
         downloadedSegments = entity.downloadedSegments,
     )
+
+    private fun toDownloadTiming(startTime: Long?, endTime: Long?): DownloadTiming? {
+        val start = startTime ?: return null
+        val end = endTime ?: return null
+        return DownloadTiming(start = start, end = end)
+    }
 }

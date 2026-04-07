@@ -7,6 +7,13 @@ data class EpisodesUiModel(
     val ordinal: Long,
     val episodeUrls: LinkedHashMap<String, String> = linkedMapOf(),
     val downloadStatus: DownloadStatusUi? = null,
+    val opening: EpisodeTimingUiModel? = null,
+    val ending: EpisodeTimingUiModel? = null,
+)
+
+data class EpisodeTimingUiModel(
+    val start: Long,
+    val end: Long,
 )
 
 enum class DownloadStatusUi {
