@@ -1,6 +1,7 @@
 package com.dezdeqness.videoplayer.core.player
 
 import androidx.compose.runtime.Stable
+import com.dezdeqness.videoplayer.EpisodeEndOverlayUiState
 import com.dezdeqness.videoplayer.core.player.api.PlayerContext
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
@@ -31,6 +32,10 @@ class VideoPlayerManager(
 
     private val _controlsOverlayState = MutableStateFlow(ControlsOverlayState.UnlockedVisible)
     val controlsOverlayState: StateFlow<ControlsOverlayState> = _controlsOverlayState.asStateFlow()
+
+    private val _episodeEndOverlayState =
+        MutableStateFlow<EpisodeEndOverlayUiState>(EpisodeEndOverlayUiState.Hidden)
+    internal val episodeEndOverlayState: StateFlow<EpisodeEndOverlayUiState> = _episodeEndOverlayState.asStateFlow()
 
     override val controlsVisible: StateFlow<Boolean> = controlsOverlayState
         .map { it.controlsVisible }
@@ -75,7 +80,8 @@ class VideoPlayerManager(
                 .collect { key ->
                     if (key.playlist.isEmpty()) return@collect
 
-                    val urls = key.playlist.map { it.source.resolveUrl(key.quality) }
+                    val current = key.playlist.getOrNull(key.index) ?: return@collect
+                    val currentUrl = current.source.resolveUrl(key.quality)
 
                     val previous = previousKey
                     val qualityOnlySwitch = previous?.let {
@@ -88,8 +94,8 @@ class VideoPlayerManager(
                     previousKey = key
 
                     player.setMediaItems(
-                        mediaItems = urls,
-                        startIndex = key.index.coerceIn(0, urls.lastIndex),
+                        mediaItems = listOf(currentUrl),
+                        startIndex = 0,
                         startPositionMs = startPositionMs,
                     )
                 }
@@ -111,6 +117,7 @@ class VideoPlayerManager(
     ) {
         _currentIndex.value = startIndex.coerceAtLeast(0)
         _playlist.value = items
+        dismissEpisodeEndOverlay()
     }
 
     override fun selectItem(id: String) {
@@ -176,6 +183,26 @@ class VideoPlayerManager(
         _autoHidePauseCount.update { (it - 1).coerceAtLeast(0) }
     }
 
+    fun onEndOverlayAutoNext(nextIndex: Int) {
+        if (nextIndex <= _playlist.value.lastIndex) {
+            selectItemByIndex(nextIndex)
+            seekTo(0)
+            play()
+        }
+        dismissEpisodeEndOverlay()
+    }
+
+    fun onEndOverlayRetry() {
+        selectItemByIndex(_currentIndex.value)
+        seekTo(0)
+        play()
+        dismissEpisodeEndOverlay()
+    }
+
+    fun dismissEpisodeEndOverlay() {
+        _episodeEndOverlayState.value = EpisodeEndOverlayUiState.Hidden
+    }
+
     fun release() {
         _registry.allFeatures().forEach { it.dispose() }
         player.release()
@@ -184,13 +211,30 @@ class VideoPlayerManager(
     private fun reduce(event: PlayerEvent) {
         _playerState.update { prev ->
             when (event) {
-                is PlayerEvent.IsPlaying -> prev.copy(isPlaying = event.value)
+                is PlayerEvent.IsPlaying -> {
+                    if (event.value) dismissEpisodeEndOverlay()
+                    prev.copy(isPlaying = event.value)
+                }
                 is PlayerEvent.IsBuffering -> prev.copy(isBuffering = event.value)
                 is PlayerEvent.DurationChanged -> prev.copy(duration = event.durationMs.coerceAtLeast(0))
                 is PlayerEvent.PositionChanged -> prev.copy(position = event.positionMs.coerceAtLeast(0))
                 is PlayerEvent.BufferedChanged -> prev.copy(buffered = event.bufferedMs.coerceAtLeast(0))
-                is PlayerEvent.PlaybackEnded -> prev.copy(isPlaying = false)
-                is PlayerEvent.Error -> prev.copy(error = event.message)
+                is PlayerEvent.PlaybackEnded -> {
+                    val nextIndex = _currentIndex.value + 1
+                    _episodeEndOverlayState.value = if (nextIndex <= _playlist.value.lastIndex) {
+                        EpisodeEndOverlayUiState.AutoNext(
+                            nextIndex = nextIndex,
+                            previewUrl = _playlist.value.getOrNull(_currentIndex.value)?.previewUrl.orEmpty(),
+                        )
+                    } else {
+                        EpisodeEndOverlayUiState.Retry
+                    }
+                    prev.copy(isPlaying = false)
+                }
+                is PlayerEvent.Error -> {
+                    dismissEpisodeEndOverlay()
+                    prev.copy(error = event.message)
+                }
             }
         }
     }

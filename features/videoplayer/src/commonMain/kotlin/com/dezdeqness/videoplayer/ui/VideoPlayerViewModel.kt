@@ -7,6 +7,7 @@ import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
@@ -103,6 +104,7 @@ class VideoPlayerViewModel(
                     id = item.id.toString(),
                     title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
                     source = MediaSource.FilePath(item.filePath!!),
+                    previewUrl = item.previewUrl,
                     opening = item.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
                     ending = item.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
                 )
@@ -132,6 +134,7 @@ private fun List<EpisodeUiItem>.toMediaItems(): List<MediaItem> = map { episode 
                 )
             },
         ),
+        previewUrl = episode.previewUrl,
         opening = episode.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
         ending = episode.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
     )

@@ -2,7 +2,7 @@ package com.dezdeqness.videoplayer.ui
 
 import com.dezdeqness.details.domain.model.EpisodeEntity
 import com.dezdeqness.details.domain.model.TimingEntity
-import com.dezdeqness.network.models.core.Timing
+import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import com.dezdeqness.videoplayer.ui.model.TimingUiItem
 
@@ -11,6 +11,7 @@ class VideoPlayerUiMapper {
     fun map(item: EpisodeEntity) = EpisodeUiItem(
         id = item.id,
         name = item.name,
+        previewUrl = item.previewUrl.toAbsoluteImageUrl(),
         ordinal = item.ordinal,
         episodeUrls = item.episodeUrls,
         nameEnglish = item.nameEnglish,
@@ -29,4 +30,9 @@ class VideoPlayerUiMapper {
         }
     }
 
+}
+
+private fun String.toAbsoluteImageUrl(): String {
+    if (isBlank()) return ""
+    return if (startsWith("http://") || startsWith("https://")) this else BaseUrl.BASE_URL_IMAGES + this
 }

@@ -7,6 +7,7 @@ import com.dezdeqness.details.domain.model.VideoQuality
 data class EpisodeUiItem(
     val id: String,
     val name: String,
+    val previewUrl: String,
     val ordinal: Long,
     val episodeUrls: LinkedHashMap<VideoQuality, String>,
     val nameEnglish: String?,

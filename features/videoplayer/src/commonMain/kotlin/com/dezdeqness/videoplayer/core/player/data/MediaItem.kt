@@ -4,6 +4,7 @@ data class MediaItem(
     val id: String,
     val title: String = "",
     val source: MediaSource,
+    val previewUrl: String = "",
     val opening: SkipRange? = null,
     val ending: SkipRange? = null,
 )
