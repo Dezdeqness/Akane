@@ -1,7 +1,6 @@
 package com.dezdeqness.videoplayer.core.player
 
 import androidx.compose.runtime.Stable
-import com.dezdeqness.videoplayer.EpisodeEndOverlayUiState
 import com.dezdeqness.videoplayer.core.player.api.PlayerContext
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
@@ -188,6 +187,7 @@ class VideoPlayerManager(
             selectItemByIndex(nextIndex)
             seekTo(0)
             play()
+            return
         }
         dismissEpisodeEndOverlay()
     }
@@ -196,7 +196,6 @@ class VideoPlayerManager(
         selectItemByIndex(_currentIndex.value)
         seekTo(0)
         play()
-        dismissEpisodeEndOverlay()
     }
 
     fun dismissEpisodeEndOverlay() {
@@ -224,10 +223,12 @@ class VideoPlayerManager(
                     _episodeEndOverlayState.value = if (nextIndex <= _playlist.value.lastIndex) {
                         EpisodeEndOverlayUiState.AutoNext(
                             nextIndex = nextIndex,
-                            previewUrl = _playlist.value.getOrNull(_currentIndex.value)?.previewUrl.orEmpty(),
+                            previewUrl = _playlist.value.getOrNull(nextIndex)?.previewUrl.orEmpty(),
                         )
                     } else {
-                        EpisodeEndOverlayUiState.Retry
+                        EpisodeEndOverlayUiState.Retry(
+                            previewUrl = _playlist.value.getOrNull(_currentIndex.value)?.previewUrl.orEmpty(),
+                        )
                     }
                     prev.copy(isPlaying = false)
                 }
@@ -244,4 +245,17 @@ class VideoPlayerManager(
         val index: Int,
         val quality: MediaQuality,
     )
+}
+
+sealed interface EpisodeEndOverlayUiState {
+    data object Hidden : EpisodeEndOverlayUiState
+
+    data class AutoNext(
+        val nextIndex: Int,
+        val previewUrl: String,
+    ) : EpisodeEndOverlayUiState
+
+    data class Retry(
+        val previewUrl: String,
+    ) : EpisodeEndOverlayUiState
 }

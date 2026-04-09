@@ -79,6 +79,7 @@ fun VideoPlayerScreen(
 
             else -> {
                 val currentItem by engine.currentItem.collectAsStateOnLifecycle()
+                val endOverlayState by engine.episodeEndOverlayState.collectAsStateOnLifecycle()
 
                 VideoPlayerLayout(
                     engine = engine,
@@ -118,7 +119,18 @@ fun VideoPlayerScreen(
                         )
                     },
                 )
+
+                EpisodeEndOverlay(
+                    state = endOverlayState,
+                    onAutoNext = engine::onEndOverlayAutoNext,
+                    onRetry = {
+                        engine.onEndOverlayRetry()
+                    },
+                    onBack = onBackButtonClicked,
+                    modifier = Modifier.fillMaxSize(),
+                )
             }
         }
+
     }
 }

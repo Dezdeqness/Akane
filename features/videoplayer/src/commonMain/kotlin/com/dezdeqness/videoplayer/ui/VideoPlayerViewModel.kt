@@ -7,7 +7,6 @@ import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
-import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
