@@ -28,16 +28,18 @@ compose.desktop {
         mainClass = "com.dezdeqness.akane.Akane"
 
         nativeDistributions {
-            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
-            packageName = "com.dezdeqness.akane"
-            packageVersion = "1.0.0"
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
+            packageName = "Akane"
+            packageVersion = "1.1.0"
             includeAllModules = true
 
             windows {
-                menuGroup = "com.dezdeqness.akane"
+                menuGroup = "Akane"
                 shortcut = true
                 dirChooser = true
                 perUserInstall = true
+
+                iconFile.set(project.file("src/desktopMain/resources/icon.ico"))
             }
             macOS {
                 bundleID = "com.dezdeqness.akane"
