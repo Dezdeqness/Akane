@@ -44,6 +44,8 @@ compose.desktop {
             macOS {
                 bundleID = "com.dezdeqness.akane"
                 dockName = "Akane"
+
+                iconFile.set(project.file("src/desktopMain/resources/icon.icns"))
             }
         }
     }
