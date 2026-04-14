@@ -1,5 +1,6 @@
 package com.dezdeqness.shared.di
 
+import com.dezdeqness.analytics.di.analyticsModule
 import com.dezdeqness.calendar.di.calendarModule
 import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.downloads.di.downloadsModule
@@ -11,6 +12,7 @@ import com.dezdeqness.personal.di.personalModule
 import com.dezdeqness.shared.AppViewModel
 import com.dezdeqness.videoplayer.di.videoPlayerModule
 import org.koin.core.context.startKoin
+import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -20,22 +22,23 @@ private val appModule = module {
 
 object KoinModules {
 
-    val modules = listOf(
-        networkModule,
-        coreModule,
-        feedModule,
-        detailsModule,
-        videoPlayerModule,
-        personalModule,
-        homeModule,
-        calendarModule,
-        downloadsModule,
-        appModule,
-    )
+    fun modules(): List<Module> = buildList {
+        add(analyticsModule())
+        add(networkModule)
+        add(coreModule)
+        add(feedModule)
+        add(detailsModule)
+        add(videoPlayerModule)
+        add(personalModule)
+        add(homeModule)
+        add(calendarModule)
+        add(downloadsModule)
+        add(appModule)
+    }
 
     fun initKoinModules() {
         startKoin {
-            modules(modules)
+            modules(KoinModules.modules())
         }
     }
 

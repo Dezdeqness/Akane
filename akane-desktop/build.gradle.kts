@@ -17,8 +17,10 @@ kotlin {
 
         desktopMain.dependencies {
             implementation(projects.akaneShared)
+            implementation(projects.common.analytics)
 
             implementation(compose.desktop.currentOs)
+            implementation(libs.koin.core)
         }
     }
 }

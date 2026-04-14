@@ -23,6 +23,7 @@ kotlin {
         commonMain.dependencies {
             implementation(projects.common.designsystem)
             implementation(projects.common.network)
+            implementation(projects.common.analytics)
 
             implementation(projects.features.feed)
             implementation(projects.features.details)

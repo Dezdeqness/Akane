@@ -11,7 +11,7 @@ class AkaneApplication : Application() {
         super.onCreate()
         startKoin {
             androidContext(this@AkaneApplication)
-            modules(KoinModules.modules)
+            modules(KoinModules.modules())
         }
     }
 }
