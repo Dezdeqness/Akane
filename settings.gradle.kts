@@ -66,6 +66,7 @@ include(":akane-shared")
 include(":common:network")
 include(":common:designsystem")
 include(":common:foundation")
+include(":common:analytics")
 
 include(":features:feed")
 include(":features:details")
