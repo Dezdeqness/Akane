@@ -8,7 +8,10 @@ import com.dezdeqness.analytics.DefaultAkaneAnalytics
 import org.koin.dsl.module
 
 fun analyticsModule() = module {
-    includes(platformAnalyticsModule())
+    includes(
+        platformAnalyticsModule(),
+        akaneErrorReporterModule(),
+    )
 
     single<Analytics>(createdAtStart = true) {
         val config = get<AptabaseConfig>()
