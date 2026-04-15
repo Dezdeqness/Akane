@@ -8,6 +8,12 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+val appProperties = Properties().apply {
+    load(rootProject.file("app.properties").inputStream())
+}
+val applicationVersion = appProperties.getProperty("app.version") ?: "1.0.0"
+val applicationCode = appProperties.getProperty("app.versionCode").toInt()
+
 android {
     namespace = "com.dezdeqness.akane"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -15,8 +21,8 @@ android {
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 3
-        versionName = "1.2.0"
+        versionCode = applicationCode
+        versionName = applicationVersion
     }
     packaging {
         resources {

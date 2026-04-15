@@ -11,10 +11,14 @@ val props = Properties().apply {
     val file = rootProject.file("local.properties")
     load(file.inputStream())
 }
+val appProperties = Properties().apply {
+    load(rootProject.file("app.properties").inputStream())
+}
 
 val aptabaseAppKey = props["aptabase.app.key"] as? String
     ?: System.getenv("APTABASE_APP_KEY")
     ?: ""
+val applicationVersion = appProperties.getProperty("app.version")
 
 android {
     namespace = "com.dezdeqness.analytics"
@@ -29,6 +33,12 @@ buildkonfig {
             type = STRING,
             name = "APTABASE_APP_KEY",
             value = aptabaseAppKey,
+            const = true,
+        )
+        buildConfigField(
+            type = STRING,
+            name = "APP_VERSION",
+            value = applicationVersion,
             const = true,
         )
     }

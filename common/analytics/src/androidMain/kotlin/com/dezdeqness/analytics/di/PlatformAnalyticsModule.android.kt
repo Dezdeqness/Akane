@@ -12,10 +12,7 @@ actual fun platformAnalyticsModule(): Module = module {
 
         AptabaseConfig(
             appKey = AptabaseSecrets.APTABASE_APP_KEY,
-            appVersion = context.packageManager
-                .getPackageInfo(context.packageName, 0)
-                .versionName
-                ?: "1.2.0",
+            appVersion = AptabaseSecrets.APP_VERSION,
             isDebug = (context.applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE) != 0,
         )
     }
