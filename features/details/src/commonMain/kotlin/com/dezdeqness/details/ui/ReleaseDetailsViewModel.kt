@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.FranchiseEntity
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
@@ -43,6 +44,7 @@ class ReleaseDetailsViewModel(
     private val cancelAllDownloadsUseCase: CancelAllDownloadsUseCase,
     private val releaseDetailsUiMapper: ReleaseDetailsUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val analytics: AkaneAnalytics,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -115,16 +117,24 @@ class ReleaseDetailsViewModel(
 
     fun onFavouriteClicked(id: Long) {
         viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            val item = releaseDetailsStateFlow.value.details ?: return@launch
             if (personalRepository.containsById(id = id)) {
                 personalRepository.deleteById(id = id)
+                analytics.trackUnfavouriteAnime(
+                    animeId = id,
+                    title = item.header.title,
+                )
             } else {
-                val item = releaseDetailsStateFlow.value.details ?: return@launch
                 val personalEntity = PersonalEntity(
                     id = item.id,
                     name = item.header.title,
                     poster = item.header.imageUrl,
                 )
                 personalRepository.add(personalEntity)
+                analytics.trackFavouriteAnime(
+                    animeId = item.id,
+                    title = item.header.title,
+                )
             }
         }
     }

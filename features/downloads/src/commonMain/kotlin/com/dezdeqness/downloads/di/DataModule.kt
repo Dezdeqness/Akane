@@ -48,6 +48,7 @@ internal val dataModule = module {
             fileManager = get(),
             coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
             coroutineDispatcherProvider = get(),
+            analytics = get(),
             remuxEnabled = get(named("remuxEnabled")),
         )
     }

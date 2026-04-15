@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.StateFlow
 fun RootNavigationHost(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    rootControllerNavigateToDetails: (Long) -> Unit,
+    rootControllerNavigateToDetails: (Long, String) -> Unit,
     activeDownloadsCountFlow: StateFlow<Int>,
     onNavigateToFeed: () -> Unit,
     onNavigateToReleaseEpisodes: (Long) -> Unit,

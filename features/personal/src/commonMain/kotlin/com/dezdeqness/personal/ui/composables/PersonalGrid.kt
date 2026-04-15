@@ -17,7 +17,7 @@ import com.dezdeqness.personal.ui.model.PersonalUiModel
 fun PersonalGrid(
     modifier: Modifier = Modifier,
     items: List<PersonalUiModel>,
-    onItemClicked: (Long) -> Unit,
+    onItemClicked: (PersonalUiModel) -> Unit,
 ) {
     LazyVerticalGrid(
         columns = GridCells.Fixed(2),
@@ -34,7 +34,7 @@ fun PersonalGrid(
                     .fillMaxWidth()
                     .animateItem()
                     .clip(RoundedCornerShape(8.dp))
-                    .clickable { onItemClicked(item.id) },
+                    .clickable { onItemClicked(item) },
                 item = item,
             )
         }

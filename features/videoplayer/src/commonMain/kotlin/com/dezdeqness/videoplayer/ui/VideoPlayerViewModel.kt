@@ -3,6 +3,7 @@ package com.dezdeqness.videoplayer.ui
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
@@ -21,6 +22,7 @@ import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import io.ktor.http.decodeURLPart
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -37,6 +39,7 @@ class VideoPlayerViewModel(
     private val uiMapper: VideoPlayerUiMapper,
     savedStateHandle: SavedStateHandle,
     private val dispatchers: CoroutineDispatcherProvider,
+    private val analytics: AkaneAnalytics,
 ) : ViewModel() {
 
     val manager = VideoPlayerManager(player, viewModelScope)
@@ -60,6 +63,27 @@ class VideoPlayerViewModel(
 
     init {
         manager.installPlatformFeatures()
+
+        viewModelScope.launch {
+            manager.currentItem
+                .distinctUntilChangedBy { it?.id }
+                .collect { item ->
+                    item ?: return@collect
+                    analytics.trackPlayerStarted(
+                        episodeId = item.id,
+                        episodeTitle = item.title,
+                    )
+                }
+        }
+
+        viewModelScope.launch {
+            manager.completedItems.collect { item ->
+                analytics.trackEpisodeFinished(
+                    episodeId = item.id,
+                    episodeTitle = item.title,
+                )
+            }
+        }
     }
 
     override fun onCleared() {
@@ -100,7 +124,7 @@ class VideoPlayerViewModel(
 
             val items = downloads.filter { it.filePath != null }.map { item ->
                 MediaItem(
-                    id = item.id.toString(),
+                    id = item.episodeId,
                     title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
                     source = MediaSource.FilePath(item.filePath!!),
                     previewUrl = item.previewUrl,

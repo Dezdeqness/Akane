@@ -42,7 +42,13 @@ fun RootScreen(
         RootNavigationHost(
             modifier = contentModifier,
             navController = navController,
-            rootControllerNavigateToDetails = rootController::navigateToDetailsScreen,
+            rootControllerNavigateToDetails = { animeId, title ->
+                analytics.trackDetailsOpened(
+                    animeId = animeId,
+                    title = title,
+                )
+                rootController.navigateToDetailsScreen(animeId)
+            },
             activeDownloadsCountFlow = appViewModel.activeDownloadsCount,
             onNavigateToFeed = {
                 navigateToRootTab(

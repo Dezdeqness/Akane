@@ -26,7 +26,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun FeedPage(
     modifier: Modifier = Modifier,
     viewModel: FeedViewModel = koinViewModel(),
-    onReleaseClicked: (Long) -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     val state by viewModel.feedStateFlow.collectAsStateOnLifecycle()
     val isFeedFilterShownState by viewModel.isFeedFilterShownState.collectAsStateOnLifecycle()

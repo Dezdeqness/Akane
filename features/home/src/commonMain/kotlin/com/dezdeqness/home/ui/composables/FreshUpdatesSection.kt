@@ -44,7 +44,7 @@ import kotlinx.coroutines.isActive
 fun FreshUpdatesSection(
     modifier: Modifier = Modifier,
     items: List<HomeUiModel>,
-    onItemClicked: (Long) -> Unit,
+    onItemClicked: (HomeUiModel) -> Unit,
 ) {
     if (items.isEmpty()) return
 
@@ -77,7 +77,7 @@ fun FreshUpdatesSection(
                 item = item,
                 shape = shape,
                 imageHeight = imageHeight,
-                onClick = { onItemClicked(item.id) },
+                onClick = { onItemClicked(item) },
             )
         }
 

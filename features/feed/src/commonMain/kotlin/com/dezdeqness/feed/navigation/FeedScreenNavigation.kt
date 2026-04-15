@@ -6,7 +6,7 @@ import com.dezdeqness.feed.ui.FeedPage
 
 const val FEED_ROUTE = "feed_route"
 
-fun NavGraphBuilder.feedScreen(onReleaseClicked: (Long) -> Unit) {
+fun NavGraphBuilder.feedScreen(onReleaseClicked: (Long, String) -> Unit) {
     composable(FEED_ROUTE) {
         FeedPage(onReleaseClicked = onReleaseClicked)
     }

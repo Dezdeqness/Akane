@@ -21,6 +21,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(compose.components.resources)
+            implementation(project(":common:analytics"))
 
             implementation(project(":features:details"))
             implementation(project(":features:downloads"))

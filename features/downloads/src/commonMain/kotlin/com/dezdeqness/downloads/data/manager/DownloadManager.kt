@@ -1,6 +1,7 @@
 package com.dezdeqness.downloads.data.manager
 
 import co.touchlab.kermit.Logger
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.downloads.data.hls.HlsParser
 import com.dezdeqness.downloads.data.network.HlsDownloadService
@@ -35,6 +36,7 @@ class DownloadManager(
     private val fileManager: DownloadFileManager,
     private val coroutineScope: CoroutineScope,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val analytics: AkaneAnalytics,
     private val remuxEnabled: Boolean = false,
 ) {
     private val jobsMutex = Mutex()
@@ -169,6 +171,13 @@ class DownloadManager(
             throw e
         } catch (e: Exception) {
             Logger.e(TAG, e) { "Download failed id=$downloadId: ${e.message}" }
+            downloadEpisodeRepository.getById(downloadId)?.let { download ->
+                analytics.trackEpisodeDownloadFailed(
+                    episodeId = download.episodeId,
+                    animeId = download.releaseId,
+                    animeTitle = download.releaseTitle,
+                )
+            }
             syncRepository.updateStatus(downloadId, DownloadStatus.FAILED)
         } finally {
             jobsMutex.withLock {
@@ -448,6 +457,11 @@ class DownloadManager(
             val remuxResult = fileManager.remux(outputPath)
             syncRepository.updateFilePath(downloadId, fileManager.toRelativePath(remuxResult.filePath))
             syncRepository.markCompleted(downloadId)
+            analytics.trackEpisodeDownloadSucceeded(
+                episodeId = download.episodeId,
+                animeId = download.releaseId,
+                animeTitle = download.releaseTitle,
+            )
 
             if (remuxResult.success) {
                 Logger.d(TAG) { "[$downloadId] Remux successful: ${remuxResult.filePath}" }
@@ -471,6 +485,11 @@ class DownloadManager(
 
             syncRepository.updateFilePath(downloadId, fileManager.toRelativePath(playlistPath.toString()))
             syncRepository.markCompleted(downloadId)
+            analytics.trackEpisodeDownloadSucceeded(
+                episodeId = download.episodeId,
+                animeId = download.releaseId,
+                animeTitle = download.releaseTitle,
+            )
         }
     }
 

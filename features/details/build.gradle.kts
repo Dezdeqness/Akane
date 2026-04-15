@@ -15,6 +15,7 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
+            implementation(project(":common:analytics"))
             implementation(project(":features:personal"))
             implementation(project(":features:downloads"))
         }

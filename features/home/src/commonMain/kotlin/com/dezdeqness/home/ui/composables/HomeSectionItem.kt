@@ -19,7 +19,7 @@ import com.dezdeqness.home.ui.model.HomeUiModel
 fun HomeSectionItem(
     modifier: Modifier = Modifier,
     item: HomeUiModel,
-    onItemClicked: (Long) -> Unit,
+    onItemClicked: () -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -27,7 +27,7 @@ fun HomeSectionItem(
             .clip(RoundedCornerShape(12.dp))
             .clickable(
                 onClick = {
-                    onItemClicked.invoke(item.id)
+                    onItemClicked.invoke()
                 },
             ),
         verticalArrangement = Arrangement.spacedBy(4.dp),

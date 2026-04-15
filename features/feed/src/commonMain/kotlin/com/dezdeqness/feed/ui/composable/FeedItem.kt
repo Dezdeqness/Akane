@@ -16,7 +16,7 @@ import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 fun FeedItem(
     modifier: Modifier = Modifier,
     item: FeedAnimeUiModel,
-    onReleaseClicked: (Long) -> Unit,
+    onReleaseClicked: () -> Unit,
 ) {
     Row(
         modifier = modifier
@@ -24,7 +24,7 @@ fun FeedItem(
             .clip(RoundedCornerShape(6.dp))
             .clickable(
                 onClick = {
-                    onReleaseClicked.invoke(item.id)
+                    onReleaseClicked.invoke()
                 }
             )
     ) {

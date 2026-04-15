@@ -13,6 +13,7 @@ val personalModule = module {
             personalRepository = get(),
             personalUiMapper = get(),
             coroutineDispatcherProvider = get(),
+            analytics = get(),
         )
     }
 }

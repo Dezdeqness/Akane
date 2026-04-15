@@ -13,7 +13,7 @@ fun HomeSection(
     modifier: Modifier = Modifier,
     title: String,
     items: List<HomeUiModel>,
-    onItemClicked: (Long) -> Unit,
+    onItemClicked: (HomeUiModel) -> Unit,
 ) {
     AppSections(
         modifier = modifier,
@@ -27,7 +27,9 @@ fun HomeSection(
         itemContent = { item ->
             HomeSectionItem(
                 item = item,
-                onItemClicked = onItemClicked,
+                onItemClicked = {
+                    onItemClicked.invoke(item)
+                }
             )
         }
     )

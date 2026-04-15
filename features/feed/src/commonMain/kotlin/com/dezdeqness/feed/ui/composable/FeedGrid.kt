@@ -27,7 +27,7 @@ fun FeedGrid(
     hasNextPage: Boolean,
     isPageLoading: Boolean,
     onLoadMore: () -> Unit,
-    onReleaseClicked: (Long) -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     val gridState = rememberLazyGridState()
 
@@ -64,8 +64,10 @@ fun FeedGrid(
                 modifier = Modifier
                     .animateItem()
                     .padding(padding),
-                onReleaseClicked = { id ->
-                    onReleaseClicked.invoke(item.id)
+                onReleaseClicked = {
+                    val id = item.id
+                    val title = item.title
+                    onReleaseClicked.invoke(id, title)
                 }
             )
         }

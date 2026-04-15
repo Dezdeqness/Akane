@@ -9,8 +9,11 @@ import com.dezdeqness.videoplayer.core.player.data.resolveUrl
 import com.dezdeqness.videoplayer.core.player.feature.FeatureRegistry
 import com.dezdeqness.videoplayer.core.player.feature.PlayerFeature
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
@@ -35,6 +38,8 @@ class VideoPlayerManager(
     private val _episodeEndOverlayState =
         MutableStateFlow<EpisodeEndOverlayUiState>(EpisodeEndOverlayUiState.Hidden)
     internal val episodeEndOverlayState: StateFlow<EpisodeEndOverlayUiState> = _episodeEndOverlayState.asStateFlow()
+    private val _completedItems = MutableSharedFlow<MediaItem>(extraBufferCapacity = 1)
+    val completedItems: SharedFlow<MediaItem> = _completedItems.asSharedFlow()
 
     override val controlsVisible: StateFlow<Boolean> = controlsOverlayState
         .map { it.controlsVisible }
@@ -219,6 +224,7 @@ class VideoPlayerManager(
                 is PlayerEvent.PositionChanged -> prev.copy(position = event.positionMs.coerceAtLeast(0))
                 is PlayerEvent.BufferedChanged -> prev.copy(buffered = event.bufferedMs.coerceAtLeast(0))
                 is PlayerEvent.PlaybackEnded -> {
+                    currentItem.value?.let(_completedItems::tryEmit)
                     val nextIndex = _currentIndex.value + 1
                     _episodeEndOverlayState.value = if (nextIndex <= _playlist.value.lastIndex) {
                         EpisodeEndOverlayUiState.AutoNext(

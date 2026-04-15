@@ -2,6 +2,7 @@ package com.dezdeqness.personal.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.personal.domain.repository.PersonalRepository
 import com.dezdeqness.personal.ui.mapper.PersonalUiMapper
@@ -16,6 +17,7 @@ class PersonalViewModel(
     private val personalRepository: PersonalRepository,
     private val personalUiMapper: PersonalUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val analytics: AkaneAnalytics,
 ) : ViewModel() {
 
     val personalStateFlow: StateFlow<PersonalState> =
@@ -33,7 +35,12 @@ class PersonalViewModel(
 
     fun onItemUnFavouriteClicked(id: Long) {
         viewModelScope.launch(coroutineDispatcherProvider.io()) {
+            val title = personalStateFlow.value.list.firstOrNull { it.id == id }?.name.orEmpty()
             personalRepository.deleteById(id)
+            analytics.trackUnfavouriteAnime(
+                animeId = id,
+                title = title,
+            )
         }
     }
 }
