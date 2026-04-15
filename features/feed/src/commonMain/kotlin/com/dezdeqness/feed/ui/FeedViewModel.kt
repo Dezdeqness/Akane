@@ -3,6 +3,7 @@ package com.dezdeqness.feed.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.feed.domain.model.CatalogFilter
 import com.dezdeqness.feed.domain.model.FeedEntity
@@ -24,6 +25,7 @@ class FeedViewModel(
     private val feedRepository: FeedRepository,
     private val feedUiMapper: FeedUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val analytics: AkaneAnalytics,
 ) : ViewModel() {
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
@@ -105,6 +107,7 @@ class FeedViewModel(
         val filter = currentInput.filterCatalogFilter.copy(search = query)
         val input = currentInput.copy(filterCatalogFilter = filter)
         loadEvents.tryEmit(LoadEvent.Refresh(input = input))
+        analytics.trackSearch(query)
     }
 
     fun onFilterClicked() {

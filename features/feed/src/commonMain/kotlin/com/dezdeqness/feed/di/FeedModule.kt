@@ -16,6 +16,7 @@ val feedModule = module {
             feedRepository = get(),
             feedUiMapper = get(),
             coroutineDispatcherProvider = get(),
+            analytics = get(),
         )
     }
     viewModel {

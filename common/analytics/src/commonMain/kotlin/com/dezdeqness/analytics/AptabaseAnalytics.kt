@@ -23,10 +23,12 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.datetime.Clock
 import kotlinx.serialization.json.Json
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 import kotlin.random.Random
 
+@OptIn(ExperimentalTime::class)
 class AptabaseAnalytics(
     private val config: AptabaseConfig,
     private val logger: Logger = Logger.withTag("AptabaseAnalytics"),

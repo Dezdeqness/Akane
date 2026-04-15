@@ -14,6 +14,7 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
+            implementation(project(":common:analytics"))
         }
 
         val desktopMain by getting

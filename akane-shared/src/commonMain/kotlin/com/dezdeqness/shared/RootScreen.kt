@@ -6,10 +6,12 @@ import androidx.compose.runtime.getValue
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.feed.navigation.FEED_ROUTE
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
 import com.dezdeqness.downloads.navigation.navigateToActiveDownloads
 import com.dezdeqness.downloads.navigation.navigateToReleaseEpisodes
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -18,6 +20,7 @@ fun RootScreen(
 ) {
     val navController = rememberNavController()
     val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
+    val analytics: AkaneAnalytics = koinInject()
 
     val appViewModel: AppViewModel = koinViewModel()
     val activeDownloadsCount by appViewModel.activeDownloadsCount.collectAsState()
@@ -26,6 +29,9 @@ fun RootScreen(
         currentDestination = currentDestination,
         activeDownloadsCount = activeDownloadsCount,
         onTabSelected = { route ->
+            if (currentDestination != route) {
+                analytics.trackBottomNavigation(route)
+            }
             navigateToRootTab(
                 currentRoute = currentDestination,
                 targetRoute = route,
