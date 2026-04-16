@@ -9,7 +9,10 @@ import java.io.File
 actual fun dataBaseModule() = module {
     single<DownloadDatabase> {
         val userHome = System.getProperty("user.home")
-        val dbFile = File(userHome, "downloads.db")
+        val dbDirectory = File(userHome, ".akane/db/downloads").apply {
+            mkdirs()
+        }
+        val dbFile = File(dbDirectory, "downloads.db")
 
         val builder = Room.databaseBuilder<DownloadDatabase>(
             name = dbFile.absolutePath

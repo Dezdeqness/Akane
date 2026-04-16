@@ -10,7 +10,10 @@ actual fun dataBaseModule() = module {
     single<PersonalDatabase> {
 
         val userHome = System.getProperty("user.home")
-        val dbFile = File(userHome, "personal.db")
+        val dbDirectory = File(userHome, ".akane/db/personal").apply {
+            mkdirs()
+        }
+        val dbFile = File(dbDirectory, "personal.db")
 
         val builder = Room.databaseBuilder<PersonalDatabase>(
             name = dbFile.absolutePath
