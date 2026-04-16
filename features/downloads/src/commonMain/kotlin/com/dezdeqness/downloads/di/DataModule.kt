@@ -37,6 +37,7 @@ internal val dataModule = module {
         DownloadFileManager(
             downloadDirectoryProvider = get(),
             videoRemuxer = get(),
+            errorReporter = get(),
         )
     }
     single {
@@ -49,6 +50,7 @@ internal val dataModule = module {
             coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
             coroutineDispatcherProvider = get(),
             analytics = get(),
+            errorReporter = get(),
             remuxEnabled = get(named("remuxEnabled")),
         )
     }

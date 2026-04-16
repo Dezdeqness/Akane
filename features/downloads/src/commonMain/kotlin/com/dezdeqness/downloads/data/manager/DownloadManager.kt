@@ -2,6 +2,7 @@ package com.dezdeqness.downloads.data.manager
 
 import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.downloads.data.hls.HlsParser
 import com.dezdeqness.downloads.data.network.HlsDownloadService
@@ -37,6 +38,7 @@ class DownloadManager(
     private val coroutineScope: CoroutineScope,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
+    private val errorReporter: AkaneErrorReporter,
     private val remuxEnabled: Boolean = false,
 ) {
     private val jobsMutex = Mutex()
@@ -114,6 +116,12 @@ class DownloadManager(
             enqueue(download.id)
         } catch (e: Exception) {
             Logger.e(TAG, e) { "[${download.id}] Recovery error: ${e.message}" }
+            errorReporter.captureException(
+                throwable = e,
+                message = "Recover remux failed",
+                tags = mapOf("feature" to "downloads"),
+                extras = download.errorExtras(),
+            )
             syncRepository.updateStatus(download.id, DownloadStatus.FAILED)
         }
     }
@@ -172,6 +180,12 @@ class DownloadManager(
         } catch (e: Exception) {
             Logger.e(TAG, e) { "Download failed id=$downloadId: ${e.message}" }
             downloadEpisodeRepository.getById(downloadId)?.let { download ->
+                errorReporter.captureException(
+                    throwable = e,
+                    message = "Download job failed",
+                    tags = mapOf("feature" to "downloads"),
+                    extras = download.errorExtras(),
+                )
                 analytics.trackEpisodeDownloadFailed(
                     episodeId = download.episodeId,
                     animeId = download.releaseId,
@@ -230,6 +244,10 @@ class DownloadManager(
         val download = downloadEpisodeRepository.getById(downloadId)
         if (download == null) {
             Logger.e(TAG) { "Download not found in DB id=$downloadId" }
+            errorReporter.captureMessage(
+                message = "Download not found in database",
+                tags = mapOf("feature" to "downloads"),
+            )
         }
         return download
     }
@@ -640,3 +658,13 @@ class DownloadManager(
         private const val BUFFER_SIZE = 8192
     }
 }
+
+private fun DownloadEntity.errorExtras(): Map<String, String> = mapOf(
+    "download_id" to id.toString(),
+    "release_id" to releaseId.toString(),
+    "release_title" to releaseTitle,
+    "episode_id" to episodeId,
+    "episode_name" to episodeName,
+    "quality" to quality,
+    "status" to status.name,
+)

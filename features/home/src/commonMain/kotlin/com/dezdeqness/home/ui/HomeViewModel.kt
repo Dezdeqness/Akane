@@ -2,6 +2,7 @@ package com.dezdeqness.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.calendar.domain.model.CalendarScheduleEntity
 import com.dezdeqness.calendar.domain.repository.CalendarRepository
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
@@ -26,6 +27,7 @@ class HomeViewModel(
     private val calendarRepository: CalendarRepository,
     private val homeUiMapper: HomeUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
+    private val errorReporter: AkaneErrorReporter,
 ) : ViewModel() {
 
     private val reloadTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -50,7 +52,14 @@ class HomeViewModel(
                         )
                     }
 
-                    if (listOf(ongoing, released, best, calendar).any { it.isFailure }) {
+                    val results = listOf(ongoing, released, best, calendar)
+
+                    if (results.any { it.isFailure }) {
+                        results
+                            .first { it.isFailure }
+                            .onFailure { throwable ->
+                                captureError(throwable)
+                            }
                         emit(HomeState(status = StateStatus.Error))
                         return@flow
                     }
@@ -66,7 +75,10 @@ class HomeViewModel(
                     )
                 }.flowOn(coroutineDispatcherProvider.io())
             }
-            .catch { emit(HomeState(status = StateStatus.Error)) }
+            .catch { throwable ->
+                captureError(throwable)
+                emit(HomeState(status = StateStatus.Error))
+            }
             .stateIn(
                 scope = viewModelScope,
                 started = SharingStarted.Lazily,
@@ -75,6 +87,14 @@ class HomeViewModel(
 
     fun onRetryClicked() {
         reloadTrigger.tryEmit(Unit)
+    }
+
+    private fun captureError(throwable: Throwable) {
+        errorReporter.captureException(
+            throwable = throwable,
+            message = "Home load failed",
+            tags = mapOf("feature" to "home"),
+        )
     }
 }
 

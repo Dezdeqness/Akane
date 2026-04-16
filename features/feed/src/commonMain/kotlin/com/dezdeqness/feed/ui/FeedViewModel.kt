@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.feed.domain.model.CatalogFilter
 import com.dezdeqness.feed.domain.model.FeedEntity
@@ -26,6 +27,7 @@ class FeedViewModel(
     private val feedUiMapper: FeedUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
+    private val errorReporter: AkaneErrorReporter,
 ) : ViewModel() {
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
@@ -78,6 +80,15 @@ class FeedViewModel(
             }
 
             result.onFailure { error ->
+                errorReporter.captureException(
+                    throwable = error,
+                    message = "Feed load failed",
+                    tags = mapOf("feature" to "feed"),
+                    extras = mapOf(
+                        "page" to event.page.toString(),
+                        "search" to event.input.search.orEmpty(),
+                    ),
+                )
                 val newStatus = when (event) {
                     is LoadEvent.Initial -> Status.Error
                     else -> previous.status

@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneAnalytics
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
@@ -22,10 +23,12 @@ import com.dezdeqness.videoplayer.navigation.EPISODE_ID
 import com.dezdeqness.videoplayer.navigation.ID
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import io.ktor.http.decodeURLPart
-import kotlinx.coroutines.flow.distinctUntilChangedBy
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -40,6 +43,7 @@ class VideoPlayerViewModel(
     savedStateHandle: SavedStateHandle,
     private val dispatchers: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
+    private val errorReporter: AkaneErrorReporter,
 ) : ViewModel() {
 
     val manager = VideoPlayerManager(player, viewModelScope)
@@ -84,6 +88,17 @@ class VideoPlayerViewModel(
                 )
             }
         }
+
+        viewModelScope.launch {
+            manager.playerState
+                .map { it.error }
+                .distinctUntilChanged()
+                .collect { message ->
+                    if (!message.isNullOrBlank()) {
+                        capturePlayerError(message)
+                    }
+                }
+        }
     }
 
     override fun onCleared() {
@@ -100,6 +115,24 @@ class VideoPlayerViewModel(
                     ?.sortedBy { it.ordinal }
 
                 if (episodes == null) {
+                    result.exceptionOrNull()?.let { throwable ->
+                        if (throwable is CancellationException) throw throwable
+                        errorReporter.captureException(
+                            throwable = throwable,
+                            message = "Video player load failed",
+                            tags = mapOf(
+                                "feature" to "videoplayer",
+                                "layer" to "viewmodel",
+                                "operation" to "load_streaming_release",
+                            ),
+                            extras = mapOf(
+                                "release_id" to releaseId.toString(),
+                                "download_release_id" to downloadReleaseId.toString(),
+                                "initial_episode_id" to initialEpisodeId,
+                                "download_start_episode_id" to downloadStartEpisodeId,
+                            ),
+                        )
+                    }
                     ScreenState(isLoading = false, isError = true)
                 } else {
                     val items = episodes.toMediaItems()
@@ -116,32 +149,82 @@ class VideoPlayerViewModel(
     private fun loadDownloadedPlaylist(): StateFlow<ScreenState> {
         val state = MutableStateFlow(ScreenState())
         viewModelScope.launch {
-            val downloads = downloadEpisodeRepository.getCompletedByReleaseId(downloadReleaseId)
-            if (downloads.isEmpty()) {
-                state.value = ScreenState(isLoading = false, isError = true)
-                return@launch
-            }
+            try {
+                val downloads = downloadEpisodeRepository.getCompletedByReleaseId(downloadReleaseId)
+                if (downloads.isEmpty()) {
+                    errorReporter.captureMessage(
+                        message = "Downloaded playlist is empty",
+                        tags = mapOf(
+                            "feature" to "videoplayer",
+                            "layer" to "viewmodel",
+                            "operation" to "load_downloaded_playlist",
+                        ),
+                        extras = mapOf(
+                            "release_id" to downloadReleaseId.toString(),
+                            "start_episode_id" to downloadStartEpisodeId,
+                        ),
+                    )
+                    state.value = ScreenState(isLoading = false, isError = true)
+                    return@launch
+                }
 
-            val items = downloads.filter { it.filePath != null }.map { item ->
-                MediaItem(
-                    id = item.episodeId,
+                val items = downloads.filter { it.filePath != null }.map { item ->
+                    MediaItem(
+                        id = item.episodeId,
                     title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
-                    source = MediaSource.FilePath(item.filePath!!),
-                    previewUrl = item.previewUrl,
-                    opening = item.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
-                    ending = item.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
-                )
-            }
-            val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }
-                .coerceAtLeast(0)
+                        source = MediaSource.FilePath(item.filePath!!),
+                        previewUrl = item.previewUrl,
+                        opening = item.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
+                        ending = item.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
+                    )
+                }
+                val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }
+                    .coerceAtLeast(0)
 
-            manager.setPlaylist(items, startIndex)
-            state.value = ScreenState(
-                title = downloads.firstOrNull()?.releaseTitle.orEmpty(),
-                isLoading = false,
-            )
+                manager.setPlaylist(items, startIndex)
+                state.value = ScreenState(
+                    title = downloads.firstOrNull()?.releaseTitle.orEmpty(),
+                    isLoading = false,
+                )
+            } catch (throwable: Throwable) {
+                if (throwable is CancellationException) throw throwable
+                errorReporter.captureException(
+                    throwable = throwable,
+                    message = "Video player load failed",
+                    tags = mapOf(
+                        "feature" to "videoplayer",
+                        "layer" to "viewmodel",
+                        "operation" to "load_downloaded_playlist",
+                    ),
+                    extras = mapOf(
+                        "release_id" to releaseId.toString(),
+                        "download_release_id" to downloadReleaseId.toString(),
+                        "initial_episode_id" to initialEpisodeId,
+                        "download_start_episode_id" to downloadStartEpisodeId,
+                    ),
+                )
+                state.value = ScreenState(isLoading = false, isError = true)
+            }
         }
         return state
+    }
+
+    private fun capturePlayerError(message: String) {
+        errorReporter.captureMessage(
+            message = "Video player error: $message",
+            tags = mapOf(
+                "feature" to "videoplayer",
+                "layer" to "viewmodel",
+                "operation" to "playback",
+            ),
+            extras = mapOf(
+                "release_id" to releaseId.toString(),
+                "episode_id" to manager.currentItem.value?.id.orEmpty(),
+                "episode_title" to manager.currentItem.value?.title.orEmpty(),
+                "quality" to manager.selectedQuality.value.name,
+                "is_downloaded_playlist" to isDownloadedPlaylist.toString(),
+            ),
+        )
     }
 }
 

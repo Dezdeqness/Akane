@@ -13,6 +13,7 @@ val homeModule = module {
             calendarRepository = get(),
             homeUiMapper = get(),
             coroutineDispatcherProvider = get(),
+            errorReporter = get(),
         )
     }
 }

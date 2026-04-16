@@ -13,6 +13,7 @@ kotlin {
             implementation(libs.coil.compose)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
+            implementation(project(":common:analytics"))
             implementation(project(":features:feed"))
             implementation(project(":features:calendar"))
 

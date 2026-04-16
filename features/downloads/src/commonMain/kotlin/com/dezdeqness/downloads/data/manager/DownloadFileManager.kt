@@ -1,6 +1,7 @@
 package com.dezdeqness.downloads.data.manager
 
 import co.touchlab.kermit.Logger
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.downloads.data.platform.DownloadDirectoryProvider
 import com.dezdeqness.downloads.data.platform.VideoRemuxer
 import com.dezdeqness.downloads.domain.model.DownloadEntity
@@ -14,6 +15,7 @@ import okio.buffer
 class DownloadFileManager(
     private val downloadDirectoryProvider: DownloadDirectoryProvider,
     private val videoRemuxer: VideoRemuxer,
+    private val errorReporter: AkaneErrorReporter,
     private val fileSystem: FileSystem = FileSystem.SYSTEM,
 ) {
 
@@ -141,6 +143,11 @@ class DownloadFileManager(
             videoRemuxer.remux(tsPath, mp4Path)
         } catch (e: Exception) {
             Logger.e(TAG, e) { "Remux exception: ${e.message}" }
+            errorReporter.captureException(
+                throwable = e,
+                message = "Video remux failed",
+                tags = mapOf("feature" to "downloads"),
+            )
             false
         }
 
@@ -152,6 +159,10 @@ class DownloadFileManager(
             RemuxResult(filePath = mp4Path, success = true)
         } else {
             Logger.w(TAG) { "Remux failed or mp4 not found (success=$success, mp4Exists=$mp4Exists), keeping .ts file" }
+            errorReporter.captureMessage(
+                message = "Video remux finished unsuccessfully",
+                tags = mapOf("feature" to "downloads"),
+            )
             RemuxResult(filePath = tsPath, success = false)
         }
     }

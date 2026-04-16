@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
+import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.details.domain.model.FranchiseEntity
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
@@ -45,6 +46,7 @@ class ReleaseDetailsViewModel(
     private val releaseDetailsUiMapper: ReleaseDetailsUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
+    private val errorReporter: AkaneErrorReporter,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
@@ -66,6 +68,17 @@ class ReleaseDetailsViewModel(
         }
         .scan(LoadResultCache()) { previous, result ->
             result
+                .franchiseResult
+                .onFailure { throwable ->
+                    errorReporter.captureException(
+                        throwable = throwable,
+                        message = "Release details load failed",
+                        tags = mapOf("feature" to "details"),
+                        extras = mapOf("release_id" to releaseId.toString()),
+                    )
+                }
+
+            result
                 .releaseResult
                 .onSuccess { details ->
                     val franchise = result.franchiseResult.getOrNull()
@@ -76,6 +89,12 @@ class ReleaseDetailsViewModel(
                     )
                 }
                 .onFailure { throwable ->
+                    errorReporter.captureException(
+                        throwable = throwable,
+                        message = "Release details load failed",
+                        tags = mapOf("feature" to "details"),
+                        extras = mapOf("release_id" to releaseId.toString()),
+                    )
                     Logger.e(
                         tag = TAG,
                         messageString = throwable.message.orEmpty(),
