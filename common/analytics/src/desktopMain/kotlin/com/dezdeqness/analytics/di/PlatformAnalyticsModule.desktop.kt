@@ -2,10 +2,25 @@ package com.dezdeqness.analytics.di
 
 import com.dezdeqness.analytics.core.AptabaseConfig
 import com.dezdeqness.analytics.core.SentryConfig
+import com.dezdeqness.analytics.data.AptabaseEventStore
+import com.dezdeqness.analytics.data.db.AnalyticsDatabase
+import com.dezdeqness.analytics.data.db.getAnalyticsDatabase
+import com.dezdeqness.analytics.data.getAnalyticsDatabaseBuilder
 import org.koin.core.module.Module
 import org.koin.dsl.module
 
 internal actual fun platformAnalyticsModule(): Module = module {
+    single<AnalyticsDatabase> {
+        getAnalyticsDatabase(getAnalyticsDatabaseBuilder())
+    }
+
+    single {
+        AptabaseEventStore(
+            aptabaseEventDao = get<AnalyticsDatabase>().aptabaseEventDao(),
+            json = get(),
+        )
+    }
+
     single {
         AptabaseConfig(
             appKey = AptabaseSecrets.APTABASE_APP_KEY,

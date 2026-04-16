@@ -7,6 +7,7 @@ import com.dezdeqness.analytics.core.AptabaseConfig
 import com.dezdeqness.analytics.core.AptabaseEventPayload
 import com.dezdeqness.analytics.core.AptabaseSystemProps
 import com.dezdeqness.analytics.core.readPlatformSystemInfo
+import com.dezdeqness.analytics.data.AptabaseEventStore
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.header
@@ -21,8 +22,8 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.sync.Mutex
 import kotlinx.serialization.json.Json
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
@@ -31,6 +32,7 @@ import kotlin.random.Random
 @OptIn(ExperimentalTime::class)
 class AptabaseAnalytics(
     private val config: AptabaseConfig,
+    private val eventStore: AptabaseEventStore,
     private val logger: Logger = Logger.withTag("AptabaseAnalytics"),
 ) : Analytics {
 
@@ -42,9 +44,7 @@ class AptabaseAnalytics(
     private val platformSystemInfo = readPlatformSystemInfo()
     private val sessionId = newSessionId()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    private val queueMutex = Mutex()
     private val flushMutex = Mutex()
-    private val queue = mutableListOf<AptabaseEventPayload>()
 
     private val httpClient = HttpClient {
         install(ContentNegotiation) {
@@ -54,6 +54,10 @@ class AptabaseAnalytics(
     }
 
     init {
+        scope.launch {
+            flush()
+        }
+
         scope.launch {
             while (true) {
                 delay(config.flushIntervalMillis)
@@ -77,10 +81,12 @@ class AptabaseAnalytics(
         )
 
         scope.launch {
-            val shouldFlush = queueMutex.withLock {
-                queue += event
-                queue.size >= MAX_BATCH_SIZE
-            }
+            val shouldFlush = runCatching {
+                eventStore.append(event)
+                eventStore.count() >= MAX_BATCH_SIZE
+            }.onFailure { throwable ->
+                logger.w(throwable) { "Failed to persist Aptabase event." }
+            }.getOrDefault(false)
 
             if (shouldFlush) {
                 flush()
@@ -91,30 +97,19 @@ class AptabaseAnalytics(
     override suspend fun flush() {
         flushMutex.withLock {
             while (true) {
-                val batch = queueMutex.withLock {
-                    if (queue.isEmpty()) {
-                        emptyList()
-                    } else {
-                        val count = minOf(queue.size, MAX_BATCH_SIZE)
-                        val snapshot = queue.take(count)
-                        repeat(count) {
-                            queue.removeAt(0)
-                        }
-                        snapshot
-                    }
-                }
+                val pendingEvents = eventStore.getBatch(MAX_BATCH_SIZE)
 
-                if (batch.isEmpty()) {
+                if (pendingEvents.isEmpty()) {
                     return
                 }
 
+                val batch = pendingEvents.map { it.payload }
                 val delivered = sendBatch(batch)
                 if (!delivered) {
-                    queueMutex.withLock {
-                        queue.addAll(0, batch)
-                    }
                     return
                 }
+
+                eventStore.delete(pendingEvents.map { it.id })
             }
         }
     }

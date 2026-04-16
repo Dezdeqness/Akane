@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.dezdeqness.kmp.library)
     alias(libs.plugins.buildkonfig)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.ksp)
+    alias(libs.plugins.androidx.room)
 }
 
 val props = Properties().apply {
@@ -81,6 +83,8 @@ kotlin {
             implementation(libs.bundles.ktor.common)
             implementation(libs.kermit)
             implementation(libs.sentry.kotlin.multiplatform)
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.androidx.sqlite.bundled)
         }
 
         androidMain.dependencies {
@@ -97,4 +101,16 @@ kotlin {
             implementation(libs.ktor.okhttp)
         }
     }
+}
+
+dependencies {
+    add("kspAndroid", libs.androidx.room.compiler)
+    add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+    add("kspIosX64", libs.androidx.room.compiler)
+    add("kspIosArm64", libs.androidx.room.compiler)
+    add("kspDesktop", libs.androidx.room.compiler)
+}
+
+room {
+    schemaDirectory("$projectDir/schemas")
 }
