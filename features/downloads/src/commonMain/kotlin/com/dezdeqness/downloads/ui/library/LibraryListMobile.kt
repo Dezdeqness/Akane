@@ -8,7 +8,7 @@ import androidx.compose.ui.Modifier
 import com.dezdeqness.downloads.ui.model.ReleaseGroup
 
 @Composable
-internal fun LibraryList(
+fun LibraryListMobile(
     library: List<ReleaseGroup>,
     onReleaseClicked: (releaseId: Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -20,7 +20,7 @@ internal fun LibraryList(
             items = library,
             key = { it.releaseId },
         ) { group ->
-            ReleaseGroupItem(
+            ReleaseGroupItemMobile(
                 group = group,
                 onClicked = { onReleaseClicked(group.releaseId) },
             )

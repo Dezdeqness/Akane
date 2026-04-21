@@ -11,6 +11,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -19,6 +20,8 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
+import com.dezdeqness.designsystem.layouts.AdaptiveLayout
+import com.dezdeqness.designsystem.layouts.LayoutType
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -74,11 +77,28 @@ fun LibraryPage(
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {
-                LibraryList(
-                    library = state.library,
-                    onReleaseClicked = onReleaseClicked,
-                    modifier = Modifier.fillMaxSize(),
-                )
+                AdaptiveLayout(modifier = Modifier.fillMaxSize()) { type ->
+                    LaunchedEffect(type) {
+                        println(type)
+                    }
+                    when (type) {
+                        LayoutType.Mobile -> {
+                            LibraryListMobile(
+                                library = state.library,
+                                onReleaseClicked = onReleaseClicked,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                        else -> {
+                            LibraryListWide(
+                                library = state.library,
+                                onReleaseClicked = onReleaseClicked,
+                                layoutType = type,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                        }
+                    }
+                }
             }
         }
     }

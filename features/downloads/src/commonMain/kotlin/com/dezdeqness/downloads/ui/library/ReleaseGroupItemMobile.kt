@@ -25,7 +25,7 @@ import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.downloads.ui.model.ReleaseGroup
 
 @Composable
-internal fun ReleaseGroupItem(
+fun ReleaseGroupItemMobile(
     group: ReleaseGroup,
     onClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -42,7 +42,7 @@ internal fun ReleaseGroupItem(
             contentDescription = null,
             contentScale = ContentScale.Crop,
             modifier = Modifier
-                .size(48.dp, 48.dp)
+                .size(60.dp)
                 .clip(RoundedCornerShape(8.dp)),
         )
 

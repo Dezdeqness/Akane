@@ -20,13 +20,24 @@ class DownloadFileManager(
 ) {
 
     fun toRelativePath(absolutePath: String): String {
-        val root = downloadDirectoryProvider.getDownloadDirectory()
-        return absolutePath.removePrefix("$root/")
+        val normalizedRoot = normalizePath(downloadDirectoryProvider.getDownloadDirectory())
+        val normalizedPath = normalizePath(absolutePath)
+
+        return when {
+            normalizedPath == normalizedRoot -> ""
+            normalizedPath.startsWith("$normalizedRoot/") -> {
+                normalizedPath.removePrefix("$normalizedRoot/")
+            }
+            else -> absolutePath
+        }
     }
 
     fun resolveFilePath(relativePath: String): String {
-        if (relativePath.startsWith("/")) return relativePath
-        return "${downloadDirectoryProvider.getDownloadDirectory()}/$relativePath"
+        if (isAbsolutePath(relativePath)) return normalizePath(relativePath)
+
+        val root = normalizePath(downloadDirectoryProvider.getDownloadDirectory())
+        val relative = relativePath.removePrefix("/").removePrefix("\\")
+        return "$root/$relative"
     }
 
     fun getOutputPath(download: DownloadEntity): Path {
@@ -291,6 +302,7 @@ class DownloadFileManager(
     companion object {
         private const val TAG = "DownloadFileManager"
         private const val BUFFER_SIZE = 8192
+        private val windowsAbsolutePathRegex = Regex("^[A-Za-z]:[/\\\\].*")
 
         fun sanitize(name: String): String {
             val cleaned = name
@@ -313,5 +325,14 @@ class DownloadFileManager(
                 else -> "${(gb * 100).toLong() / 100.0} GB"
             }
         }
+
+        private fun isAbsolutePath(path: String): Boolean {
+            val normalized = normalizePath(path)
+            return normalized.startsWith("/") ||
+                    normalized.startsWith("file:///") ||
+                    windowsAbsolutePathRegex.matches(normalized)
+        }
+
+        private fun normalizePath(path: String): String = path.replace('\\', '/')
     }
 }
