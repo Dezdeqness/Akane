@@ -1,4 +1,4 @@
-package com.dezdeqness.videoplayer.core
+package com.dezdeqness.foundation.config
 
 import android.content.res.Configuration
 import androidx.compose.runtime.Composable

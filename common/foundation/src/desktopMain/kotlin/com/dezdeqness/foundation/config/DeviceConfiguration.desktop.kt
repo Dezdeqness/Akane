@@ -1,9 +1,6 @@
-package com.dezdeqness.videoplayer.core
+package com.dezdeqness.foundation.config
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.unit.toSize
 import java.awt.Toolkit
 
 @Composable

@@ -23,7 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import com.dezdeqness.videoplayer.core.getDeviceConfiguration
+import com.dezdeqness.foundation.config.getDeviceConfiguration
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
 import com.dezdeqness.videoplayer.core.player.composables.slider.ProgressSliderState
 import com.dezdeqness.videoplayer.core.player.composables.slider.VideoProgressSlider
