@@ -19,7 +19,6 @@ import androidx.compose.material.icons.filled.Pause
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material3.Icon
-import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.downloads.domain.model.DownloadStatus
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 
@@ -158,7 +158,7 @@ private fun statusSubtitle(download: DownloadUiModel): String {
     return when (download.status) {
         DownloadStatus.QUEUED -> "$quality • В очереди"
         DownloadStatus.DOWNLOADING -> "$quality • ${(download.progress * 100).toInt()}%"
-        DownloadStatus.REMUXING -> "$quality • Декодирование"
+        DownloadStatus.REMUXING -> "$quality • Обработка"
         DownloadStatus.COMPLETED -> "$quality • Завершено"
         DownloadStatus.FAILED -> "$quality • Ошибка сети"
         DownloadStatus.PAUSED -> "$quality • Пауза"

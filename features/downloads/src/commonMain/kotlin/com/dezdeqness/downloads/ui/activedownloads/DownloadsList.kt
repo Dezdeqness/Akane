@@ -99,7 +99,7 @@ internal fun DownloadsList(
 private fun SectionHeader(title: String) {
     Text(
         text = title,
-        fontSize = 13.sp,
+        fontSize = 15.sp,
         fontWeight = FontWeight.SemiBold,
         color = AppTheme.colors.textSecondary,
         modifier = Modifier

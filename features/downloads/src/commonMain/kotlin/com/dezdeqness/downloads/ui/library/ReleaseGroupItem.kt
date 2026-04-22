@@ -3,6 +3,7 @@ package com.dezdeqness.downloads.ui.library
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -73,6 +74,50 @@ fun ReleaseGroupItemMobile(
         )
     }
 }
+
+@Composable
+fun ReleaseGroupItemWide(
+    group: ReleaseGroup,
+    onClicked: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .clip(RoundedCornerShape(8.dp))
+            .clickable(onClick = onClicked),
+    ) {
+        AppImage(
+            data = group.previewUrl,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxWidth()
+                .aspectRatio(16 / 9f)
+                .clip(RoundedCornerShape(8.dp)),
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 4.dp),
+        ) {
+            Text(
+                text = group.releaseTitle,
+                fontSize = 15.sp,
+                fontWeight = FontWeight.Medium,
+                color = AppTheme.colors.textPrimary,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+            )
+            Text(
+                text = "${group.totalSize} ${episodeCountText(group.totalSize)}",
+                fontSize = 13.sp,
+                color = AppTheme.colors.textSecondary,
+            )
+        }
+    }
+}
+
 
 private fun episodeCountText(count: Int): String {
     val mod10 = count % 10

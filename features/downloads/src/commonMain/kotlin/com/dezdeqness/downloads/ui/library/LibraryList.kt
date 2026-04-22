@@ -3,8 +3,10 @@ package com.dezdeqness.downloads.ui.library
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -41,6 +43,27 @@ fun LibraryListWide(
                 group = item,
                 onClicked = { onReleaseClicked(item.releaseId) },
                 modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun LibraryListMobile(
+    library: List<ReleaseGroup>,
+    onReleaseClicked: (releaseId: Long) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+    ) {
+        items(
+            items = library,
+            key = { it.releaseId },
+        ) { group ->
+            ReleaseGroupItemMobile(
+                group = group,
+                onClicked = { onReleaseClicked(group.releaseId) },
             )
         }
     }
