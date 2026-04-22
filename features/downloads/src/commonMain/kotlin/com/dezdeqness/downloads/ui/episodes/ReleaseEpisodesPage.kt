@@ -13,10 +13,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
+import com.dezdeqness.designsystem.layouts.AdaptiveViewCollection
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -64,11 +66,33 @@ fun ReleaseEpisodesPage(
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {
-                EpisodesList(
+                AdaptiveViewCollection(
+                    items = state.episodes,
+                    key = { it.id },
                     modifier = Modifier.fillMaxSize(),
-                    episodes = state.episodes,
-                    onPlayClicked = onPlayClicked,
-                    onDeleteClicked = viewModel::onDeleteClicked,
+                    mobileItem = { episode ->
+                        EpisodeDownloadItemMobile(
+                            episode = episode,
+                            onPlayClicked = {
+                                onPlayClicked(episode.releaseId, episode.episodeId)
+                            },
+                            onDeleteClicked = {
+                                viewModel.onDeleteClicked(episode.id)
+                            },
+                        )
+                    },
+                    wideItem = { episode ->
+                        EpisodeDownloadItemWide(
+                            episode = episode,
+                            onPlayClicked = {
+                                onPlayClicked(episode.releaseId, episode.episodeId)
+                            },
+                            onDeleteClicked = {
+                                viewModel.onDeleteClicked(episode.id)
+                            },
+                            modifier = Modifier.padding(8.dp)
+                        )
+                    }
                 )
             }
         }

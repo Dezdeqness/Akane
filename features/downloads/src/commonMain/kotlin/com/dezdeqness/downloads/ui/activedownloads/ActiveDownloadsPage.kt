@@ -3,6 +3,7 @@ package com.dezdeqness.downloads.ui.activedownloads
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
@@ -12,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
@@ -50,14 +52,17 @@ fun ActiveDownloadsPage(
         },
         containerColor = AppTheme.colors.background,
     ) { padding ->
-        Box(modifier = Modifier.padding(padding).fillMaxSize()) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.padding(padding).fillMaxSize(),
+        ) {
             if (state.isEmptyState) {
                 DownloadsEmptyState(
                     modifier = Modifier.align(Alignment.Center),
                 )
             } else {
                 DownloadsList(
-                    modifier = Modifier.fillMaxSize(),
+                    modifier = Modifier.widthIn(max = 800.dp),
                     activeDownloads = state.activeDownloads,
                     historyDownloads = state.historyDownloads,
                     completedDownloads = state.completedDownloads,
