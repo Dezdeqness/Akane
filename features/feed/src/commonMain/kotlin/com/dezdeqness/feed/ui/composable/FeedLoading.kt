@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -45,7 +45,7 @@ fun FeedItemLoading(
 ) {
     Box(
         modifier = modifier
-            .height(150.dp)
+            .aspectRatio(FeedItemAspectRatio)
             .shimmer(shimmerOffset = shimmerOffset, color = AppTheme.colors.surface)
     )
 }

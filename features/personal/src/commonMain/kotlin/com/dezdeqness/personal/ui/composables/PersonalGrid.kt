@@ -16,11 +16,12 @@ import com.dezdeqness.personal.ui.model.PersonalUiModel
 @Composable
 fun PersonalGrid(
     modifier: Modifier = Modifier,
+    columns: GridCells = GridCells.Fixed(2),
     items: List<PersonalUiModel>,
     onItemClicked: (PersonalUiModel) -> Unit,
 ) {
     LazyVerticalGrid(
-        columns = GridCells.Fixed(2),
+        columns = columns,
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -18,7 +18,6 @@ import com.dezdeqness.core.ui.views.rememberShimmerOffset
 import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 private const val PAGINATION_LOAD_FACTOR = 0.75
-private const val CELL_GRID_COUNT = 3
 
 @Composable
 fun FeedGrid(
@@ -26,6 +25,7 @@ fun FeedGrid(
     list: List<FeedAnimeUiModel>,
     hasNextPage: Boolean,
     isPageLoading: Boolean,
+    columnCount: Int = 3,
     onLoadMore: () -> Unit,
     onReleaseClicked: (Long, String) -> Unit,
 ) {
@@ -48,7 +48,7 @@ fun FeedGrid(
 
     LazyVerticalGrid(
         state = gridState,
-        columns = GridCells.Fixed(CELL_GRID_COUNT),
+        columns = GridCells.Fixed(columnCount),
         modifier = modifier.fillMaxSize(),
     ) {
         items(
@@ -57,7 +57,7 @@ fun FeedGrid(
         ) { index ->
             val item = list[index]
 
-            val padding = calculateItemPadding(index, CELL_GRID_COUNT)
+            val padding = calculateItemPadding(index, columnCount)
 
             FeedItem(
                 item = item,
@@ -73,8 +73,8 @@ fun FeedGrid(
         }
 
         if (hasNextPage) {
-            repeat(CELL_GRID_COUNT) { index ->
-                val padding = calculateItemPadding(index, CELL_GRID_COUNT)
+            repeat(columnCount) { index ->
+                val padding = calculateItemPadding(index, columnCount)
                 item {
                     FeedItemLoading(
                         modifier = Modifier.padding(padding), shimmerOffset = shimmerOffset,

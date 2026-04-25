@@ -1,5 +1,6 @@
 package com.dezdeqness.feed.ui.composable
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 fun FeedSearch(
     modifier: Modifier = Modifier,
     onQueryChanged: (String) -> Unit,
+    showFilterButton: Boolean = true,
     onFilterClicked: () -> Unit,
 ) {
     val searchBarState = rememberSearchBarState()
@@ -41,6 +43,27 @@ fun FeedSearch(
     LaunchedEffect(searchBarState.currentValue, textFieldState.text) {
         if (searchBarState.currentValue == SearchBarValue.Collapsed && textFieldState.text.isEmpty()) {
             onQueryChanged("")
+        }
+    }
+
+    val leadingIcon = @Composable {
+        if (searchBarState.currentValue == SearchBarValue.Expanded) {
+
+            IconButton(
+                onClick = { scope.launch { searchBarState.animateToCollapsed() } }
+            ) {
+                Icon(
+                    AkaneIcons.Back,
+                    contentDescription = null,
+                    tint = AppTheme.colors.onSurface
+                )
+            }
+        } else {
+            Icon(
+                AkaneIcons.Search,
+                contentDescription = null,
+                tint = AppTheme.colors.onSurface
+            )
         }
     }
 
@@ -61,30 +84,11 @@ fun FeedSearch(
                     Text(
                         text = "Восстание Лелуша",
                         style = AppTheme.typography.titleMedium.copy(
-                            color = AppTheme.colors.textPrimary.copy(alpha = 0.8f),
+                            color = AppTheme.colors.textPrimary.copy(alpha = 0.95f),
                         ),
                     )
                 },
-                leadingIcon = {
-                    if (searchBarState.currentValue == SearchBarValue.Expanded) {
-
-                        IconButton(
-                            onClick = { scope.launch { searchBarState.animateToCollapsed() } }
-                        ) {
-                            Icon(
-                                AkaneIcons.Back,
-                                contentDescription = null,
-                                tint = AppTheme.colors.onSurface
-                            )
-                        }
-                    } else {
-                        Icon(
-                            AkaneIcons.Search,
-                            contentDescription = null,
-                            tint = AppTheme.colors.onSurface
-                        )
-                    }
-                },
+                leadingIcon = if (showFilterButton) leadingIcon else null,
                 trailingIcon = {
                     if (textFieldState.text.isNotEmpty()) {
                         IconButton(
@@ -110,27 +114,37 @@ fun FeedSearch(
             )
         }
 
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        TopSearchBar(
+    if (showFilterButton) {
+        Row(
+            modifier = modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            TopSearchBar(
+                state = searchBarState,
+                inputField = inputField,
+                modifier = Modifier.weight(1f),
+            )
+
+            AppIconButton(
+                modifier = Modifier.padding(end = 8.dp),
+                icon = AkaneIcons.Filter,
+                onClick = onFilterClicked,
+            )
+        }
+
+        ExpandedFullScreenSearchBar(
             state = searchBarState,
             inputField = inputField,
-            modifier = Modifier.weight(1f),
-        )
-
-        AppIconButton(
-            modifier = Modifier.padding(end = 8.dp),
-            icon = AkaneIcons.Filter,
-            onClick = onFilterClicked,
-        )
+            colors = SearchBarDefaults.colors(
+                containerColor = AppTheme.colors.background,
+            )
+        ) {}
+    } else {
+        Row(
+            modifier = modifier.padding(top = 8.dp).fillMaxWidth(),
+            horizontalArrangement = Arrangement.Center,
+        ) {
+            inputField()
+        }
     }
-    ExpandedFullScreenSearchBar(
-        state = searchBarState,
-        inputField = inputField,
-        colors = SearchBarDefaults.colors(
-            containerColor = AppTheme.colors.background,
-        )
-    ) {}
 }
