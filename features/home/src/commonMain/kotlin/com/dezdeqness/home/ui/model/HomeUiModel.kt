@@ -4,4 +4,5 @@ data class HomeUiModel(
     val id: Long,
     val name: String,
     val imagePath: String,
+    val description: String,
 )

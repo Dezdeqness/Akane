@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables
+package com.dezdeqness.home.ui.composables.freshupdates
 
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring

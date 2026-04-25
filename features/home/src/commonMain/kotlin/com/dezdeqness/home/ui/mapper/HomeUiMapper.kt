@@ -10,6 +10,7 @@ class HomeUiMapper {
             id = data.id,
             name = data.name,
             imagePath = data.poster,
+            description = data.description,
         )
 
     fun toUiModelSchedule(data: ScheduleItemEntity) =
@@ -17,5 +18,6 @@ class HomeUiMapper {
             id = data.id,
             name = data.name,
             imagePath = data.poster,
+            description = data.description,
         )
 }
