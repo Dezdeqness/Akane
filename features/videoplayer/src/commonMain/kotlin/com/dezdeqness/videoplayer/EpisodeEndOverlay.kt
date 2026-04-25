@@ -25,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableLongStateOf
-
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -40,7 +39,7 @@ import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.designsystem.utils.noRippleClickable
-import com.dezdeqness.videoplayer.core.getDeviceConfiguration
+import com.dezdeqness.foundation.config.getDeviceConfiguration
 import com.dezdeqness.videoplayer.core.player.EpisodeEndOverlayUiState
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource

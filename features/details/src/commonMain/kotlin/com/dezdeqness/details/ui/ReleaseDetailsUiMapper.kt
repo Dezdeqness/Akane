@@ -90,7 +90,7 @@ class ReleaseDetailsUiMapper(
         totalEpisodes = franchise.totalEpisodes,
         totalReleases = franchise.totalReleases,
         totalDuration = franchise.totalDuration,
-        releases = franchise.franchiseReleases.map { release ->
+        releases = franchise.franchiseReleases.sortedBy { it.sortOrder }.map { release ->
             FranchiseReleaseUiModel(
                 id = release.releaseId,
                 sortOrder = release.sortOrder,

@@ -13,6 +13,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.header.Header
+import com.dezdeqness.designsystem.layouts.AdaptiveLayout
+import com.dezdeqness.designsystem.layouts.LayoutType
 import com.dezdeqness.details.ui.composables.core.MetadataRow
 import com.dezdeqness.details.ui.model.DetailsTab
 
@@ -66,9 +68,26 @@ fun FranchiseTabContent(franchise: DetailsTab.FranchiseTab) {
             title = "Релизы",
             titleStyle = AppTheme.typography.labelLarge.copy(fontSize = 18.sp),
         )
-        
-        franchise.releases.sortedBy { it.sortOrder }.forEach { release ->
-            FranchiseReleaseItem(release)
+
+        AdaptiveLayout { type ->
+            when (type) {
+                LayoutType.Mobile -> {
+                    Column {
+                        franchise.releases.forEach { release ->
+                            FranchiseReleaseItemMobile(release)
+                        }
+                    }
+                }
+
+                LayoutType.Tablet,
+                LayoutType.Desktop,
+                    -> {
+                    FranchiseReleasesGridWide(
+                        franchise = franchise,
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                    )
+                }
+            }
         }
     }
 }

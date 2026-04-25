@@ -25,7 +25,7 @@ import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 
 @Composable
-fun FranchiseReleaseItem(release: FranchiseReleaseUiModel) {
+fun FranchiseReleaseItemMobile(release: FranchiseReleaseUiModel) {
     Card(
         modifier = Modifier
             .padding(vertical = 4.dp, horizontal = 16.dp)

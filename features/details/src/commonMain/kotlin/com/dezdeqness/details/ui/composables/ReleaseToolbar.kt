@@ -32,7 +32,6 @@ fun ReleaseToolbar(
         }
     }
 
-
     AppToolbar(
         modifier = modifier,
         title = {

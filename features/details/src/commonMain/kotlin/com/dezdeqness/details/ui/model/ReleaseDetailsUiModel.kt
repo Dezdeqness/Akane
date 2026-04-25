@@ -1,5 +1,7 @@
 package com.dezdeqness.details.ui.model
 
+import androidx.compose.runtime.Immutable
+
 data class ReleaseDetailsUiModel(
     val id: Long,
     val header: ReleaseDetailsHeaderUiModel,
@@ -15,6 +17,7 @@ data class ReleaseDetailsHeaderUiModel(
 )
 
 sealed class DetailsTab(val title: String) {
+    @Immutable
     data class InfoTab(
         val summary: String,
         val genres: List<String>,
@@ -27,6 +30,7 @@ sealed class DetailsTab(val title: String) {
 
     data class EpisodesTab(val episodes: List<EpisodesUiModel>) : DetailsTab("Эпизоды")
 
+    @Immutable
     data class FranchiseTab(
         val id: String,
         val name: String,
