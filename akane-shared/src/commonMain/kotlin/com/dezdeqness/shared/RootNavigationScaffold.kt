@@ -25,10 +25,11 @@ fun RootNavigationScaffold(
     currentDestination: String?,
     activeDownloadsCount: Int,
     onTabSelected: (String) -> Unit,
+    modifier: Modifier = Modifier,
     content: @Composable (Modifier) -> Unit,
 ) {
     BoxWithConstraints(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize(),
     ) {
         val useRailNavigation = maxWidth >= WideDeviceWidthFactor
 
@@ -62,6 +63,7 @@ fun RootNavigationScaffold(
                 Row(modifier = Modifier.fillMaxSize()) {
                     NavigationRail(
                         containerColor = AppTheme.colors.background,
+                        modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
                     ) {
                         RootNavigationItems(
                             currentDestination = currentDestination,
