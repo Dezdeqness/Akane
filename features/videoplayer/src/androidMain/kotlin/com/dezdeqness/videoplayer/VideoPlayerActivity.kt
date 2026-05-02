@@ -23,11 +23,9 @@ import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
-import com.dezdeqness.videoplayer.navigation.DOWNLOAD_RELEASE_ID
-import com.dezdeqness.videoplayer.navigation.DOWNLOAD_START_EPISODE_ID
-import com.dezdeqness.videoplayer.navigation.EPISODE_ID
-import com.dezdeqness.videoplayer.navigation.ID
 import kotlinx.coroutines.delay
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
 class VideoPlayerActivity : ComponentActivity() {
     private var lastTouchEvent by mutableIntStateOf(MotionEvent.ACTION_UP)
@@ -64,6 +62,14 @@ class VideoPlayerActivity : ComponentActivity() {
             ) {
                 AkaneTheme {
                     VideoPlayerScreen(
+                        videoPlayerViewModel = koinViewModel {
+                            parametersOf(
+                                intent.getLongExtra(ID, -1L),
+                                intent.getStringExtra(EPISODE_ID).orEmpty(),
+                                intent.getLongExtra(DOWNLOAD_RELEASE_ID, -1L),
+                                intent.getStringExtra(DOWNLOAD_START_EPISODE_ID).orEmpty()
+                            )
+                        },
                         onBackButtonClicked = {
                             finish()
                         }
@@ -97,6 +103,11 @@ class VideoPlayerActivity : ComponentActivity() {
             }
             context.startActivity(intent)
         }
+
+        private const val ID = "ID"
+        private const val EPISODE_ID = "EPISODE_ID"
+        private const val DOWNLOAD_RELEASE_ID = "DOWNLOAD_RELEASE_ID"
+        private const val DOWNLOAD_START_EPISODE_ID = "DOWNLOAD_START_EPISODE_ID"
     }
 
 }
