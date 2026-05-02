@@ -2,6 +2,9 @@ package com.dezdeqness.shared
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -49,6 +52,13 @@ fun RootScreen(
         DownloadsRoute -> downloadsBackStack
         else -> homeBackStack
     }
+
+    val tabBackHandlerState = rememberNavigationEventState(currentInfo = NavigationEventInfo.None)
+    NavigationBackHandler(
+        state = tabBackHandlerState,
+        isBackEnabled = activeTabOrdinal != 0 && currentTabStack.size <= 1,
+        onBackCompleted = { activeTabOrdinal = 0 },
+    )
 
     val appViewModel: AppViewModel = koinViewModel()
     val activeDownloadsCount by appViewModel.activeDownloadsCount.collectAsState()
