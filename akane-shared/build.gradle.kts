@@ -40,7 +40,8 @@ kotlin {
             implementation(libs.coil.kt)
             implementation(libs.coil.network.ktor)
 
-            implementation(libs.androidx.navigation.compose)
+            implementation(libs.androidx.navigation3.ui)
+            implementation(libs.androidx.lifecycle.viewmodel.navigation3)
 
             implementation(libs.koin.compose)
         }
