@@ -81,11 +81,16 @@ class AndroidVideoPlayer(context: Context) : VideoPlayer {
     override fun play() = exoPlayer.play()
     override fun pause() = exoPlayer.pause()
     override fun stop() {
-        exoPlayer.stop(); stopTicker(); _events.tryEmit(PlayerEvent.IsPlaying(false))
+        exoPlayer.stop()
+        stopTicker()
+        _events.tryEmit(PlayerEvent.IsPlaying(false))
     }
 
     override fun release() {
-        stopTicker(); exoPlayer.release(); scope.cancel()
+        stopTicker()
+        exoPlayer.stop()
+        exoPlayer.release()
+        scope.cancel()
     }
 
     override fun seekBack() = exoPlayer.seekBack()
