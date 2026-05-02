@@ -3,78 +3,128 @@ package com.dezdeqness.shared
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.currentBackStackEntryAsState
-import androidx.navigation.compose.rememberNavController
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.rememberNavBackStack
 import com.dezdeqness.analytics.core.AkaneAnalytics
-import com.dezdeqness.feed.navigation.FEED_ROUTE
+import com.dezdeqness.details.navigation.detailsEntries
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
+import com.dezdeqness.downloads.navigation.DownloadsRoute
+import com.dezdeqness.downloads.navigation.activeDownloadsEntries
 import com.dezdeqness.downloads.navigation.navigateToActiveDownloads
 import com.dezdeqness.downloads.navigation.navigateToReleaseEpisodes
+import com.dezdeqness.downloads.navigation.releaseEpisodesEntries
+import com.dezdeqness.feed.navigation.FeedRoute
+import com.dezdeqness.home.navigation.HomeRoute
+import com.dezdeqness.personal.navigation.PersonalRoute
+import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
+import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
+import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
+import com.dezdeqness.videoplayer.navigation.videoPlayerEntries
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RootScreen(
-    rootController: NavHostController,
+    rootBackStack: NavBackStack<NavKey>,
 ) {
-    val navController = rememberNavController()
-    val currentDestination = navController.currentBackStackEntryAsState().value?.destination?.route
     val analytics: AkaneAnalytics = koinInject()
+
+    val homeBackStack = rememberNavBackStack(navSavedStateConfiguration(), HomeRoute)
+    val feedBackStack = rememberNavBackStack(navSavedStateConfiguration(), FeedRoute)
+    val personalBackStack = rememberNavBackStack(navSavedStateConfiguration(), PersonalRoute)
+    val downloadsBackStack = rememberNavBackStack(navSavedStateConfiguration(), DownloadsRoute)
+
+    var activeTab: NavKey by rememberSaveable { mutableStateOf(HomeRoute) }
+
+    val currentTabStack = when (activeTab) {
+        HomeRoute -> homeBackStack
+        FeedRoute -> feedBackStack
+        PersonalRoute -> personalBackStack
+        DownloadsRoute -> downloadsBackStack
+        else -> homeBackStack
+    }
 
     val appViewModel: AppViewModel = koinViewModel()
     val activeDownloadsCount by appViewModel.activeDownloadsCount.collectAsState()
 
     RootNavigationScaffold(
-        currentDestination = currentDestination,
+        activeTab = activeTab,
         activeDownloadsCount = activeDownloadsCount,
-        onTabSelected = { route ->
-            if (currentDestination != route) {
-                analytics.trackBottomNavigation(route)
+        onTabSelected = { tab ->
+            if (activeTab != tab) {
+                val tabName = AkaneBottomTabModel.entries.find { it.key == tab }?.name.orEmpty()
+                analytics.trackBottomNavigation(tabName)
             }
-            navigateToRootTab(
-                currentRoute = currentDestination,
-                targetRoute = route,
-                navController = navController,
-            )
+            activeTab = tab
         },
-    ) { contentModifier ->
+    ) { contentModifier, isWideLayout ->
         RootNavigationHost(
             modifier = contentModifier,
-            navController = navController,
-            rootControllerNavigateToDetails = { animeId, title ->
-                analytics.trackDetailsOpened(
-                    animeId = animeId,
-                    title = title,
-                )
-                rootController.navigateToDetailsScreen(animeId)
+            currentTabStack = currentTabStack,
+            rootControllerNavigateToDetails = { id, title ->
+                analytics.trackDetailsOpened(animeId = id, title = title)
+                if (isWideLayout) {
+                    currentTabStack.navigateToDetailsScreen(id)
+                } else {
+                    rootBackStack.navigateToDetailsScreen(id)
+                }
             },
             activeDownloadsCountFlow = appViewModel.activeDownloadsCount,
-            onNavigateToFeed = {
-                navigateToRootTab(
-                    currentRoute = currentDestination,
-                    targetRoute = FEED_ROUTE,
-                    navController = navController,
+            onNavigateToFeed = { activeTab = FeedRoute },
+            onNavigateToReleaseEpisodes = { id ->
+                if (isWideLayout) {
+                    currentTabStack.navigateToReleaseEpisodes(id)
+                } else {
+                    rootBackStack.navigateToReleaseEpisodes(id)
+                }
+            },
+            onNavigateToActiveDownloads = {
+                if (isWideLayout) {
+                    currentTabStack.navigateToActiveDownloads()
+                } else {
+                    rootBackStack.navigateToActiveDownloads()
+                }
+            },
+            tabFullScreenEntries = {
+                tabFullScreenEntriesForWideLayout(
+                    currentTabStack = currentTabStack,
+                    onEpisodeClick = { id, episodeId ->
+                        currentTabStack.navigateToVideoPlayerScreen(id, episodeId)
+                    },
+                    onPlayDownloadedClicked = { releaseId, episodeId ->
+                        currentTabStack.navigateToDownloadedPlaylist(releaseId, episodeId)
+                    },
                 )
             },
-            onNavigateToReleaseEpisodes = rootController::navigateToReleaseEpisodes,
-            onNavigateToActiveDownloads = rootController::navigateToActiveDownloads,
         )
     }
 }
 
-fun navigateToRootTab(
-    currentRoute: String?,
-    targetRoute: String,
-    navController: NavHostController,
+private fun EntryProviderScope<NavKey>.tabFullScreenEntriesForWideLayout(
+    currentTabStack: NavBackStack<NavKey>,
+    onEpisodeClick: (Long, String) -> Unit,
+    onPlayDownloadedClicked: (Long, String) -> Unit,
 ) {
-    if (currentRoute == targetRoute) return
-
-    navController.navigate(targetRoute) {
-        popUpTo(navController.graph.startDestinationId) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
-    }
+    detailsEntries(
+        onBackPressed = { currentTabStack.removeLastOrNull() },
+        onEpisodeClick = onEpisodeClick,
+    )
+    releaseEpisodesEntries(
+        onBackPressed = { currentTabStack.removeLastOrNull() },
+        onPlayClicked = onPlayDownloadedClicked,
+    )
+    activeDownloadsEntries(
+        onBackPressed = { currentTabStack.removeLastOrNull() },
+    )
+    videoPlayerEntries(
+        onBackPressed = { currentTabStack.removeLastOrNull() },
+    )
+    downloadedPlaylistEntries(
+        onBackPressed = { currentTabStack.removeLastOrNull() },
+    )
 }

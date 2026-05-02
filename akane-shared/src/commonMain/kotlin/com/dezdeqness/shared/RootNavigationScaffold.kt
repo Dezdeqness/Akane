@@ -16,17 +16,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.core.ui.theme.AppTheme
 
 private val WideDeviceWidthFactor = 840.dp
 
 @Composable
 fun RootNavigationScaffold(
-    currentDestination: String?,
+    activeTab: NavKey?,
     activeDownloadsCount: Int,
-    onTabSelected: (String) -> Unit,
+    onTabSelected: (NavKey) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (Modifier) -> Unit,
+    content: @Composable (modifier: Modifier, isWideLayout: Boolean) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
@@ -41,11 +42,11 @@ fun RootNavigationScaffold(
                         tonalElevation = 0.dp,
                     ) {
                         RootNavigationItems(
-                            currentDestination = currentDestination,
+                            activeTab = activeTab,
                         ) { item, isSelected ->
                             NavigationBarItem(
                                 selected = isSelected,
-                                onClick = { onTabSelected(item.route) },
+                                onClick = { onTabSelected(item.key) },
                                 icon = {
                                     AkaneNavigationItemIcon(
                                         item = item,
@@ -66,11 +67,11 @@ fun RootNavigationScaffold(
                         modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
                     ) {
                         RootNavigationItems(
-                            currentDestination = currentDestination,
+                            activeTab = activeTab,
                         ) { item, isSelected ->
                             NavigationRailItem(
                                 selected = isSelected,
-                                onClick = { onTabSelected(item.route) },
+                                onClick = { onTabSelected(item.key) },
                                 icon = {
                                     AkaneNavigationItemIcon(
                                         item = item,
@@ -84,10 +85,10 @@ fun RootNavigationScaffold(
                             )
                         }
                     }
-                    content(Modifier.fillMaxSize().weight(1f))
+                    content(Modifier.fillMaxSize().weight(1f), true)
                 }
             } else {
-                content(Modifier.fillMaxSize().padding(padding))
+                content(Modifier.fillMaxSize().padding(padding), false)
             }
         }
     }
@@ -96,11 +97,11 @@ fun RootNavigationScaffold(
 
 @Composable
 private fun RootNavigationItems(
-    currentDestination: String?,
+    activeTab: NavKey?,
     itemContent: @Composable (item: AkaneBottomTabModel, isSelected: Boolean) -> Unit,
 ) {
     AkaneBottomTabModel.entries.forEach { item ->
-        val isSelected = currentDestination == item.route
+        val isSelected = activeTab == item.key
         itemContent(item, isSelected)
     }
 }

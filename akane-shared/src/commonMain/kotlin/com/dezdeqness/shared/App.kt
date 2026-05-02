@@ -5,18 +5,25 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import com.dezdeqness.downloads.navigation.activeDownloadsScreen
-import com.dezdeqness.downloads.navigation.releaseEpisodesScreen
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
+import androidx.navigation3.runtime.NavKey
+import androidx.navigation3.runtime.entryProvider
+import androidx.navigation3.runtime.rememberNavBackStack
+import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
+import androidx.navigation3.ui.NavDisplay
 import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
-import com.dezdeqness.details.navigation.detailsScreen
-import com.dezdeqness.videoplayer.navigation.downloadedPlaylistScreen
+import com.dezdeqness.details.navigation.detailsEntries
+import com.dezdeqness.downloads.navigation.activeDownloadsEntries
+import com.dezdeqness.downloads.navigation.releaseEpisodesEntries
+import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.videoController
-import com.dezdeqness.videoplayer.navigation.videoPlayerScreen
+import com.dezdeqness.videoplayer.navigation.videoPlayerEntries
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object RootShellKey : NavKey
 
 @Composable
 fun App() {
@@ -26,40 +33,41 @@ fun App() {
         LocalAstImageLoader provides getImageLoader()
     ) {
         AkaneTheme {
-            val rootController = rememberNavController()
+            val rootBackStack = rememberNavBackStack(navSavedStateConfiguration(), RootShellKey)
 
-            NavHost(
-                navController = rootController,
-                startDestination = "root",
+            NavDisplay(
+                backStack = rootBackStack,
+                onBack = { rootBackStack.removeLastOrNull() },
                 modifier = Modifier.fillMaxSize(),
-            ) {
-                composable(route = "root") {
-                    RootScreen(rootController = rootController)
+                entryDecorators = listOf(
+                    rememberSaveableStateHolderNavEntryDecorator(),
+                    rememberViewModelStoreNavEntryDecorator(),
+                ),
+                entryProvider = entryProvider {
+                    entry<RootShellKey> {
+                        RootScreen(rootBackStack = rootBackStack)
+                    }
+                    detailsEntries(
+                        onBackPressed = { rootBackStack.removeLastOrNull() },
+                        onEpisodeClick = { id, episodeId ->
+                            controller.navigateToPlayer(rootBackStack, id, episodeId)
+                        },
+                    )
+                    videoPlayerEntries(onBackPressed = { rootBackStack.removeLastOrNull() })
+                    downloadedPlaylistEntries(onBackPressed = { rootBackStack.removeLastOrNull() })
+                    releaseEpisodesEntries(
+                        onBackPressed = { rootBackStack.removeLastOrNull() },
+                        onPlayClicked = { releaseId, episodeId ->
+                            controller.navigateToDownloadedPlaylist(
+                                backStack = rootBackStack,
+                                releaseId = releaseId,
+                                startEpisodeId = episodeId,
+                            )
+                        },
+                    )
+                    activeDownloadsEntries(onBackPressed = { rootBackStack.removeLastOrNull() })
                 }
-
-                detailsScreen(
-                    onBackPressed = rootController::navigateUp,
-                    onEpisodeClick = { id, episodeId ->
-                        controller.navigateToPlayer(rootController, id, episodeId)
-                    },
-                )
-                videoPlayerScreen(onBackPressed = rootController::navigateUp)
-                downloadedPlaylistScreen(onBackPressed = rootController::navigateUp)
-                releaseEpisodesScreen(
-                    onBackPressed = rootController::navigateUp,
-                    onPlayClicked = { releaseId, episodeId ->
-                        controller.navigateToDownloadedPlaylist(
-                            controller = rootController,
-                            releaseId = releaseId,
-                            startEpisodeId = episodeId,
-                        )
-                    },
-                )
-                activeDownloadsScreen(
-                    onBackPressed = rootController::navigateUp,
-                )
-            }
-
+            )
         }
     }
 }
