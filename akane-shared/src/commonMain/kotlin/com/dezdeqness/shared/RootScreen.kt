@@ -39,7 +39,8 @@ fun RootScreen(
     val personalBackStack = rememberNavBackStack(navSavedStateConfiguration(), PersonalRoute)
     val downloadsBackStack = rememberNavBackStack(navSavedStateConfiguration(), DownloadsRoute)
 
-    var activeTab: NavKey by rememberSaveable { mutableStateOf(HomeRoute) }
+    var activeTabOrdinal by rememberSaveable { mutableStateOf(0) }
+    val activeTab = AkaneBottomTabModel.entries[activeTabOrdinal].key
 
     val currentTabStack = when (activeTab) {
         HomeRoute -> homeBackStack
@@ -56,11 +57,13 @@ fun RootScreen(
         activeTab = activeTab,
         activeDownloadsCount = activeDownloadsCount,
         onTabSelected = { tab ->
-            if (activeTab != tab) {
-                val tabName = AkaneBottomTabModel.entries.find { it.key == tab }?.name.orEmpty()
-                analytics.trackBottomNavigation(tabName)
+            val newOrdinal = AkaneBottomTabModel.entries.indexOfFirst { it.key == tab }
+            if (newOrdinal >= 0) {
+                if (activeTabOrdinal != newOrdinal) {
+                    analytics.trackBottomNavigation(AkaneBottomTabModel.entries[newOrdinal].name)
+                }
+                activeTabOrdinal = newOrdinal
             }
-            activeTab = tab
         },
     ) { contentModifier, isWideLayout ->
         RootNavigationHost(
@@ -75,7 +78,9 @@ fun RootScreen(
                 }
             },
             activeDownloadsCountFlow = appViewModel.activeDownloadsCount,
-            onNavigateToFeed = { activeTab = FeedRoute },
+            onNavigateToFeed = {
+                activeTabOrdinal = AkaneBottomTabModel.entries.indexOfFirst { it.key == FeedRoute }
+            },
             onNavigateToReleaseEpisodes = { id ->
                 if (isWideLayout) {
                     currentTabStack.navigateToReleaseEpisodes(id)
