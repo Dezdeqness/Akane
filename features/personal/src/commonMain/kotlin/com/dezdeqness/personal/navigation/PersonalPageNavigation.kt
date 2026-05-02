@@ -1,16 +1,18 @@
 package com.dezdeqness.personal.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.personal.ui.PersonalStandalonePage
+import kotlinx.serialization.Serializable
 
-const val PERSONAL_ROUTE = "personal_route"
+@Serializable
+data object PersonalRoute : NavKey
 
-fun NavGraphBuilder.personalScreen(
+fun EntryProviderScope<NavKey>.personalEntries(
     onItemClicked: (Long, String) -> Unit,
     onEmptyListActionClicked: () -> Unit,
 ) {
-    composable(PERSONAL_ROUTE) {
+    entry<PersonalRoute> {
         PersonalStandalonePage(
             onItemClicked = onItemClicked,
             onEmptyListActionClicked = onEmptyListActionClicked,

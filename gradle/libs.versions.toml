@@ -28,7 +28,8 @@ sentryKmp = "0.25.0"
 composeBom = "2025.11.01"
 supportCoreVersion = "0.1.2"
 supportCoreUiVersion = "0.3.1-beta08"
-androidx-navigation = "2.9.1"
+lifecycle-viewmodel-nav3 = "2.10.0"
+navigation-nav3 = "1.1.0-alpha01"
 coil = "3.3.0"
 material = "1.9.0"
 koin-bom = "4.1.1"
@@ -90,7 +91,8 @@ koin-android = { module = "io.insert-koin:koin-android" }
 koin-compose = { group = "io.insert-koin", name = "koin-compose" }
 koin-compose-viewmodel = { group = "io.insert-koin", name = "koin-compose-viewmodel"}
 
-androidx-navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "androidx-navigation" }
+androidx-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "navigation-nav3" }
+androidx-lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle-viewmodel-nav3" }
 coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose-core", version.ref = "coil" }
 coil-core = { group = "io.coil-kt.coil3", name = "coil-core", version.ref = "coil" }
 coil-kt = { group = "io.coil-kt.coil3", name = "coil", version.ref = "coil" }

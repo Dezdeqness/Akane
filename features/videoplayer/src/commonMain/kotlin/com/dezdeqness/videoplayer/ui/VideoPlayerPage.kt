@@ -9,6 +9,7 @@ import com.dezdeqness.videoplayer.VideoPlayerScreen
 
 @Composable
 fun VideoPlayerPage(
+    viewModel: VideoPlayerViewModel,
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
 ) {
@@ -17,6 +18,7 @@ fun VideoPlayerPage(
         containerColor = MaterialTheme.colorScheme.primaryContainer,
     ) {
         VideoPlayerScreen(
+            videoPlayerViewModel = viewModel,
             onBackButtonClicked = onBackPressed,
         )
     }

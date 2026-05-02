@@ -1,13 +1,15 @@
 package com.dezdeqness.feed.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.feed.ui.FeedPage
+import kotlinx.serialization.Serializable
 
-const val FEED_ROUTE = "feed_route"
+@Serializable
+data object FeedRoute : NavKey
 
-fun NavGraphBuilder.feedScreen(onReleaseClicked: (Long, String) -> Unit) {
-    composable(FEED_ROUTE) {
+fun EntryProviderScope<NavKey>.feedEntries(onReleaseClicked: (Long, String) -> Unit) {
+    entry<FeedRoute> {
         FeedPage(onReleaseClicked = onReleaseClicked)
     }
 }

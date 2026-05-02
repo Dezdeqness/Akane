@@ -1,6 +1,5 @@
 package com.dezdeqness.details.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
@@ -11,7 +10,6 @@ import com.dezdeqness.details.domain.model.FranchiseEntity
 import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
 import com.dezdeqness.details.domain.repository.FranchiseRepository
 import com.dezdeqness.details.domain.repository.ReleaseRepository
-import com.dezdeqness.details.navigation.RELEASE_ID
 import com.dezdeqness.details.ui.model.DetailsTab
 import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
@@ -36,6 +34,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class ReleaseDetailsViewModel(
+    private val releaseId: Long,
     private val releaseRepository: ReleaseRepository,
     private val franchiseRepository: FranchiseRepository,
     private val personalRepository: PersonalRepository,
@@ -47,10 +46,7 @@ class ReleaseDetailsViewModel(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
     private val errorReporter: AkaneErrorReporter,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
-    private var releaseId = savedStateHandle.get<Long>(RELEASE_ID) ?: -1
 
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 

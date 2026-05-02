@@ -11,12 +11,13 @@ class CMPFeatureConventionPlugin : Plugin<Project> {
                 apply(libs.findPlugin("dezdeqness-kmp-library").get().get().pluginId)
                 apply(libs.findPlugin("jetbrainsCompose").get().get().pluginId)
                 apply(libs.findPlugin("compose-compiler").get().get().pluginId)
+                apply(libs.findPlugin("kotlin-serialization").get().get().pluginId)
             }
             dependencies {
                 add("commonMainImplementation", project(":common:designsystem"))
                 add("commonMainImplementation", project(":common:network"))
                 add("commonMainImplementation", project(":common:foundation"))
-                add("commonMainImplementation", libs.findLibrary("androidx-navigation-compose").get())
+                add("commonMainImplementation", libs.findLibrary("androidx-navigation3-ui").get())
             }
         }
     }

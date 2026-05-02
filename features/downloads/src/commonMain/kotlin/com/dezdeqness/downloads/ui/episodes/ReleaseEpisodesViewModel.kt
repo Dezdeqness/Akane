@@ -1,12 +1,10 @@
 package com.dezdeqness.downloads.ui.episodes
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.downloads.data.manager.DownloadManager
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
-import com.dezdeqness.downloads.navigation.RELEASE_ID_ARG
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -20,13 +18,11 @@ data class ReleaseEpisodesState(
 )
 
 class ReleaseEpisodesViewModel(
+    private val releaseId: Long,
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
     private val syncRepository: SyncDownloadsEpisodeRepository,
     private val downloadManager: DownloadManager,
-    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
-
-    private val releaseId = savedStateHandle.get<Long>(RELEASE_ID_ARG) ?: -1L
 
     val state: StateFlow<ReleaseEpisodesState> = downloadEpisodeRepository
         .getCompletedByReleaseIdAsFlow(releaseId)

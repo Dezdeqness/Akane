@@ -1,6 +1,5 @@
 package com.dezdeqness.videoplayer.ui
 
-import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneAnalytics
@@ -17,10 +16,6 @@ import com.dezdeqness.videoplayer.core.player.data.MediaSource
 import com.dezdeqness.videoplayer.core.player.data.QualityVariant
 import com.dezdeqness.videoplayer.core.player.data.SkipRange
 import com.dezdeqness.videoplayer.core.player.feature.installPlatformFeatures
-import com.dezdeqness.videoplayer.navigation.DOWNLOAD_RELEASE_ID
-import com.dezdeqness.videoplayer.navigation.DOWNLOAD_START_EPISODE_ID
-import com.dezdeqness.videoplayer.navigation.EPISODE_ID
-import com.dezdeqness.videoplayer.navigation.ID
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import io.ktor.http.decodeURLPart
 import kotlinx.coroutines.CancellationException
@@ -40,19 +35,16 @@ class VideoPlayerViewModel(
     private val releaseRepository: ReleaseRepository,
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
     private val uiMapper: VideoPlayerUiMapper,
-    savedStateHandle: SavedStateHandle,
     private val dispatchers: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
     private val errorReporter: AkaneErrorReporter,
+    private val releaseId: Long,
+    private val initialEpisodeId: String,
+    private val downloadReleaseId: Long,
+    private val downloadStartEpisodeId: String,
 ) : ViewModel() {
 
     val manager = VideoPlayerManager(player, viewModelScope)
-
-    private val releaseId: Long = savedStateHandle.get<Long>(ID) ?: -1
-    private val initialEpisodeId: String = savedStateHandle.get<String>(EPISODE_ID).orEmpty()
-    private val downloadReleaseId: Long = savedStateHandle.get<Long>(DOWNLOAD_RELEASE_ID) ?: -1L
-    private val downloadStartEpisodeId: String =
-        savedStateHandle.get<String>(DOWNLOAD_START_EPISODE_ID).orEmpty().decodeURLPart()
 
     private val isDownloadedPlaylist: Boolean = downloadReleaseId > 0
 

@@ -1,32 +1,31 @@
 package com.dezdeqness.details.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.details.ui.DetailsPage
+import com.dezdeqness.details.ui.ReleaseDetailsViewModel
+import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-const val RELEASE_ID = "releaseId"
-const val DETAILS_ROUTE = "details_route/{$RELEASE_ID}"
+@Serializable
+data class DetailsRoute(val releaseId: Long) : NavKey
 
-fun NavGraphBuilder.detailsScreen(
+fun EntryProviderScope<NavKey>.detailsEntries(
     onBackPressed: () -> Unit,
     onEpisodeClick: (Long, String) -> Unit,
 ) {
-    composable(
-        DETAILS_ROUTE,
-        arguments = listOf(
-            navArgument(RELEASE_ID) { type = NavType.LongType },
-        ),
-    ) {
+    entry<DetailsRoute> { key ->
+        val viewModel: ReleaseDetailsViewModel = koinViewModel { parametersOf(key.releaseId) }
         DetailsPage(
+            viewModel = viewModel,
             onBackPressed = onBackPressed,
             onEpisodeClick = onEpisodeClick,
         )
     }
 }
 
-fun NavHostController.navigateToDetailsScreen(releaseId: Long) {
-    navigate("details_route/$releaseId")
+fun NavBackStack<NavKey>.navigateToDetailsScreen(releaseId: Long) {
+    add(DetailsRoute(releaseId))
 }

@@ -1,13 +1,15 @@
 package com.dezdeqness.home.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.compose.composable
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.home.ui.HomePageStandalone
+import kotlinx.serialization.Serializable
 
-const val HOME_ROUTE = "home_route"
+@Serializable
+data object HomeRoute : NavKey
 
-fun NavGraphBuilder.homeScreen(onItemClicked: (Long, String) -> Unit) {
-    composable(HOME_ROUTE) {
+fun EntryProviderScope<NavKey>.homeEntries(onItemClicked: (Long, String) -> Unit) {
+    entry<HomeRoute> {
         HomePageStandalone(onItemClicked = onItemClicked)
     }
 }

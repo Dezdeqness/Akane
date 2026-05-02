@@ -1,8 +1,9 @@
 package com.dezdeqness.videoplayer.navigation
 
-import androidx.navigation.NavHostController
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 
 interface VideoPlayerNavigationController {
-    fun navigateToPlayer(controller: NavHostController, id: Long, episodeId: String)
-    fun navigateToDownloadedPlaylist(controller: NavHostController, releaseId: Long, startEpisodeId: String)
+    fun navigateToPlayer(backStack: NavBackStack<NavKey>, id: Long, episodeId: String)
+    fun navigateToDownloadedPlaylist(backStack: NavBackStack<NavKey>, releaseId: Long, startEpisodeId: String)
 }

@@ -1,80 +1,53 @@
 package com.dezdeqness.videoplayer.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.videoplayer.ui.VideoPlayerPage
+import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import io.ktor.http.encodeURLParameter
+import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-const val ID = "id"
-const val EPISODE_ID = "episodeId"
-const val VIDEO_PLAYER_ROUTE = "video_player_route/{$ID}/{$EPISODE_ID}"
+@Serializable
+data class VideoPlayerRoute(val id: Long, val episodeId: String) : NavKey
 
-const val DOWNLOAD_RELEASE_ID = "downloadReleaseId"
-const val DOWNLOAD_START_EPISODE_ID = "downloadStartEpisodeId"
-const val DOWNLOADED_PLAYLIST_ROUTE = "downloaded_playlist_route/{$DOWNLOAD_RELEASE_ID}/{$DOWNLOAD_START_EPISODE_ID}"
+@Serializable
+data class DownloadedPlaylistRoute(val downloadReleaseId: Long, val downloadStartEpisodeId: String) : NavKey
 
-fun NavGraphBuilder.videoPlayerScreen(
-    onBackPressed: () -> Unit,
-) {
-    composable(
-        route = VIDEO_PLAYER_ROUTE,
-        arguments = listOf(
-            navArgument(ID) {
-                type = NavType.LongType
-                nullable = false
-            },
-            navArgument(EPISODE_ID) {
-                type = NavType.StringType
-                nullable = false
-            }
-        )
-    ) { _ ->
-        VideoPlayerPage(
-            onBackPressed = onBackPressed,
-        )
+fun EntryProviderScope<NavKey>.videoPlayerEntries(onBackPressed: () -> Unit) {
+    entry<VideoPlayerRoute> { key ->
+        val viewModel: VideoPlayerViewModel = koinViewModel {
+            parametersOf(key.id, key.episodeId, -1L, "")
+        }
+        VideoPlayerPage(viewModel = viewModel, onBackPressed = onBackPressed)
     }
 }
 
-fun NavHostController.navigateToVideoPlayerScreen(id: Long, episodeId: String) {
-    navigate("video_player_route/$id/$episodeId")
-}
-
-fun NavGraphBuilder.downloadedPlaylistScreen(
-    onBackPressed: () -> Unit,
-) {
-    composable(
-        route = DOWNLOADED_PLAYLIST_ROUTE,
-        arguments = listOf(
-            navArgument(DOWNLOAD_RELEASE_ID) {
-                type = NavType.LongType
-                nullable = false
-            },
-            navArgument(DOWNLOAD_START_EPISODE_ID) {
-                type = NavType.StringType
-                nullable = false
-            }
-        )
-    ) {
-        VideoPlayerPage(
-            onBackPressed = onBackPressed,
-        )
+fun EntryProviderScope<NavKey>.downloadedPlaylistEntries(onBackPressed: () -> Unit) {
+    entry<DownloadedPlaylistRoute> { key ->
+        val viewModel: VideoPlayerViewModel = koinViewModel {
+            parametersOf(-1L, "", key.downloadReleaseId, key.downloadStartEpisodeId)
+        }
+        VideoPlayerPage(viewModel = viewModel, onBackPressed = onBackPressed)
     }
 }
 
-fun NavHostController.navigateToDownloadedPlaylist(releaseId: Long, startEpisodeId: String) {
-    val encodedEpisodeId = startEpisodeId.encodeURLParameter()
-    navigate("downloaded_playlist_route/$releaseId/$encodedEpisodeId")
+fun NavBackStack<NavKey>.navigateToVideoPlayerScreen(id: Long, episodeId: String) {
+    add(VideoPlayerRoute(id, episodeId))
+}
+
+fun NavBackStack<NavKey>.navigateToDownloadedPlaylist(releaseId: Long, startEpisodeId: String) {
+    add(DownloadedPlaylistRoute(downloadReleaseId = releaseId, downloadStartEpisodeId = startEpisodeId.encodeURLParameter()))
 }
 
 class VideoPlayerNavigationControllerImpl : VideoPlayerNavigationController {
-    override fun navigateToPlayer(controller: NavHostController, id: Long, episodeId: String) {
-        controller.navigateToVideoPlayerScreen(id = id, episodeId = episodeId)
+    override fun navigateToPlayer(backStack: NavBackStack<NavKey>, id: Long, episodeId: String) {
+        backStack.navigateToVideoPlayerScreen(id = id, episodeId = episodeId)
     }
 
-    override fun navigateToDownloadedPlaylist(controller: NavHostController, releaseId: Long, startEpisodeId: String) {
-        controller.navigateToDownloadedPlaylist(releaseId = releaseId, startEpisodeId = startEpisodeId)
+    override fun navigateToDownloadedPlaylist(backStack: NavBackStack<NavKey>, releaseId: Long, startEpisodeId: String) {
+        backStack.navigateToDownloadedPlaylist(releaseId = releaseId, startEpisodeId = startEpisodeId)
     }
 }

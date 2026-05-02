@@ -1,29 +1,33 @@
 package com.dezdeqness.downloads.navigation
 
-import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
-import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
+import androidx.navigation3.runtime.EntryProviderScope
+import androidx.navigation3.runtime.NavBackStack
+import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.downloads.ui.activedownloads.ActiveDownloadsPage
 import com.dezdeqness.downloads.ui.episodes.ReleaseEpisodesPage
+import com.dezdeqness.downloads.ui.episodes.ReleaseEpisodesViewModel
 import com.dezdeqness.downloads.ui.library.LibraryPage
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.serialization.Serializable
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 
-const val DOWNLOADS_ROUTE = "downloads_route"
+@Serializable
+data object DownloadsRoute : NavKey
 
-const val RELEASE_ID_ARG = "releaseId"
-const val RELEASE_EPISODES_ROUTE = "release_episodes_route/{$RELEASE_ID_ARG}"
+@Serializable
+data class ReleaseEpisodesRoute(val releaseId: Long) : NavKey
 
-const val ACTIVE_DOWNLOADS_ROUTE = "active_downloads_route"
+@Serializable
+data object ActiveDownloadsRoute : NavKey
 
-fun NavGraphBuilder.downloadsScreen(
+fun EntryProviderScope<NavKey>.downloadsEntries(
     onReleaseClicked: (releaseId: Long) -> Unit,
     activeDownloadsCountFlow: Flow<Int> = emptyFlow(),
     onActiveDownloadsClicked: () -> Unit = {},
 ) {
-    composable(DOWNLOADS_ROUTE) {
+    entry<DownloadsRoute> {
         LibraryPage(
             onReleaseClicked = onReleaseClicked,
             activeDownloadsCountFlow = activeDownloadsCountFlow,
@@ -32,37 +36,32 @@ fun NavGraphBuilder.downloadsScreen(
     }
 }
 
-fun NavGraphBuilder.releaseEpisodesScreen(
+fun EntryProviderScope<NavKey>.releaseEpisodesEntries(
     onBackPressed: () -> Unit,
     onPlayClicked: (releaseId: Long, episodeId: String) -> Unit,
 ) {
-    composable(
-        route = RELEASE_EPISODES_ROUTE,
-        arguments = listOf(
-            navArgument(RELEASE_ID_ARG) { type = NavType.LongType },
-        ),
-    ) {
+    entry<ReleaseEpisodesRoute> { key ->
+        val viewModel: ReleaseEpisodesViewModel = koinViewModel { parametersOf(key.releaseId) }
         ReleaseEpisodesPage(
+            viewModel = viewModel,
             onPlayClicked = onPlayClicked,
             onBackPressed = onBackPressed,
         )
     }
 }
 
-fun NavGraphBuilder.activeDownloadsScreen(
+fun EntryProviderScope<NavKey>.activeDownloadsEntries(
     onBackPressed: () -> Unit,
 ) {
-    composable(ACTIVE_DOWNLOADS_ROUTE) {
-        ActiveDownloadsPage(
-            onBackPressed = onBackPressed,
-        )
+    entry<ActiveDownloadsRoute> {
+        ActiveDownloadsPage(onBackPressed = onBackPressed)
     }
 }
 
-fun NavHostController.navigateToReleaseEpisodes(releaseId: Long) {
-    navigate("release_episodes_route/$releaseId")
+fun NavBackStack<NavKey>.navigateToReleaseEpisodes(releaseId: Long) {
+    add(ReleaseEpisodesRoute(releaseId))
 }
 
-fun NavHostController.navigateToActiveDownloads() {
-    navigate(ACTIVE_DOWNLOADS_ROUTE)
+fun NavBackStack<NavKey>.navigateToActiveDownloads() {
+    add(ActiveDownloadsRoute)
 }
