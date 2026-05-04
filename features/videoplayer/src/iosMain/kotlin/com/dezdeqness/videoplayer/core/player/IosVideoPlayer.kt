@@ -168,6 +168,7 @@ class IosVideoPlayer : VideoPlayer {
 
     override fun seekTo(positionMs: Long) {
         avPlayer.seekToTime(CMTimeMake(positionMs.coerceAtLeast(0), 1000))
+        _events.tryEmit(PlayerEvent.PositionChanged(positionMs))
     }
 
     override fun seekForward() {

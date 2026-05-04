@@ -154,6 +154,7 @@ class DesktopVideoPlayer : VideoPlayer {
 
     override fun seekTo(positionMs: Long) {
         mediaPlayer.controls().setTime(positionMs.coerceAtLeast(0))
+        _events.tryEmit(PlayerEvent.PositionChanged(positionMs))
     }
 
     override fun setVolume(volume: Float) {

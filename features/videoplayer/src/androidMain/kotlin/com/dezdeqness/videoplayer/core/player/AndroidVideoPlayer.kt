@@ -67,8 +67,10 @@ class AndroidVideoPlayer(context: Context) : VideoPlayer {
         tickerJob?.cancel()
         tickerJob = scope.launch {
             while (isActive) {
-                _events.emit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
-                _events.emit(PlayerEvent.BufferedChanged(exoPlayer.bufferedPosition))
+                if (exoPlayer.isPlaying) {
+                    _events.emit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
+                    _events.emit(PlayerEvent.BufferedChanged(exoPlayer.bufferedPosition))
+                }
                 delay(500)
             }
         }
@@ -93,9 +95,15 @@ class AndroidVideoPlayer(context: Context) : VideoPlayer {
         scope.cancel()
     }
 
-    override fun seekBack() = exoPlayer.seekBack()
-    override fun seekForward() = exoPlayer.seekForward()
-    override fun seekTo(positionMs: Long) = exoPlayer.seekTo(positionMs.coerceAtLeast(0))
+    override fun seekBack() = exoPlayer.seekBack().also {
+        _events.tryEmit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
+    }
+    override fun seekForward() = exoPlayer.seekForward().also {
+        _events.tryEmit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
+    }
+    override fun seekTo(positionMs: Long) = exoPlayer.seekTo(positionMs.coerceAtLeast(0)).also {
+        _events.tryEmit(PlayerEvent.PositionChanged(exoPlayer.currentPosition))
+    }
     override fun setVolume(volume: Float) {
         exoPlayer.volume = volume.coerceIn(0f, 1f)
     }
