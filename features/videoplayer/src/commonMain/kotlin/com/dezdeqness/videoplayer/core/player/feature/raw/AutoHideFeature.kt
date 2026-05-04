@@ -27,6 +27,8 @@ class AutoHideFeature(
     private var featureScope: CoroutineScope? = null
     private var timerJob: Job? = null
 
+    private var isPointerDown = false
+
     override fun install(context: PlayerContext, scope: CoroutineScope) {
         playerContext = context
         featureScope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -58,6 +60,7 @@ class AutoHideFeature(
                     val isPressed = event.changes.any { it.pressed }
 
                     if (!wasPressed && isPressed) {
+                        isPointerDown = true
                         val context = playerContext ?: run { wasPressed = isPressed; continue }
 
                         val anyConsumed = event.changes.any { it.isConsumed }
@@ -94,6 +97,7 @@ class AutoHideFeature(
                     }
 
                     if (wasPressed && !isPressed) {
+                        isPointerDown = false
                         val context = playerContext ?: run { wasPressed = isPressed; continue }
                         if (context.playerState.value.isPlaying) {
                             restartTimer()
@@ -128,6 +132,12 @@ class AutoHideFeature(
         timerJob?.cancel()
         timerJob = featureScope?.launch {
             delay(timeoutMs)
+
+            if (isPointerDown) {
+                restartTimer()
+                return@launch
+            }
+
             if (context.autoHidePaused.value) {
                 context.autoHidePaused.collect { paused ->
                     if (!paused) {

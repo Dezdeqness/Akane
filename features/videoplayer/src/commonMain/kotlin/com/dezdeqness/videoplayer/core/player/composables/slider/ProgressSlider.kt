@@ -276,7 +276,7 @@ private fun SliderGestureLayer(
         valueRange = 0f..duration.toFloat(),
         modifier = modifier.fillMaxWidth(),
         thumb = {
-            Box(modifier = Modifier.size(1.dp))
+            Box(modifier = Modifier.size(24.dp).offset(y = (-6).dp))
         },
         track = {
             Box(
