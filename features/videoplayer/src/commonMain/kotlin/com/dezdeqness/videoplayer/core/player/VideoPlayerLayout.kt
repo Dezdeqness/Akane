@@ -2,6 +2,7 @@ package com.dezdeqness.videoplayer.core.player
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.CubicBezierEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -55,6 +56,15 @@ fun VideoPlayerLayout(
             end = safePadding.calculateRightPadding(LayoutDirection.Ltr),
         )
     }
+
+    val bottomPadding by animateDpAsState(
+        targetValue = if (controlsVisible && !isLocked) {
+            if (isPortrait) 160.dp else 80.dp
+        } else {
+            16.dp
+        },
+        label = "overlay_padding"
+    )
 
     Box(
         modifier = modifier
@@ -114,13 +124,7 @@ fun VideoPlayerLayout(
             modifier = Modifier
                 .align(if (isPortrait) Alignment.BottomCenter else Alignment.BottomEnd)
                 .padding(outerPadding)
-                .padding(
-                    bottom = if (controlsVisible && !isLocked) {
-                        if (isPortrait) 160.dp else 80.dp
-                    } else {
-                        16.dp
-                    },
-                ),
+                .padding(bottom = bottomPadding),
             contentAlignment = Alignment.Center,
         ) {
             engine.registry.SlotContent(ControlSlot.Overlay)
