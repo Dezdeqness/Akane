@@ -6,6 +6,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -18,8 +19,8 @@ fun FeedPage(
     val state by viewModel.feedStateFlow.collectAsStateOnLifecycle()
     val isFeedFilterShownState by viewModel.isFeedFilterShownState.collectAsStateOnLifecycle()
 
-    AdaptiveLayout(modifier = modifier.fillMaxSize()) { type ->
-        when (type) {
+    AdaptiveLayout(modifier = modifier.fillMaxSize()) {
+        when (val type = LocalLayoutType.current) {
             LayoutType.Mobile -> {
                 FeedPageMobile(
                     state = state,

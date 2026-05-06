@@ -17,6 +17,7 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.toolbar.AppToolbar
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.personal.ui.composables.PersonalEmpty
 import com.dezdeqness.personal.ui.composables.PersonalGrid
 import kotlinx.coroutines.flow.StateFlow
@@ -48,7 +49,9 @@ fun PersonalPage(
                     onAction = actions::onEmptyListActionClicked,
                 )
             } else {
-                AdaptiveLayout(modifier = Modifier.fillMaxSize()) { type ->
+                AdaptiveLayout(modifier = Modifier.fillMaxSize()) {
+                    val type = LocalLayoutType.current
+
                     val columns = when (type) {
                         LayoutType.Mobile -> 3
                         LayoutType.Tablet -> 5

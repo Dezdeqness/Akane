@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
@@ -25,7 +26,9 @@ fun ReleaseDetailsLoaded(
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
     ) {
-        AdaptiveLayout(modifier = modifier.fillMaxSize()) { type ->
+        AdaptiveLayout(modifier = modifier.fillMaxSize()) {
+            val type = LocalLayoutType.current
+
             when (type) {
                 LayoutType.Mobile -> {
                     ReleaseDetailsLoadedMobile(

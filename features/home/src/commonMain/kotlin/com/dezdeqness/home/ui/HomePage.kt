@@ -8,6 +8,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.foundation.utils.collectAsStateOnLifecycle
 import com.dezdeqness.home.ui.adaptive.HomePageMobile
 import com.dezdeqness.home.ui.adaptive.HomePageWide
@@ -38,7 +39,9 @@ fun HomePage(
             )
 
             else -> {
-                AdaptiveLayout { type ->
+                AdaptiveLayout {
+                    val type = LocalLayoutType.current
+
                     val isMobile = type == LayoutType.Mobile
 
                     if (isMobile) {

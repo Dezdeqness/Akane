@@ -128,8 +128,8 @@ class VideoPlayerViewModel(
                     ScreenState(isLoading = false, isError = true)
                 } else {
                     val items = episodes.toMediaItems()
-                    val startIdx = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
-                    manager.setPlaylist(items, startIdx)
+                    val startIndex = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
+                    manager.setPlaylist(items, startIndex)
                     ScreenState(
                         title = result.getOrNull()?.name.orEmpty(),
                         isLoading = false,

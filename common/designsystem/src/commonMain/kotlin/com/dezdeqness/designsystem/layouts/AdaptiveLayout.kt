@@ -2,6 +2,8 @@ package com.dezdeqness.designsystem.layouts
 
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -26,9 +28,17 @@ fun adaptiveLayoutType(width: Dp): LayoutType {
 @Composable
 fun AdaptiveLayout(
     modifier: Modifier = Modifier,
-    content: @Composable (LayoutType) -> Unit,
+    content: @Composable () -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
-        content(adaptiveLayoutType(maxWidth))
+        val type = adaptiveLayoutType(maxWidth)
+
+        CompositionLocalProvider(LocalLayoutType provides type) {
+            content()
+        }
     }
+}
+
+val LocalLayoutType = staticCompositionLocalOf<LayoutType> {
+    error("No LayoutType provided")
 }

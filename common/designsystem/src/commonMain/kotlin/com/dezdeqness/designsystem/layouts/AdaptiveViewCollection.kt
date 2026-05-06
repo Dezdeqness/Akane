@@ -22,9 +22,8 @@ fun <T> AdaptiveViewCollection(
     mobileItem: @Composable (T) -> Unit,
     wideItem: @Composable (T) -> Unit,
 ) {
-    AdaptiveLayout(modifier = modifier.fillMaxSize()) { type ->
-
-        when (type) {
+    AdaptiveLayout(modifier = modifier.fillMaxSize()) {
+        when (val type = LocalLayoutType.current) {
             LayoutType.Mobile -> {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),

@@ -15,6 +15,7 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.header.Header
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.details.ui.composables.core.MetadataRow
 import com.dezdeqness.details.ui.model.DetailsTab
 
@@ -69,7 +70,9 @@ fun FranchiseTabContent(franchise: DetailsTab.FranchiseTab) {
             titleStyle = AppTheme.typography.labelLarge.copy(fontSize = 18.sp),
         )
 
-        AdaptiveLayout { type ->
+        AdaptiveLayout {
+            val type = LocalLayoutType.current
+
             when (type) {
                 LayoutType.Mobile -> {
                     Column {
