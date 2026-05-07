@@ -26,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.designsystem.layouts.AdaptiveLayout
+import com.dezdeqness.designsystem.layouts.LayoutType
+import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.foundation.config.getDeviceConfiguration
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
 import com.dezdeqness.videoplayer.core.player.composables.slider.ProgressSliderState
@@ -69,9 +71,10 @@ fun VideoPlayerLayout(
     )
 
     AdaptiveLayout(modifier = modifier.fillMaxSize()) {
+        val layoutType = LocalLayoutType.current
 
         Row(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.fillMaxSize().then(engine.registry.combinedModifier())) {
+            Box(modifier = Modifier.weight(1f).then(engine.registry.combinedModifier())) {
                 Row {
                     AnimatedVisibility(
                         visible = controlsVisible && !isLocked,
@@ -134,10 +137,12 @@ fun VideoPlayerLayout(
                     engine.registry.SlotContent(ControlSlot.Overlay)
                 }
             }
-        }
 
-        Box(modifier = Modifier.fillMaxHeight()) {
-            engine.registry.SlotContent(ControlSlot.SidePanel)
+            if (layoutType == LayoutType.Desktop) {
+                Box(modifier = Modifier.fillMaxHeight()) {
+                    engine.registry.SlotContent(ControlSlot.SidePanel)
+                }
+            }
         }
     }
 }
