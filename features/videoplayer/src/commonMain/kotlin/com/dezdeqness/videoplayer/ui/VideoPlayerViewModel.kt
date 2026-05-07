@@ -5,19 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.details.domain.model.VideoQuality
 import com.dezdeqness.details.domain.repository.ReleaseRepository
 import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
-import com.dezdeqness.videoplayer.core.player.data.MediaItem
-import com.dezdeqness.videoplayer.core.player.data.MediaQuality
-import com.dezdeqness.videoplayer.core.player.data.MediaSource
-import com.dezdeqness.videoplayer.core.player.data.QualityVariant
-import com.dezdeqness.videoplayer.core.player.data.SkipRange
 import com.dezdeqness.videoplayer.core.player.feature.installPlatformFeatures
-import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
-import io.ktor.http.decodeURLPart
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -35,6 +27,7 @@ class VideoPlayerViewModel(
     private val releaseRepository: ReleaseRepository,
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
     private val uiMapper: VideoPlayerUiMapper,
+    private val mediaItemMapper: MediaItemMapper,
     private val dispatchers: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
     private val errorReporter: AkaneErrorReporter,
@@ -127,7 +120,7 @@ class VideoPlayerViewModel(
                     }
                     ScreenState(isLoading = false, isError = true)
                 } else {
-                    val items = episodes.toMediaItems()
+                    val items = episodes.map(mediaItemMapper::toMultiQualityMediaItem)
                     val startIndex = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
                     manager.setPlaylist(items, startIndex)
                     ScreenState(
@@ -160,16 +153,7 @@ class VideoPlayerViewModel(
                     return@launch
                 }
 
-                val items = downloads.filter { it.filePath != null }.map { item ->
-                    MediaItem(
-                        id = item.episodeId,
-                    title = "${item.episodeOrdinal} эпизод — ${item.episodeName}",
-                        source = MediaSource.FilePath(item.filePath!!),
-                        previewUrl = item.previewUrl,
-                        opening = item.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
-                        ending = item.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
-                    )
-                }
+                val items = downloads.filter { it.filePath != null }.map(mediaItemMapper::toFilePathMediaItem)
                 val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }
                     .coerceAtLeast(0)
 
@@ -217,31 +201,5 @@ class VideoPlayerViewModel(
                 "is_downloaded_playlist" to isDownloadedPlaylist.toString(),
             ),
         )
-    }
-}
-
-private fun List<EpisodeUiItem>.toMediaItems(): List<MediaItem> = map { episode ->
-    MediaItem(
-        id = episode.id,
-        title = episode.name.ifEmpty { "${episode.ordinal} эпизод" },
-        source = MediaSource.MultiQuality(
-            variants = episode.episodeUrls.map { (quality, url) ->
-                QualityVariant(
-                    quality = quality.toTransformToMediaQuality(),
-                    url = url,
-                )
-            },
-        ),
-        previewUrl = episode.previewUrl,
-        opening = episode.opening?.let { SkipRange(it.start * 1000, it.end * 1000) },
-        ending = episode.ending?.let { SkipRange(it.start * 1000, it.end * 1000) },
-    )
-}
-
-private fun VideoQuality.toTransformToMediaQuality(): MediaQuality {
-    return when (this) {
-        VideoQuality.q480 -> MediaQuality.q480
-        VideoQuality.q720 -> MediaQuality.q720
-        VideoQuality.q1080 -> MediaQuality.q1080
     }
 }

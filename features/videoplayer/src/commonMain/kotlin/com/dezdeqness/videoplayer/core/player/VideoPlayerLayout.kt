@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.foundation.config.getDeviceConfiguration
 import com.dezdeqness.videoplayer.core.player.feature.ControlSlot
 import com.dezdeqness.videoplayer.core.player.composables.slider.ProgressSliderState
@@ -66,68 +68,76 @@ fun VideoPlayerLayout(
         label = "overlay_padding"
     )
 
-    Box(
-        modifier = modifier
-            .fillMaxSize()
-            .then(engine.registry.combinedModifier()),
-    ) {
-        AnimatedVisibility(
-            visible = controlsVisible && !isLocked,
-            enter = controlsEnter,
-            exit = controlsExit,
-        ) {
-            Box(modifier = Modifier.fillMaxSize().padding(outerPadding)) {
+    AdaptiveLayout(modifier = modifier.fillMaxSize()) {
 
-                Row(
-                    modifier = Modifier.fillMaxWidth().align(Alignment.TopStart),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Row(
-                        modifier = Modifier.weight(1f, fill = false),
-                        verticalAlignment = Alignment.CenterVertically,
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(modifier = Modifier.fillMaxSize().then(engine.registry.combinedModifier())) {
+                Row {
+                    AnimatedVisibility(
+                        visible = controlsVisible && !isLocked,
+                        enter = controlsEnter,
+                        exit = controlsExit,
                     ) {
-                        engine.registry.SlotContent(ControlSlot.TopStart)
-                        appBarContent()
-                        engine.registry.SlotContent(ControlSlot.TopEnd)
+                        Box(modifier = Modifier.fillMaxSize().padding(outerPadding)) {
+
+                            Row(
+                                modifier = Modifier.fillMaxWidth().align(Alignment.TopStart),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                            ) {
+                                Row(
+                                    modifier = Modifier.weight(1f, fill = false),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    engine.registry.SlotContent(ControlSlot.TopStart)
+                                    appBarContent()
+                                    engine.registry.SlotContent(ControlSlot.TopEnd)
+                                }
+                            }
+
+                            Column(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                            ) {
+                                VideoPlayerControls(context = engine)
+                                engine.registry.SlotContent(ControlSlot.Center)
+                            }
+
+                            Column(
+                                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                            ) {
+                                BottomRow(engine = engine, isPortrait = isPortrait)
+                            }
+                        }
                     }
                 }
 
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
-                    VideoPlayerControls(context = engine)
-                    engine.registry.SlotContent(ControlSlot.Center)
+                Row(modifier = Modifier.align(Alignment.CenterEnd).padding(outerPadding)) {
+                    AnimatedVisibility(
+                        visible = if (isLocked) lockedControlsVisible else controlsVisible,
+                        enter = controlsEnter,
+                        exit = controlsExit,
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            engine.registry.SlotContent(ControlSlot.CenterEnd)
+                        }
+                    }
                 }
 
-                Column(
-                    modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth(),
+                Box(
+                    modifier = Modifier
+                        .align(if (isPortrait) Alignment.BottomCenter else Alignment.BottomEnd)
+                        .padding(outerPadding)
+                        .padding(bottom = bottomPadding),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    BottomRow(engine = engine, isPortrait = isPortrait)
+                    engine.registry.SlotContent(ControlSlot.Overlay)
                 }
             }
         }
 
-        AnimatedVisibility(
-            visible = if (isLocked) lockedControlsVisible else controlsVisible,
-            enter = controlsEnter,
-            exit = controlsExit,
-            modifier = Modifier.align(Alignment.CenterEnd).padding(outerPadding),
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                engine.registry.SlotContent(ControlSlot.CenterEnd)
-            }
-        }
-
-        Box(
-            modifier = Modifier
-                .align(if (isPortrait) Alignment.BottomCenter else Alignment.BottomEnd)
-                .padding(outerPadding)
-                .padding(bottom = bottomPadding),
-            contentAlignment = Alignment.Center,
-        ) {
-            engine.registry.SlotContent(ControlSlot.Overlay)
+        Box(modifier = Modifier.fillMaxHeight()) {
+            engine.registry.SlotContent(ControlSlot.SidePanel)
         }
     }
 }
