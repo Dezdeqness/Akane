@@ -74,7 +74,7 @@ fun VideoPlayerLayout(
         val layoutType = LocalLayoutType.current
 
         Row(modifier = Modifier.fillMaxSize()) {
-            Box(modifier = Modifier.weight(1f).then(engine.registry.combinedModifier())) {
+            Box(modifier = Modifier.weight(1f).fillMaxSize().then(engine.registry.combinedModifier())) {
                 Row {
                     AnimatedVisibility(
                         visible = controlsVisible && !isLocked,
