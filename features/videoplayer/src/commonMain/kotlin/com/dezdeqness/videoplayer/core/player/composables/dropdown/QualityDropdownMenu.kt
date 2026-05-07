@@ -3,6 +3,7 @@ package com.dezdeqness.videoplayer.core.player.composables.dropdown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -20,11 +21,12 @@ fun QualityDropdownMenu(
 ) {
     DropdownMenu(
         expanded = isExpanded,
-        onDismissRequest = { onDismiss() }
+        onDismissRequest = { onDismiss() },
+        containerColor = Color.Black,
     ) {
         variants.forEach { variant ->
             DropdownMenuItem(
-                text = { Text(variant.quality.nameQuality, color = Color.Black) },
+                text = { Text(variant.quality.nameQuality) },
                 onClick = {
                     onQualityChange(variant.quality)
                     onDismiss()
@@ -33,7 +35,11 @@ fun QualityDropdownMenu(
                     if (variant.quality == currentQuality) {
                         Icon(AkaneIcons.Check, contentDescription = null)
                     }
-                }
+                },
+                colors = MenuDefaults.itemColors().copy(
+                    trailingIconColor = Color.White,
+                    textColor = Color.White,
+                ),
             )
         }
     }

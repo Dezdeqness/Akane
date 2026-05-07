@@ -3,6 +3,7 @@ package com.dezdeqness.videoplayer.core.player.composables.dropdown
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MenuDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -18,18 +19,23 @@ fun VideoSpeedDropdownMenu(
 ) {
     DropdownMenu(
         expanded = isExpanded,
-        onDismissRequest = { onDismiss() }
+        onDismissRequest = { onDismiss() },
+        containerColor = Color.Black,
     ) {
         PlaybackSpeed.entries.forEach { item ->
             DropdownMenuItem(
-                text = { Text(item.label, color = Color.Black) },
+                text = { Text(item.label) },
                 onClick = {
                     onSpeedChange(item)
                     onDismiss()
                 },
                 trailingIcon = {
                     if (item == currentSpeed) Icon(AkaneIcons.Check, contentDescription = null)
-                }
+                },
+                colors = MenuDefaults.itemColors().copy(
+                    trailingIconColor = Color.White,
+                    textColor = Color.White,
+                ),
             )
         }
     }
