@@ -2,8 +2,8 @@ package com.dezdeqness.downloads.ui.library
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 import com.dezdeqness.downloads.ui.model.ReleaseGroup
 import kotlinx.coroutines.flow.SharingStarted

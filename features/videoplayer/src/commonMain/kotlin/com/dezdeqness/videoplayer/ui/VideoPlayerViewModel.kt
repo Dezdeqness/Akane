@@ -5,8 +5,8 @@ import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.details.domain.repository.ReleaseRepository
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.release.contract.repository.ReleaseRepository
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 import com.dezdeqness.videoplayer.core.player.feature.installPlatformFeatures

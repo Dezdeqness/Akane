@@ -4,9 +4,9 @@ import com.dezdeqness.downloads.data.db.DownloadEpisodeLocal
 import com.dezdeqness.downloads.data.db.DownloadProgressLocal
 import com.dezdeqness.downloads.data.db.DownloadWithProgress
 import com.dezdeqness.downloads.data.manager.DownloadFileManager
-import com.dezdeqness.downloads.domain.model.DownloadEntity
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.model.DownloadTiming
+import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.model.DownloadTiming
 
 class DownloadMapper(
     private val fileManager: DownloadFileManager,

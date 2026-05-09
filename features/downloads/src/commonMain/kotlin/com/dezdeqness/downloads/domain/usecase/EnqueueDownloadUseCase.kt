@@ -2,11 +2,11 @@ package com.dezdeqness.downloads.domain.usecase
 
 import com.dezdeqness.downloads.data.manager.DownloadManager
 import com.dezdeqness.downloads.data.platform.currentTimeMillis
-import com.dezdeqness.downloads.domain.model.DownloadEntity
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.model.DownloadTiming
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
-import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.model.DownloadTiming
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 
 class EnqueueDownloadUseCase(
     private val downloadEpisodeRepository: DownloadEpisodeRepository,

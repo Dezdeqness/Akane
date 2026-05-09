@@ -23,8 +23,8 @@ kotlin {
             implementation(compose.components.resources)
             implementation(project(":common:analytics"))
 
-            implementation(project(":features:details"))
-            implementation(project(":features:downloads"))
+            implementation(project(":contract:release"))
+            implementation(project(":contract:downloads"))
         }
 
         androidMain.dependencies {

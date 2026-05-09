@@ -16,6 +16,7 @@ kotlin {
             implementation(libs.material.icons.core)
             implementation(libs.kermit)
             implementation(project(":common:analytics"))
+            api(project(":contract:downloads"))
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
             implementation(libs.okio)

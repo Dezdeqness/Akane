@@ -1,7 +1,7 @@
 package com.dezdeqness.videoplayer.ui
 
 import androidx.compose.runtime.Immutable
-import com.dezdeqness.details.domain.model.VideoQuality
+import com.dezdeqness.release.contract.model.VideoQuality
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 
 @Immutable

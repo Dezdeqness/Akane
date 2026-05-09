@@ -1,6 +1,6 @@
 package com.dezdeqness.videoplayer.ui
 
-import com.dezdeqness.downloads.domain.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.videoplayer.core.player.data.MediaItem
 import com.dezdeqness.videoplayer.core.player.data.MediaSource
 import com.dezdeqness.videoplayer.core.player.data.QualityVariant

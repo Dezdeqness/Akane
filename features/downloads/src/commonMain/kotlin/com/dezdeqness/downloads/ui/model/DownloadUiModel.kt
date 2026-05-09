@@ -1,6 +1,6 @@
 package com.dezdeqness.downloads.ui.model
 
-import com.dezdeqness.downloads.domain.model.DownloadStatus
+import com.dezdeqness.downloads.contract.model.DownloadStatus
 
 data class DownloadUiModel(
     val id: Long,

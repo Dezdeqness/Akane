@@ -6,10 +6,10 @@ import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.downloads.data.hls.HlsParser
 import com.dezdeqness.downloads.data.network.HlsDownloadService
-import com.dezdeqness.downloads.domain.model.DownloadEntity
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
-import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.utils.io.readAvailable
 import kotlinx.coroutines.CancellationException

@@ -1,9 +1,9 @@
 package com.dezdeqness.downloads.data.repository
 
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.data.db.SyncDownloadEpisodeDao
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 
 class SyncDownloadsEpisodeRepositoryImpl(
     private val downloadEpisodeRepository: DownloadEpisodeRepository,

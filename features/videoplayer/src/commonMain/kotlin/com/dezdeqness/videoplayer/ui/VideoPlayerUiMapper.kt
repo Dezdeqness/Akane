@@ -1,7 +1,7 @@
 package com.dezdeqness.videoplayer.ui
 
-import com.dezdeqness.details.domain.model.EpisodeEntity
-import com.dezdeqness.details.domain.model.TimingEntity
+import com.dezdeqness.release.contract.model.EpisodeEntity
+import com.dezdeqness.release.contract.model.TimingEntity
 import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import com.dezdeqness.videoplayer.ui.model.TimingUiItem

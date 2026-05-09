@@ -1,7 +1,7 @@
 package com.dezdeqness.videoplayer.ui.model
 
 import androidx.compose.runtime.Stable
-import com.dezdeqness.details.domain.model.VideoQuality
+import com.dezdeqness.release.contract.model.VideoQuality
 
 @Stable
 data class EpisodeUiItem(

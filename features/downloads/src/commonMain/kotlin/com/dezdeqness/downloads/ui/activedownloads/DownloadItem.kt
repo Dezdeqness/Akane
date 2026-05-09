@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
-import com.dezdeqness.downloads.domain.model.DownloadStatus
+import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 
 @Composable

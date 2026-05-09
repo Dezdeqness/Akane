@@ -1,9 +1,9 @@
 package com.dezdeqness.downloads.domain.usecase
 
 import com.dezdeqness.downloads.data.manager.DownloadManager
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
-import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 
 class CancelDownloadUseCase(
     private val downloadEpisodeRepository: DownloadEpisodeRepository,

@@ -4,7 +4,7 @@ import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.downloads.data.platform.DownloadDirectoryProvider
 import com.dezdeqness.downloads.data.platform.VideoRemuxer
-import com.dezdeqness.downloads.domain.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadEntity
 import okio.BufferedSink
 import okio.FileSystem
 import okio.Path

@@ -2,8 +2,8 @@ package com.dezdeqness.downloads.di
 
 import com.dezdeqness.downloads.data.repository.DownloadEpisodeRepositoryImpl
 import com.dezdeqness.downloads.data.repository.SyncDownloadsEpisodeRepositoryImpl
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
-import com.dezdeqness.downloads.domain.repository.SyncDownloadsEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 import com.dezdeqness.downloads.domain.usecase.CancelAllDownloadsUseCase
 import com.dezdeqness.downloads.domain.usecase.CancelDownloadUseCase
 import com.dezdeqness.downloads.domain.usecase.EnqueueDownloadUseCase

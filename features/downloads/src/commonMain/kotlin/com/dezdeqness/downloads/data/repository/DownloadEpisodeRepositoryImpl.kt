@@ -3,9 +3,9 @@ package com.dezdeqness.downloads.data.repository
 import com.dezdeqness.downloads.data.db.DownloadEpisodeDao
 import com.dezdeqness.downloads.data.db.SyncDownloadEpisodeDao
 import com.dezdeqness.downloads.data.mapper.DownloadMapper
-import com.dezdeqness.downloads.domain.model.DownloadEntity
-import com.dezdeqness.downloads.domain.model.DownloadStatus
-import com.dezdeqness.downloads.domain.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadStatus
+import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -23,9 +23,9 @@ class DownloadEpisodeRepositoryImpl(
 
     override fun getActiveDownloadsCountAsFlow(): Flow<Int> {
         val activeStatuses = setOf(
-            com.dezdeqness.downloads.domain.model.DownloadStatus.QUEUED,
-            com.dezdeqness.downloads.domain.model.DownloadStatus.DOWNLOADING,
-            com.dezdeqness.downloads.domain.model.DownloadStatus.REMUXING,
+            com.dezdeqness.downloads.contract.model.DownloadStatus.QUEUED,
+            com.dezdeqness.downloads.contract.model.DownloadStatus.DOWNLOADING,
+            com.dezdeqness.downloads.contract.model.DownloadStatus.REMUXING,
         )
         return getAllDownloadsAsFlow().map { list ->
             list.count { it.status in activeStatuses }

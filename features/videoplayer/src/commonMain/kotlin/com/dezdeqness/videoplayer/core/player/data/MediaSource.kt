@@ -1,6 +1,6 @@
 package com.dezdeqness.videoplayer.core.player.data
 
-import com.dezdeqness.details.domain.model.VideoQuality
+import com.dezdeqness.release.contract.model.VideoQuality
 
 sealed interface MediaSource {
 
