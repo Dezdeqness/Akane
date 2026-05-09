@@ -1,7 +1,7 @@
 package com.dezdeqness.details.data.mapper
 
-import com.dezdeqness.details.domain.model.FranchiseEntity
-import com.dezdeqness.details.domain.model.FranchiseReleaseEntity
+import com.dezdeqness.release.contract.model.FranchiseEntity
+import com.dezdeqness.release.contract.model.FranchiseReleaseEntity
 import com.dezdeqness.network.models.response.FranchiseRelease
 import com.dezdeqness.network.models.response.FranchiseResponse
 

@@ -16,7 +16,9 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":common:analytics"))
-            implementation(project(":features:personal"))
+            api(project(":contract:release"))
+            implementation(project(":contract:personal"))
+            implementation(project(":contract:downloads"))
             implementation(project(":features:downloads"))
         }
         val desktopMain by getting

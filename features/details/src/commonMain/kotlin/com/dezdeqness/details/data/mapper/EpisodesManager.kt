@@ -1,8 +1,8 @@
 package com.dezdeqness.details.data.mapper
 
-import com.dezdeqness.details.domain.model.EpisodeEntity
-import com.dezdeqness.details.domain.model.TimingEntity
-import com.dezdeqness.details.domain.model.VideoQuality
+import com.dezdeqness.release.contract.model.EpisodeEntity
+import com.dezdeqness.release.contract.model.TimingEntity
+import com.dezdeqness.release.contract.model.VideoQuality
 import com.dezdeqness.network.models.core.Episode
 import com.dezdeqness.network.models.core.Timing
 

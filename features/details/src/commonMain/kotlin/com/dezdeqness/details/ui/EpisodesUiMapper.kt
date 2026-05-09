@@ -1,12 +1,12 @@
 package com.dezdeqness.details.ui
 
-import com.dezdeqness.details.domain.model.EpisodeEntity
-import com.dezdeqness.details.domain.model.TimingEntity
+import com.dezdeqness.release.contract.model.EpisodeEntity
+import com.dezdeqness.release.contract.model.TimingEntity
 import com.dezdeqness.details.ui.model.DownloadStatusUi
 import com.dezdeqness.details.ui.model.EpisodeTimingUiModel
 import com.dezdeqness.details.ui.model.EpisodesUiModel
-import com.dezdeqness.downloads.domain.model.DownloadEntity
-import com.dezdeqness.downloads.domain.model.DownloadStatus
+import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.network.constants.BaseUrl
 
 class EpisodesUiMapper {

@@ -2,8 +2,8 @@ package com.dezdeqness.details.di
 
 import com.dezdeqness.details.data.repository.FranchiseRepositoryImpl
 import com.dezdeqness.details.data.repository.ReleaseRepositoryImpl
-import com.dezdeqness.details.domain.repository.FranchiseRepository
-import com.dezdeqness.details.domain.repository.ReleaseRepository
+import com.dezdeqness.release.contract.repository.FranchiseRepository
+import com.dezdeqness.release.contract.repository.ReleaseRepository
 import org.koin.dsl.module
 
 val domainModule = module {

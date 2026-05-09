@@ -1,12 +1,12 @@
 package com.dezdeqness.details.ui
 
-import com.dezdeqness.details.domain.model.FranchiseEntity
-import com.dezdeqness.details.domain.model.ReleaseDetailsEntity
+import com.dezdeqness.release.contract.model.FranchiseEntity
+import com.dezdeqness.release.contract.model.ReleaseDetailsEntity
 import com.dezdeqness.details.ui.model.DetailsTab
 import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsHeaderUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
-import com.dezdeqness.downloads.domain.model.DownloadEntity
+import com.dezdeqness.downloads.contract.model.DownloadEntity
 
 class ReleaseDetailsUiMapper(
     private val episodesUiMapper: EpisodesUiMapper,
