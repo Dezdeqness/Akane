@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.personal.domain.repository.PersonalRepository
+import com.dezdeqness.personal.contract.repository.PersonalRepository
 import com.dezdeqness.personal.ui.mapper.PersonalUiMapper
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow

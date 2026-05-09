@@ -14,8 +14,8 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(project(":common:analytics"))
-            implementation(project(":features:feed"))
-            implementation(project(":features:calendar"))
+            implementation(project(":contract:feed"))
+            implementation(project(":contract:calendar"))
 
             implementation(libs.compottie)
             implementation(libs.compottie.dot)

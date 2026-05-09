@@ -1,6 +1,6 @@
 package com.dezdeqness.personal.ui.mapper
 
-import com.dezdeqness.personal.domain.models.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalEntity
 import com.dezdeqness.personal.ui.model.PersonalUiModel
 
 class PersonalUiMapper {

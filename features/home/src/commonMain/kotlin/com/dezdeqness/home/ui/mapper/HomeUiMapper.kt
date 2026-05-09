@@ -1,7 +1,7 @@
 package com.dezdeqness.home.ui.mapper
 
-import com.dezdeqness.calendar.domain.model.ScheduleItemEntity
-import com.dezdeqness.feed.domain.model.ReleaseEntity
+import com.dezdeqness.calendar.contract.model.ScheduleItemEntity
+import com.dezdeqness.feed.contract.model.ReleaseEntity
 import com.dezdeqness.home.ui.model.HomeUiModel
 
 class HomeUiMapper {

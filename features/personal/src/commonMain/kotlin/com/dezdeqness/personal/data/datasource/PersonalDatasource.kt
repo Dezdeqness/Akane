@@ -1,6 +1,6 @@
 package com.dezdeqness.personal.data.datasource
 
-import com.dezdeqness.personal.domain.models.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PersonalDatasource {

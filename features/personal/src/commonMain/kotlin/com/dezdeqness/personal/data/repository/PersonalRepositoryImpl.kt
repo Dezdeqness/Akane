@@ -1,8 +1,8 @@
 package com.dezdeqness.personal.data.repository
 
 import com.dezdeqness.personal.data.datasource.PersonalDatasource
-import com.dezdeqness.personal.domain.models.PersonalEntity
-import com.dezdeqness.personal.domain.repository.PersonalRepository
+import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.contract.repository.PersonalRepository
 
 class PersonalRepositoryImpl(
     private val personalDatasource: PersonalDatasource

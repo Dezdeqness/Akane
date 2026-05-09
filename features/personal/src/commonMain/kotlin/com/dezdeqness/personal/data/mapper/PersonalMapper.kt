@@ -2,7 +2,7 @@ package com.dezdeqness.personal.data.mapper
 
 import com.dezdeqness.personal.core.currentTimeMillis
 import com.dezdeqness.personal.data.models.PersonalLocal
-import com.dezdeqness.personal.domain.models.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalEntity
 
 class PersonalMapper {
     fun fromLocal(item: PersonalLocal) =

@@ -16,6 +16,7 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":common:analytics"))
+            api(project(":contract:personal"))
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
         }

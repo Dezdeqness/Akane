@@ -3,7 +3,7 @@ package com.dezdeqness.personal.data.datasource.impl
 import com.dezdeqness.personal.data.datasource.PersonalDatasource
 import com.dezdeqness.personal.data.db.PersonalDao
 import com.dezdeqness.personal.data.mapper.PersonalMapper
-import com.dezdeqness.personal.domain.models.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalEntity
 import kotlinx.coroutines.flow.map
 
 class PersonalDatasourceImpl(

@@ -3,11 +3,11 @@ package com.dezdeqness.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneErrorReporter
-import com.dezdeqness.calendar.domain.model.CalendarScheduleEntity
-import com.dezdeqness.calendar.domain.repository.CalendarRepository
+import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
+import com.dezdeqness.calendar.contract.repository.CalendarRepository
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.feed.domain.model.ReleaseEntity
-import com.dezdeqness.feed.domain.repository.FeedRepository
+import com.dezdeqness.feed.contract.model.ReleaseEntity
+import com.dezdeqness.feed.contract.repository.FeedRepository
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
