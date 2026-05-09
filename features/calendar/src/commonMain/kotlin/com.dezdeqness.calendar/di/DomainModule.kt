@@ -1,7 +1,7 @@
 package com.dezdeqness.calendar.di
 
 import com.dezdeqness.calendar.data.repository.CalendarRepositoryImpl
-import com.dezdeqness.calendar.domain.repository.CalendarRepository
+import com.dezdeqness.calendar.contract.repository.CalendarRepository
 import org.koin.dsl.module
 
 val domainModule = module {

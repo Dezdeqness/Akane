@@ -1,6 +1,6 @@
 package com.dezdeqness.feed.data.mapper
 
-import com.dezdeqness.feed.domain.model.ReleaseEntity
+import com.dezdeqness.feed.contract.model.ReleaseEntity
 import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.network.models.response.ReleaseResponse
 

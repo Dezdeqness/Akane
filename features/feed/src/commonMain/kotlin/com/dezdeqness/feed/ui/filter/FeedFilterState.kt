@@ -1,6 +1,6 @@
 package com.dezdeqness.feed.ui.filter
 
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.CatalogFilter
 
 data class FeedFilterState(
     val sections: List<FilterSectionUiModel> = listOf(),

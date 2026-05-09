@@ -1,7 +1,7 @@
 package com.dezdeqness.calendar.data.mapper
 
-import com.dezdeqness.calendar.domain.model.CalendarScheduleEntity
-import com.dezdeqness.calendar.domain.model.ScheduleItemEntity
+import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
+import com.dezdeqness.calendar.contract.model.ScheduleItemEntity
 import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.network.models.response.CalendarScheduleResponse
 import com.dezdeqness.network.models.response.ScheduleItemResponse

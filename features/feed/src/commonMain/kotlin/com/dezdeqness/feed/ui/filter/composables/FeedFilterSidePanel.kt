@@ -4,7 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.CatalogFilter
 import com.dezdeqness.feed.ui.filter.FeedFilterEvent
 import com.dezdeqness.feed.ui.filter.FeedFilterViewModel
 import com.dezdeqness.foundation.utils.collectEvents

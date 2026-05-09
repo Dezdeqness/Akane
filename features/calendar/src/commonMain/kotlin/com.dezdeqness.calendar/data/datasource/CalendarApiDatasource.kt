@@ -1,6 +1,6 @@
 package com.dezdeqness.calendar.data.datasource
 
-import com.dezdeqness.calendar.domain.model.CalendarScheduleEntity
+import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
 
 interface CalendarApiDatasource {
     suspend fun getScheduleNow(): Result<CalendarScheduleEntity>

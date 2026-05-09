@@ -15,6 +15,7 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":common:analytics"))
+            api(project(":contract:feed"))
         }
 
         val desktopMain by getting

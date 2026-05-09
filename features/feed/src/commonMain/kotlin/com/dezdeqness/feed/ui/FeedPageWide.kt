@@ -13,7 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.CatalogFilter
 import com.dezdeqness.feed.ui.composable.FeedSearch
 import com.dezdeqness.feed.ui.filter.composables.FeedFilterBottomSheet
 import com.dezdeqness.feed.ui.filter.composables.FeedFilterSidePanel

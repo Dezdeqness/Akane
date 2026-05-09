@@ -2,13 +2,13 @@ package com.dezdeqness.feed.ui.filter
 
 import com.dezdeqness.feed.core.DateUtils
 import com.dezdeqness.feed.data.provider.GenreProvider
-import com.dezdeqness.feed.domain.model.AgeRating
-import com.dezdeqness.feed.domain.model.CatalogFilter
-import com.dezdeqness.feed.domain.model.ProductionStatus
-import com.dezdeqness.feed.domain.model.PublishStatus
-import com.dezdeqness.feed.domain.model.ReleaseType
-import com.dezdeqness.feed.domain.model.Season
-import com.dezdeqness.feed.domain.model.Sorting
+import com.dezdeqness.feed.contract.model.AgeRating
+import com.dezdeqness.feed.contract.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.ProductionStatus
+import com.dezdeqness.feed.contract.model.PublishStatus
+import com.dezdeqness.feed.contract.model.ReleaseType
+import com.dezdeqness.feed.contract.model.Season
+import com.dezdeqness.feed.contract.model.Sorting
 
 class FeedFilterMapper(
     private val genreProvider: GenreProvider,

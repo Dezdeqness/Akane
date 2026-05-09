@@ -1,6 +1,6 @@
 package com.dezdeqness.feed.ui
 
-import com.dezdeqness.feed.domain.model.ReleaseEntity
+import com.dezdeqness.feed.contract.model.ReleaseEntity
 import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 class FeedUiMapper {

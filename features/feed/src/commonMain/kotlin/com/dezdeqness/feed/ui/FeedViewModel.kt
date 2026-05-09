@@ -6,9 +6,9 @@ import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.feed.domain.model.CatalogFilter
-import com.dezdeqness.feed.domain.model.FeedEntity
-import com.dezdeqness.feed.domain.repository.FeedRepository
+import com.dezdeqness.feed.contract.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.FeedEntity
+import com.dezdeqness.feed.contract.repository.FeedRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

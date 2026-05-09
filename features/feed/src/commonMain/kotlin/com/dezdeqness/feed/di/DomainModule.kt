@@ -1,7 +1,7 @@
 package com.dezdeqness.feed.di
 
 import com.dezdeqness.feed.data.repository.FeedRepositoryImpl
-import com.dezdeqness.feed.domain.repository.FeedRepository
+import com.dezdeqness.feed.contract.repository.FeedRepository
 import org.koin.dsl.module
 
 val domainModule = module {

@@ -1,7 +1,7 @@
 package com.dezdeqness.calendar.data.repository
 
 import com.dezdeqness.calendar.data.datasource.CalendarApiDatasource
-import com.dezdeqness.calendar.domain.repository.CalendarRepository
+import com.dezdeqness.calendar.contract.repository.CalendarRepository
 
 class CalendarRepositoryImpl(
     private val calendarApiDatasource: CalendarApiDatasource,

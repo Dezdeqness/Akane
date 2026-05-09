@@ -2,10 +2,10 @@ package com.dezdeqness.feed.data.datasource.impl
 
 import com.dezdeqness.feed.data.datasource.FeedApiDatasource
 import com.dezdeqness.feed.data.mapper.FeedMapper
-import com.dezdeqness.feed.domain.model.FeedEntity
-import com.dezdeqness.feed.domain.model.ProductionStatus
-import com.dezdeqness.feed.domain.model.PublishStatus
-import com.dezdeqness.feed.domain.model.Sorting
+import com.dezdeqness.feed.contract.model.FeedEntity
+import com.dezdeqness.feed.contract.model.ProductionStatus
+import com.dezdeqness.feed.contract.model.PublishStatus
+import com.dezdeqness.feed.contract.model.Sorting
 import com.dezdeqness.network.constants.ApiParams.QUERY_PRODUCTION_STATUSES
 import com.dezdeqness.network.constants.ApiParams.QUERY_PUBLISH_STATUSES
 import com.dezdeqness.network.constants.ApiParams.QUERY_SORTING

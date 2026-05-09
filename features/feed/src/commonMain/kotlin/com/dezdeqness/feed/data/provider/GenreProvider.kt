@@ -1,6 +1,6 @@
 package com.dezdeqness.feed.data.provider
 
-import com.dezdeqness.feed.domain.model.GenreEntity
+import com.dezdeqness.feed.contract.model.GenreEntity
 
 class GenreProvider {
     fun getGenres() = GENRES

@@ -2,8 +2,8 @@ package com.dezdeqness.feed.data.repository
 
 import com.dezdeqness.feed.data.datasource.FeedApiDatasource
 import com.dezdeqness.feed.data.mapper.CatalogFilterMapper
-import com.dezdeqness.feed.domain.model.CatalogFilter
-import com.dezdeqness.feed.domain.repository.FeedRepository
+import com.dezdeqness.feed.contract.model.CatalogFilter
+import com.dezdeqness.feed.contract.repository.FeedRepository
 
 class FeedRepositoryImpl(
     private val feedApiDatasource: FeedApiDatasource,

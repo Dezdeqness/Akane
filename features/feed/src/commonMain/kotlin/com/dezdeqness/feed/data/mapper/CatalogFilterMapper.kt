@@ -1,8 +1,8 @@
 package com.dezdeqness.feed.data.mapper
 
 import com.dezdeqness.feed.data.builder.CatalogFilterBuilder
-import com.dezdeqness.feed.domain.model.AgeRating
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.AgeRating
+import com.dezdeqness.feed.contract.model.CatalogFilter
 
 class CatalogFilterMapper {
     fun map(filter: CatalogFilter): CatalogFilterBuilder = CatalogFilterBuilder().apply {

@@ -1,7 +1,7 @@
 package com.dezdeqness.feed.data.datasource
 
-import com.dezdeqness.feed.domain.model.FeedEntity
-import com.dezdeqness.feed.domain.model.ReleaseEntity
+import com.dezdeqness.feed.contract.model.FeedEntity
+import com.dezdeqness.feed.contract.model.ReleaseEntity
 
 interface FeedApiDatasource {
     suspend fun getFeed(page: Int): Result<FeedEntity>

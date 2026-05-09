@@ -1,7 +1,7 @@
 package com.dezdeqness.feed.ui
 
 import androidx.compose.runtime.Immutable
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.CatalogFilter
 import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 @Immutable

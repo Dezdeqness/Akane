@@ -1,7 +1,7 @@
 package com.dezdeqness.feed.ui.filter
 
 import androidx.lifecycle.ViewModel
-import com.dezdeqness.feed.domain.model.CatalogFilter
+import com.dezdeqness.feed.contract.model.CatalogFilter
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
