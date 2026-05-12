@@ -1,5 +1,6 @@
 package com.dezdeqness.network.services
 
+import com.dezdeqness.network.auth.AuthHeader.REQUIRES_AUTH
 import com.dezdeqness.network.constants.ApiEndPoints.AUTH_LOGIN
 import com.dezdeqness.network.constants.ApiEndPoints.AUTH_LOGOUT
 import com.dezdeqness.network.constants.ApiEndPoints.AUTH_PASSWORD_FORGET
@@ -12,6 +13,7 @@ import com.dezdeqness.network.models.request.ResetPasswordRequest
 import com.dezdeqness.network.models.response.AuthTokenResponse
 import de.jensklingenberg.ktorfit.Response
 import de.jensklingenberg.ktorfit.http.Body
+import de.jensklingenberg.ktorfit.http.Headers
 import de.jensklingenberg.ktorfit.http.POST
 
 interface AuthService {
@@ -19,6 +21,7 @@ interface AuthService {
     @POST(AUTH_LOGIN)
     suspend fun login(@Body body: LoginRequest): Response<AuthTokenResponse>
 
+    @Headers(REQUIRES_AUTH)
     @POST(AUTH_LOGOUT)
     suspend fun logout(): Response<AuthTokenResponse>
 

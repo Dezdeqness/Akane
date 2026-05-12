@@ -1,5 +1,7 @@
 package com.dezdeqness.network.di
 
+import com.dezdeqness.network.auth.AuthInterceptor
+import com.dezdeqness.network.auth.TokenProvider
 import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.network.services.AuthService
 import com.dezdeqness.network.services.CalendarService
@@ -38,6 +40,7 @@ val networkModule = module {
     }
 
     single<HttpClient> {
+        val tokenProvider: TokenProvider = get()
         HttpClient {
             install(ContentNegotiation) {
                 json(get<Json>())
@@ -47,7 +50,10 @@ val networkModule = module {
                 logger = Logger.Companion.SIMPLE
             }
             install(DefaultRequest) {
-                header(HttpHeaders.ContentType, ContentType.Application.FormUrlEncoded)
+                header(HttpHeaders.ContentType, ContentType.Application.Json)
+            }
+            install(AuthInterceptor) {
+                this.tokenProvider = tokenProvider
             }
         }
     }

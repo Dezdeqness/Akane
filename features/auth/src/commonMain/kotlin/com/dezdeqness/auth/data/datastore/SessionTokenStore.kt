@@ -1,7 +1,9 @@
 package com.dezdeqness.auth.data.datastore
 
-interface SessionTokenStore {
+import com.dezdeqness.network.auth.TokenProvider
+
+interface SessionTokenStore : TokenProvider {
     suspend fun setToken(token: String)
-    suspend fun getToken(): String
+    override suspend fun getToken(): String
     suspend fun clear()
 }

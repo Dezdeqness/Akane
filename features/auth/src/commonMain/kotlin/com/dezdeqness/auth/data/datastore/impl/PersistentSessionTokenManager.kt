@@ -19,7 +19,6 @@ class PersistentSessionTokenManager(
 
     override suspend fun getToken() = dataStore.data.first()[TOKEN_KEY].orEmpty()
 
-
     override suspend fun clear() {
         dataStore.edit {
             it.remove(TOKEN_KEY)

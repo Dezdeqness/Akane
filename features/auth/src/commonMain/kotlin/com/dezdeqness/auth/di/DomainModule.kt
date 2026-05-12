@@ -8,7 +8,6 @@ internal val domainModule = module {
     single<AuthRepository> {
         AuthRepositoryImpl(
             authApiDatasource = get(),
-            sessionTokenStore = get(),
         )
     }
 }
