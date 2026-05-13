@@ -17,9 +17,7 @@ fun EntryProviderScope<NavKey>.authEntries(
     backStack: NavBackStack<NavKey>,
 ) {
     entry<LoginRoute> {
-        LoginStandalonePage(
-            onRegisterClicked = { backStack.navigateToRegister() },
-        )
+        LoginStandalonePage()
     }
     entry<RegisterRoute> {
         RegisterStandalonePage(
