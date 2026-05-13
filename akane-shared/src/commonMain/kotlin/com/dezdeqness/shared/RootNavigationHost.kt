@@ -9,10 +9,12 @@ import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.dezdeqness.auth.navigation.authEntries
 import com.dezdeqness.downloads.navigation.downloadsEntries
 import com.dezdeqness.feed.navigation.feedEntries
 import com.dezdeqness.home.navigation.homeEntries
 import com.dezdeqness.personal.navigation.personalEntries
+import com.dezdeqness.profile.navigation.profileEntries
 import kotlinx.coroutines.flow.StateFlow
 
 @Composable
@@ -46,6 +48,8 @@ fun RootNavigationHost(
                 activeDownloadsCountFlow = activeDownloadsCountFlow,
                 onActiveDownloadsClicked = onNavigateToActiveDownloads,
             )
+            profileEntries()
+            authEntries(currentTabStack)
             tabFullScreenEntries()
         }
     )

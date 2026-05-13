@@ -7,6 +7,7 @@ import com.dezdeqness.downloads.navigation.DownloadsRoute
 import com.dezdeqness.feed.navigation.FeedRoute
 import com.dezdeqness.home.navigation.HomeRoute
 import com.dezdeqness.personal.navigation.PersonalRoute
+import com.dezdeqness.profile.navigation.ProfileRoute
 
 internal enum class AkaneBottomTabModel(
     val key: NavKey,
@@ -37,5 +38,11 @@ internal enum class AkaneBottomTabModel(
         label = "Загрузки",
         selectedIcon = AkaneIcons.Library,
         unselectedIcon = AkaneIcons.LibraryBorder,
+    ),
+    PROFILE(
+        key = ProfileRoute,
+        label = "Профиль",
+        selectedIcon = AkaneIcons.Profile,
+        unselectedIcon = AkaneIcons.ProfileBoarder,
     ),
 }

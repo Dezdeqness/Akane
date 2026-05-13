@@ -1,6 +1,7 @@
 package com.dezdeqness.shared
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.navigationevent.NavigationEventInfo
 import androidx.navigationevent.compose.NavigationBackHandler
@@ -14,6 +15,8 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import androidx.navigation3.runtime.rememberNavBackStack
 import com.dezdeqness.analytics.core.AkaneAnalytics
+import com.dezdeqness.auth.contract.session.SessionState
+import com.dezdeqness.auth.navigation.LoginRoute
 import com.dezdeqness.details.navigation.detailsEntries
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
 import com.dezdeqness.downloads.navigation.DownloadsRoute
@@ -24,6 +27,7 @@ import com.dezdeqness.downloads.navigation.releaseEpisodesEntries
 import com.dezdeqness.feed.navigation.FeedRoute
 import com.dezdeqness.home.navigation.HomeRoute
 import com.dezdeqness.personal.navigation.PersonalRoute
+import com.dezdeqness.profile.navigation.ProfileRoute
 import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
 import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
@@ -41,6 +45,7 @@ fun RootScreen(
     val feedBackStack = rememberNavBackStack(navSavedStateConfiguration(), FeedRoute)
     val personalBackStack = rememberNavBackStack(navSavedStateConfiguration(), PersonalRoute)
     val downloadsBackStack = rememberNavBackStack(navSavedStateConfiguration(), DownloadsRoute)
+    val profileBackStack = rememberNavBackStack(navSavedStateConfiguration(), LoginRoute)
 
     var activeTabOrdinal by rememberSaveable { mutableStateOf(0) }
     val activeTab = AkaneBottomTabModel.entries[activeTabOrdinal].key
@@ -50,6 +55,7 @@ fun RootScreen(
         FeedRoute -> feedBackStack
         PersonalRoute -> personalBackStack
         DownloadsRoute -> downloadsBackStack
+        ProfileRoute -> profileBackStack
         else -> homeBackStack
     }
 
@@ -62,6 +68,25 @@ fun RootScreen(
 
     val appViewModel: AppViewModel = koinViewModel()
     val activeDownloadsCount by appViewModel.activeDownloadsCount.collectAsState()
+    val sessionState by appViewModel.sessionState.collectAsState()
+
+    LaunchedEffect(sessionState) {
+        when (sessionState) {
+            SessionState.Authenticated -> {
+                if (profileBackStack.firstOrNull() != ProfileRoute) {
+                    profileBackStack.clear()
+                    profileBackStack.add(ProfileRoute)
+                }
+            }
+            SessionState.Unauthenticated -> {
+                if (profileBackStack.firstOrNull() != LoginRoute) {
+                    profileBackStack.clear()
+                    profileBackStack.add(LoginRoute)
+                }
+            }
+            SessionState.Loading -> Unit
+        }
+    }
 
     RootNavigationScaffold(
         activeTab = activeTab,
