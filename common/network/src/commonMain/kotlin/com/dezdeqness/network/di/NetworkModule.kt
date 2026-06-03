@@ -6,11 +6,13 @@ import com.dezdeqness.network.constants.BaseUrl
 import com.dezdeqness.network.services.AuthService
 import com.dezdeqness.network.services.CalendarService
 import com.dezdeqness.network.services.CatalogService
+import com.dezdeqness.network.services.FavoritesService
 import com.dezdeqness.network.services.FranchiseService
 import com.dezdeqness.network.services.ProfileService
 import com.dezdeqness.network.services.createAuthService
 import com.dezdeqness.network.services.createCalendarService
 import com.dezdeqness.network.services.createCatalogService
+import com.dezdeqness.network.services.createFavoritesService
 import com.dezdeqness.network.services.createFranchiseService
 import com.dezdeqness.network.services.createProfileService
 import de.jensklingenberg.ktorfit.Ktorfit
@@ -85,5 +87,9 @@ val networkModule = module {
 
     single<ProfileService> {
         get<Ktorfit>().createProfileService()
+    }
+
+    single<FavoritesService> {
+        get<Ktorfit>().createFavoritesService()
     }
 }
