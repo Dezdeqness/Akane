@@ -14,4 +14,11 @@ val dataModule = module {
             personalMapper = get(),
         )
     }
+    single<PersonalRemoteDatasource> {
+        PersonalRemoteDatasourceImpl(
+            favoritesService = get<FavoritesService>(),
+            personalMapper = get(),
+            errorMapper = get(),
+        )
+    }
 }

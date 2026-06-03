@@ -9,12 +9,16 @@ import com.dezdeqness.feed.contract.model.Sorting
 import com.dezdeqness.network.constants.ApiParams.QUERY_PRODUCTION_STATUSES
 import com.dezdeqness.network.constants.ApiParams.QUERY_PUBLISH_STATUSES
 import com.dezdeqness.network.constants.ApiParams.QUERY_SORTING
+import com.dezdeqness.network.datasource.BaseDataSource
+import com.dezdeqness.network.error.ErrorMapper
+import com.dezdeqness.network.exception.createApiException
 import com.dezdeqness.network.services.CatalogService
 
 class FeedApiDatasourceImpl(
     private val catalogService: CatalogService,
     private val feedMapper: FeedMapper,
-) : FeedApiDatasource {
+    errorMapper: ErrorMapper,
+) : BaseDataSource(errorMapper), FeedApiDatasource {
     override suspend fun getFeed(page: Int) = getFeed(page = page, limit = LIMIT, queryMap = mapOf())
 
     override suspend fun getFeedBestRating(limit: Int) = getFeedByQueryMap(
@@ -42,7 +46,7 @@ class FeedApiDatasourceImpl(
         page: Int,
         limit: Int,
         queryMap: Map<String, Any>,
-    ) = tryWithCatch {
+    ) = tryWithCatchSuspend {
         val response = catalogService.getReleases(
             page = page,
             limit = limit,
@@ -69,15 +73,14 @@ class FeedApiDatasourceImpl(
                 )
             )
         } else {
-            // TODO: custom APIException
-            Result.failure(Throwable("Code: ${response.code}\nError: ${response.errorBody()}"))
+            throw response.createApiException()
         }
     }
 
     private suspend fun getFeedByQueryMap(
         queryMap: Map<String, Any>,
         limit: Int,
-    ) = tryWithCatch {
+    ) = tryWithCatchSuspend {
         val response = catalogService.getReleases(
             limit = limit,
             queryMap = queryMap,
@@ -93,15 +96,8 @@ class FeedApiDatasourceImpl(
 
             Result.success(items)
         } else {
-            // TODO: custom APIException
-            Result.failure(Throwable("Code: ${response.code}\nError: ${response.errorBody()}"))
+            throw response.createApiException()
         }
-    }
-
-    suspend fun <T> tryWithCatch(block: suspend () -> Result<T>) = try {
-        block()
-    } catch (throwable: Throwable) {
-        Result.failure(throwable)
     }
 
     companion object {

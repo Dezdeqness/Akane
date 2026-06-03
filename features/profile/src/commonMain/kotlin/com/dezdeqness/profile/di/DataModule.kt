@@ -11,6 +11,7 @@ internal val dataModule = module {
         ProfileApiDatasourceImpl(
             profileService = get(),
             profileMapper = get(),
+            errorMapper = get(),
         )
     }
 }

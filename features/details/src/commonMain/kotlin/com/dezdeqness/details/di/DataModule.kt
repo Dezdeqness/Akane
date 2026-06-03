@@ -17,12 +17,14 @@ val dataModule = module {
         ReleaseApiDatasourceImpl(
             catalogService = get(),
             releaseMapper = get(),
+            errorMapper = get(),
         )
     }
     single<FranchiseDatasource> {
         FranchiseDatasourceImpl(
             franchiseService = get(),
             franchiseMapper = get(),
+            errorMapper = get(),
         )
     }
 }

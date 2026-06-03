@@ -2,29 +2,27 @@ package com.dezdeqness.calendar.data.datasource.impl
 
 import com.dezdeqness.calendar.data.datasource.CalendarApiDatasource
 import com.dezdeqness.calendar.data.mapper.CalendarMapper
+import com.dezdeqness.network.datasource.BaseDataSource
+import com.dezdeqness.network.error.ErrorMapper
+import com.dezdeqness.network.exception.createApiException
 import com.dezdeqness.network.services.CalendarService
 
 class CalendarApiDatasourceImpl(
     private val calendarService: CalendarService,
     private val calendarMapper: CalendarMapper,
-) : CalendarApiDatasource {
+    errorMapper: ErrorMapper,
+) : BaseDataSource(errorMapper), CalendarApiDatasource {
 
-    override suspend fun getScheduleNow() = tryWithCatch {
+    override suspend fun getScheduleNow() = tryWithCatchSuspend {
         val response = calendarService.getScheduleNow()
 
         if (response.isSuccessful) {
             val body = response.body()
-                ?: return@tryWithCatch Result.failure(Throwable("Code: ${response.code}\nError: ${response.errorBody()}"))
+                ?: throw response.createApiException()
 
             Result.success(calendarMapper.map(body))
         } else {
-            Result.failure(Throwable("Code: ${response.code}\nError: ${response.errorBody()}"))
+            throw response.createApiException()
         }
-    }
-
-    private suspend fun <T> tryWithCatch(block: suspend () -> Result<T>) = try {
-        block()
-    } catch (throwable: Throwable) {
-        Result.failure(throwable)
     }
 }

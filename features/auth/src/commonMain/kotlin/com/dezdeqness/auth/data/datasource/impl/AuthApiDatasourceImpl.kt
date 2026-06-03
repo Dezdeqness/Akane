@@ -6,6 +6,9 @@ import com.dezdeqness.auth.contract.model.PasswordResetDataEntity
 import com.dezdeqness.auth.contract.model.RegistrationDataEntity
 import com.dezdeqness.auth.data.datasource.AuthApiDatasource
 import com.dezdeqness.auth.data.mapper.AuthMapper
+import com.dezdeqness.network.datasource.BaseDataSource
+import com.dezdeqness.network.error.ErrorMapper
+import com.dezdeqness.network.exception.createApiException
 import com.dezdeqness.network.models.response.AuthTokenResponse
 import com.dezdeqness.network.services.AuthService
 import de.jensklingenberg.ktorfit.Response
@@ -13,62 +16,54 @@ import de.jensklingenberg.ktorfit.Response
 class AuthApiDatasourceImpl(
     private val authService: AuthService,
     private val authMapper: AuthMapper,
-) : AuthApiDatasource {
+    errorMapper: ErrorMapper,
+) : BaseDataSource(errorMapper), AuthApiDatasource {
 
-    override suspend fun login(credentials: AuthCredentialsEntity) = tryWithCatch {
+    override suspend fun login(credentials: AuthCredentialsEntity) = tryWithCatchSuspend {
         authService
             .login(authMapper.mapLogin(credentials))
             .toAuthTokenResult()
     }
 
-    override suspend fun logout() = tryWithCatch {
+    override suspend fun logout() = tryWithCatchSuspend {
         val response = authService.logout()
         if (response.isSuccessful) {
             Result.success(Unit)
         } else {
-            Result.failure(httpError(response))
+            throw response.createApiException()
         }
     }
 
-    override suspend fun register(data: RegistrationDataEntity) = tryWithCatch {
+    override suspend fun register(data: RegistrationDataEntity) = tryWithCatchSuspend {
         authService
             .register(authMapper.mapRegister(data))
             .toAuthTokenResult()
     }
 
-    override suspend fun forgetPassword(email: String) = tryWithCatch {
+    override suspend fun forgetPassword(email: String) = tryWithCatchSuspend {
         val response = authService.forgetPassword(authMapper.mapForget(email))
         if (response.isSuccessful) {
             Result.success(Unit)
         } else {
-            Result.failure(httpError(response))
+            throw response.createApiException()
         }
     }
 
-    override suspend fun resetPassword(data: PasswordResetDataEntity) = tryWithCatch {
+    override suspend fun resetPassword(data: PasswordResetDataEntity) = tryWithCatchSuspend {
         val response = authService.resetPassword(authMapper.mapReset(data))
         if (response.isSuccessful) {
             Result.success(Unit)
         } else {
-            Result.failure(httpError(response))
+            throw response.createApiException()
         }
     }
 
     private fun Response<AuthTokenResponse>.toAuthTokenResult(): Result<AuthTokenEntity> {
         if (!isSuccessful) {
-            return Result.failure(httpError(this))
+            throw createApiException()
         }
         val token = body()?.let(authMapper::mapToken)
             ?: return Result.failure(Throwable("Auth token is missing in response"))
         return Result.success(token)
-    }
-
-    private fun httpError(response: Response<*>): Throwable =
-        Throwable("Code: ${response.code}\nError: ${response.errorBody()}")
-
-    private suspend fun <T> tryWithCatch(block: suspend () -> Result<T>) = try {
-        block()
-    } catch (throwable: Throwable) {
-        Result.failure(throwable)
     }
 }

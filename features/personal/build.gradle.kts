@@ -11,6 +11,7 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(libs.bundles.ktorfit.common)
             implementation(libs.compose.material3)
             implementation(libs.kermit)
             implementation(libs.compottie)

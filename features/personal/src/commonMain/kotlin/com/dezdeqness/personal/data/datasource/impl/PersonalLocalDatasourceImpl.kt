@@ -1,15 +1,15 @@
 package com.dezdeqness.personal.data.datasource.impl
 
-import com.dezdeqness.personal.data.datasource.PersonalDatasource
+import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.data.datasource.PersonalLocalDatasource
 import com.dezdeqness.personal.data.db.PersonalDao
 import com.dezdeqness.personal.data.mapper.PersonalMapper
-import com.dezdeqness.personal.contract.model.PersonalEntity
 import kotlinx.coroutines.flow.map
 
-class PersonalDatasourceImpl(
+class PersonalLocalDatasourceImpl(
     private val personalDao: PersonalDao,
     private val personalMapper: PersonalMapper,
-) : PersonalDatasource {
+) : PersonalLocalDatasource {
     override fun getPersonalAsFlow() =
         personalDao.getPersonalAsFlow().map {
             it.map(personalMapper::fromLocal)

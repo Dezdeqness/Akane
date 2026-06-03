@@ -14,6 +14,7 @@ internal val dataModule = module {
         AuthApiDatasourceImpl(
             authService = get(),
             authMapper = get(),
+            errorMapper = get(),
         )
     }
     single<SessionTokenStore> { PersistentSessionTokenManager(dataStore = get()) }

@@ -15,6 +15,7 @@ val dataModule = module {
         FeedApiDatasourceImpl(
             catalogService = get(),
             feedMapper = get(),
+            errorMapper = get(),
         )
     }
 }

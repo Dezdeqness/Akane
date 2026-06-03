@@ -11,6 +11,7 @@ val dataModule = module {
         CalendarApiDatasourceImpl(
             calendarService = get(),
             calendarMapper = get(),
+            errorMapper = get(),
         )
     }
 }

@@ -3,6 +3,8 @@ package com.dezdeqness.network.di
 import com.dezdeqness.network.auth.AuthInterceptor
 import com.dezdeqness.network.auth.TokenProvider
 import com.dezdeqness.network.constants.BaseUrl
+import com.dezdeqness.network.error.ApiErrorMapper
+import com.dezdeqness.network.error.ErrorMapper
 import com.dezdeqness.network.services.AuthService
 import com.dezdeqness.network.services.CalendarService
 import com.dezdeqness.network.services.CatalogService
@@ -32,6 +34,8 @@ import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 
 val networkModule = module {
+    single<ErrorMapper> { ApiErrorMapper() }
+
     single<Json> {
         Json {
             ignoreUnknownKeys = true
