@@ -24,6 +24,7 @@ fun RootNavigationHost(
     rootControllerNavigateToDetails: (Long, String) -> Unit,
     activeDownloadsCountFlow: StateFlow<Int>,
     onNavigateToFeed: () -> Unit,
+    onNavigateToProfile: () -> Unit,
     onNavigateToReleaseEpisodes: (Long) -> Unit,
     onNavigateToActiveDownloads: () -> Unit,
     tabFullScreenEntries: EntryProviderScope<NavKey>.() -> Unit = {},
@@ -42,6 +43,7 @@ fun RootNavigationHost(
             personalEntries(
                 onItemClicked = rootControllerNavigateToDetails,
                 onEmptyListActionClicked = onNavigateToFeed,
+                onNavigateToProfile = onNavigateToProfile,
             )
             downloadsEntries(
                 onReleaseClicked = onNavigateToReleaseEpisodes,

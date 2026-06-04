@@ -12,6 +12,7 @@ fun PersonalStandalonePage(
     personalViewModel: PersonalViewModel = koinViewModel(),
     onItemClicked: (Long, String) -> Unit,
     onEmptyListActionClicked: () -> Unit,
+    onNavigateToProfile: () -> Unit,
 ) {
     val actions = remember {
         object : PersonalActions {
@@ -19,12 +20,20 @@ fun PersonalStandalonePage(
                 onItemClicked(details.id, details.name)
             }
 
-            override fun onItemUnFavouriteClicked(id: Long) {
-                personalViewModel.onItemUnFavouriteClicked(id)
-            }
-
             override fun onEmptyListActionClicked() {
                 onEmptyListActionClicked()
+            }
+
+            override fun onLoadMore() {
+                personalViewModel.onLoadMore()
+            }
+
+            override fun onRetryClicked() {
+                personalViewModel.onRetryClicked()
+            }
+
+            override fun onNavigateToProfile() {
+                onNavigateToProfile()
             }
 
         }

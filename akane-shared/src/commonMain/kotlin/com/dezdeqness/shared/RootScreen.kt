@@ -116,6 +116,9 @@ fun RootScreen(
             onNavigateToFeed = {
                 activeTabOrdinal = AkaneBottomTabModel.entries.indexOfFirst { it.key == FeedRoute }
             },
+            onNavigateToProfile = {
+                activeTabOrdinal = AkaneBottomTabModel.entries.indexOfFirst { it.key == ProfileRoute }
+            },
             onNavigateToReleaseEpisodes = { id ->
                 if (isWideLayout) {
                     currentTabStack.navigateToReleaseEpisodes(id)

@@ -11,11 +11,13 @@ data object PersonalRoute : NavKey
 fun EntryProviderScope<NavKey>.personalEntries(
     onItemClicked: (Long, String) -> Unit,
     onEmptyListActionClicked: () -> Unit,
+    onNavigateToProfile: () -> Unit,
 ) {
     entry<PersonalRoute> {
         PersonalStandalonePage(
             onItemClicked = onItemClicked,
             onEmptyListActionClicked = onEmptyListActionClicked,
+            onNavigateToProfile = onNavigateToProfile,
         )
     }
 }
