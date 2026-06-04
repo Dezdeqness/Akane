@@ -18,6 +18,7 @@ kotlin {
             implementation(project(":common:analytics"))
             api(project(":contract:release"))
             implementation(project(":contract:personal"))
+            implementation(project(":contract:auth"))
             implementation(project(":contract:downloads"))
             implementation(project(":features:downloads"))
         }

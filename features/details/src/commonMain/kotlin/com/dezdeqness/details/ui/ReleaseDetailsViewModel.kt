@@ -5,6 +5,8 @@ import androidx.lifecycle.viewModelScope
 import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.analytics.core.AkaneErrorReporter
+import com.dezdeqness.auth.contract.session.SessionManager
+import com.dezdeqness.auth.contract.session.SessionState
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.release.contract.model.FranchiseEntity
 import com.dezdeqness.release.contract.model.ReleaseDetailsEntity
@@ -12,12 +14,12 @@ import com.dezdeqness.release.contract.repository.FranchiseRepository
 import com.dezdeqness.release.contract.repository.ReleaseRepository
 import com.dezdeqness.details.ui.model.DetailsTab
 import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.details.ui.model.FavouriteButtonState
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.domain.usecase.CancelAllDownloadsUseCase
 import com.dezdeqness.downloads.domain.usecase.CancelDownloadUseCase
 import com.dezdeqness.downloads.domain.usecase.EnqueueDownloadUseCase
 import com.dezdeqness.downloads.contract.model.DownloadTiming
-import com.dezdeqness.personal.contract.model.PersonalEntity
 import com.dezdeqness.personal.contract.repository.PersonalRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,6 +33,7 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class ReleaseDetailsViewModel(
@@ -38,6 +41,7 @@ class ReleaseDetailsViewModel(
     private val releaseRepository: ReleaseRepository,
     private val franchiseRepository: FranchiseRepository,
     private val personalRepository: PersonalRepository,
+    private val sessionManager: SessionManager,
     downloadEpisodeRepository: DownloadEpisodeRepository,
     private val enqueueDownloadUseCase: EnqueueDownloadUseCase,
     private val cancelDownloadUseCase: CancelDownloadUseCase,
@@ -51,6 +55,15 @@ class ReleaseDetailsViewModel(
     private val loadEvents = MutableSharedFlow<LoadEvent>(extraBufferCapacity = 1)
 
     private val _dialogState = MutableStateFlow<DownloadDialogState>(DownloadDialogState.None)
+
+    private val _favouriteState = MutableStateFlow(FavouriteUiState())
+
+    private val favouriteStateFlow = combine(
+        _favouriteState,
+        sessionManager.sessionState,
+    ) { uiState, sessionState ->
+        FavouriteState(uiState = uiState, sessionState = sessionState)
+    }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val detailsFlow = loadEvents
@@ -102,15 +115,20 @@ class ReleaseDetailsViewModel(
 
     val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = combine(
         detailsFlow,
-        personalRepository.getPersonalAsFlow(),
+        personalRepository.getFavoriteIdsAsFlow(),
         downloadEpisodeRepository.getAllDownloadsAsFlow(),
         _dialogState,
-    ) { cache, personalList, downloads, dialogState ->
-        val isFavourite = personalList.any { it.id == releaseId }
+        favouriteStateFlow,
+    ) { cache, favoriteIds, downloads, dialogState, favouriteState ->
+        val favouriteButtonState = when {
+            favouriteState.sessionState != SessionState.Authenticated -> FavouriteButtonState.Hidden
+            favouriteState.uiState.isLoading -> FavouriteButtonState.Loading
+            else -> FavouriteButtonState.Loaded(isFavourite = favoriteIds.contains(releaseId))
+        }
         if (cache.status != Status.Loaded || cache.release == null) {
             ReleaseDetailsState(
                 status = cache.status,
-                isFavourite = isFavourite,
+                favouriteButtonState = favouriteButtonState,
                 dialogState = dialogState,
             )
         } else {
@@ -118,7 +136,7 @@ class ReleaseDetailsViewModel(
             ReleaseDetailsState(
                 status = Status.Loaded,
                 details = mapped.details,
-                isFavourite = isFavourite,
+                favouriteButtonState = favouriteButtonState,
                 dialogState = dialogState,
                 commonQualities = mapped.commonQualities,
             )
@@ -131,26 +149,36 @@ class ReleaseDetailsViewModel(
         )
 
     fun onFavouriteClicked(id: Long) {
+        if (_favouriteState.value.isLoading) return
+        val item = releaseDetailsStateFlow.value.details ?: return
         viewModelScope.launch(coroutineDispatcherProvider.io()) {
-            val item = releaseDetailsStateFlow.value.details ?: return@launch
-            if (personalRepository.containsById(id = id)) {
-                personalRepository.deleteById(id = id)
-                analytics.trackUnfavouriteAnime(
-                    animeId = id,
-                    title = item.header.title,
-                )
+            _favouriteState.update { it.copy(isLoading = true) }
+
+            val isFavourite = personalRepository.containsById(id = id)
+            val result = if (isFavourite) {
+                personalRepository.removeFromFavorites(id = id)
             } else {
-                val personalEntity = PersonalEntity(
-                    id = item.id,
-                    name = item.header.title,
-                    poster = item.header.imageUrl,
-                )
-                personalRepository.add(personalEntity)
-                analytics.trackFavouriteAnime(
-                    animeId = item.id,
-                    title = item.header.title,
-                )
+                personalRepository.addToFavorites(id = id)
             }
+
+            result
+                .onSuccess {
+                    if (isFavourite) {
+                        analytics.trackUnfavouriteAnime(animeId = id, title = item.header.title)
+                    } else {
+                        analytics.trackFavouriteAnime(animeId = id, title = item.header.title)
+                    }
+                }
+                .onFailure { throwable ->
+                    errorReporter.captureException(
+                        throwable = throwable,
+                        message = "Toggle favourite failed",
+                        tags = mapOf("feature" to "details"),
+                        extras = mapOf("release_id" to id.toString()),
+                    )
+                }
+
+            _favouriteState.update { it.copy(isLoading = false) }
         }
     }
 
@@ -256,6 +284,15 @@ class ReleaseDetailsViewModel(
         val status: Status = Status.Loading,
         val release: ReleaseDetailsEntity? = null,
         val franchise: FranchiseEntity? = null,
+    )
+
+    private data class FavouriteUiState(
+        val isLoading: Boolean = false,
+    )
+
+    private data class FavouriteState(
+        val uiState: FavouriteUiState,
+        val sessionState: SessionState,
     )
 
     companion object {

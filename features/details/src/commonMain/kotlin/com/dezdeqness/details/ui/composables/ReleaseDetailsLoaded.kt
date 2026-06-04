@@ -8,6 +8,7 @@ import com.dezdeqness.designsystem.layouts.AdaptiveLayout
 import com.dezdeqness.designsystem.layouts.LayoutType
 import com.dezdeqness.designsystem.layouts.LocalLayoutType
 import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.details.ui.model.FavouriteButtonState
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
 @Composable
@@ -20,7 +21,7 @@ fun ReleaseDetailsLoaded(
     onDownloadAllClick: () -> Unit,
     onCancelAllDownloadsClick: () -> Unit,
     onBackPressed: () -> Unit,
-    isFavourite: Boolean,
+    favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
 ) {
     BoxWithConstraints(
@@ -39,7 +40,7 @@ fun ReleaseDetailsLoaded(
                         onDownloadAllClick = onDownloadAllClick,
                         onCancelAllDownloadsClick = onCancelAllDownloadsClick,
                         onBackPressed = onBackPressed,
-                        isFavourite = isFavourite,
+                        favouriteButtonState = favouriteButtonState,
                         onFavouriteClicked = onFavouriteClicked,
                     )
                 }
@@ -54,7 +55,7 @@ fun ReleaseDetailsLoaded(
                         onDownloadAllClick = onDownloadAllClick,
                         onCancelAllDownloadsClick = onCancelAllDownloadsClick,
                         onBackPressed = onBackPressed,
-                        isFavourite = isFavourite,
+                        favouriteButtonState = favouriteButtonState,
                         onFavouriteClicked = onFavouriteClicked,
                     )
                 }

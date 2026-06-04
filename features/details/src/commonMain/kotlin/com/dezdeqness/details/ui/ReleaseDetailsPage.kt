@@ -73,7 +73,7 @@ fun DetailsPage(
                         viewModel.onCancelAllDownloads()
                     },
                     onBackPressed = onBackPressed,
-                    isFavourite = state.isFavourite,
+                    favouriteButtonState = state.favouriteButtonState,
                 ) {
                     viewModel.onFavouriteClicked(details.id)
                 }

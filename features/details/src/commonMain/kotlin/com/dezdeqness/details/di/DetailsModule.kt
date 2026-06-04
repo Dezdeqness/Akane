@@ -16,6 +16,7 @@ val detailsModule = module {
             releaseRepository = get(),
             franchiseRepository = get(),
             personalRepository = get(),
+            sessionManager = get(),
             downloadEpisodeRepository = get(),
             enqueueDownloadUseCase = get(),
             cancelDownloadUseCase = get(),

@@ -47,6 +47,7 @@ import com.dezdeqness.details.ui.composables.stats.StatisticsTabContent
 import com.dezdeqness.details.ui.model.DetailsTab
 import com.dezdeqness.details.ui.model.DownloadStatusUi
 import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.details.ui.model.FavouriteButtonState
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
 @Composable
@@ -59,7 +60,7 @@ fun ReleaseDetailsLoadedMobile(
     onDownloadAllClick: () -> Unit,
     onCancelAllDownloadsClick: () -> Unit,
     onBackPressed: () -> Unit,
-    isFavourite: Boolean,
+    favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -108,7 +109,7 @@ fun ReleaseDetailsLoadedMobile(
                         navigationBar = {
                             ReleaseToolbar(
                                 title = details.header.title,
-                                isFavourite = isFavourite,
+                                favouriteButtonState = favouriteButtonState,
                                 onBackPressed = onBackPressed,
                                 onFavouriteClicked = onFavouriteClicked,
                             )

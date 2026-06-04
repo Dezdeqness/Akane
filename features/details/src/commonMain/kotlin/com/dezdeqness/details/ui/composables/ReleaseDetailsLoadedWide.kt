@@ -26,6 +26,7 @@ import com.dezdeqness.designsystem.icons.AkaneIcons
 import com.dezdeqness.details.ui.composables.adaptive.ReleaseDetailsWideContent
 import com.dezdeqness.details.ui.composables.adaptive.ReleaseDetailsWideSidebar
 import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.details.ui.model.FavouriteButtonState
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
 private val DetailsWideSidebarWidth = 420.dp
@@ -40,7 +41,7 @@ fun ReleaseDetailsLoadedWide(
     onDownloadAllClick: () -> Unit,
     onCancelAllDownloadsClick: () -> Unit,
     onBackPressed: () -> Unit,
-    isFavourite: Boolean,
+    favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -92,7 +93,7 @@ fun ReleaseDetailsLoadedWide(
                     ReleaseDetailsWideSidebar(
                         modifier = Modifier.width(DetailsWideSidebarWidth),
                         details = details,
-                        isFavourite = isFavourite,
+                        favouriteButtonState = favouriteButtonState,
                         onFavouriteClicked = onFavouriteClicked,
                     )
 

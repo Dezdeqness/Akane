@@ -4,12 +4,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
@@ -27,13 +28,14 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.designsystem.icons.AkaneIcons
+import com.dezdeqness.details.ui.model.FavouriteButtonState
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 
 @Composable
 fun ReleaseDetailsWideSidebar(
     modifier: Modifier = Modifier,
     details: ReleaseDetailsUiModel,
-    isFavourite: Boolean,
+    favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
 ) {
     val header = details.header
@@ -59,16 +61,34 @@ fun ReleaseDetailsWideSidebar(
                         .clip(RoundedCornerShape(16.dp)),
                 )
 
-                AppIconButton(
-                    modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp),
-                    onClick = onFavouriteClicked,
-                    contentColor = AppTheme.colors.surface,
-                ) {
-                    Icon(
-                        if (isFavourite) AkaneIcons.Favorite else AkaneIcons.FavoriteBorder,
-                        contentDescription = null,
-                        tint = AppTheme.colors.textPrimary,
-                    )
+                if (favouriteButtonState != FavouriteButtonState.Hidden) {
+                    AppIconButton(
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(4.dp),
+                        onClick = {
+                            if (favouriteButtonState !is FavouriteButtonState.Loading) onFavouriteClicked()
+                        },
+                        contentColor = AppTheme.colors.surface,
+                    ) {
+                        when (favouriteButtonState) {
+                            FavouriteButtonState.Loading -> {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.dp,
+                                    color = AppTheme.colors.textPrimary,
+                                )
+                            }
+
+                            is FavouriteButtonState.Loaded -> {
+                                Icon(
+                                    if (favouriteButtonState.isFavourite) AkaneIcons.Favorite else AkaneIcons.FavoriteBorder,
+                                    contentDescription = null,
+                                    tint = AppTheme.colors.textPrimary,
+                                )
+                            }
+
+                            FavouriteButtonState.Hidden -> Unit
+                        }
+                    }
                 }
             }
 
