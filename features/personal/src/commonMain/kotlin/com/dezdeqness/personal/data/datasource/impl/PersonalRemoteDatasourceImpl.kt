@@ -6,7 +6,7 @@ import com.dezdeqness.network.exception.createApiException
 import com.dezdeqness.network.models.request.FavoriteReleaseRequest
 import com.dezdeqness.network.models.request.FavoritesReleasesRequest
 import com.dezdeqness.network.services.FavoritesService
-import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalPageEntity
 import com.dezdeqness.personal.data.datasource.PersonalRemoteDatasource
 import com.dezdeqness.personal.data.mapper.PersonalMapper
 
@@ -28,13 +28,14 @@ class PersonalRemoteDatasourceImpl(
     override suspend fun getFavoriteReleases(
         page: Int,
         limit: Int,
-    ): Result<List<PersonalEntity>> = tryWithCatchSuspend {
+    ): Result<PersonalPageEntity> = tryWithCatchSuspend {
         val response = favoritesService.getFavoriteReleases(
             FavoritesReleasesRequest(page = page, limit = limit),
         )
         if (response.isSuccessful) {
-            val releases = response.body()?.data.orEmpty()
-            Result.success(releases.map(personalMapper::fromRelease))
+            val body = response.body()
+                ?: throw response.createApiException()
+            Result.success(personalMapper.toPage(body))
         } else {
             throw response.createApiException()
         }

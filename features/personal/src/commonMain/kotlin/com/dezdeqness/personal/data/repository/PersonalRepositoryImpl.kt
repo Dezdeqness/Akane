@@ -1,23 +1,38 @@
 package com.dezdeqness.personal.data.repository
 
-import com.dezdeqness.personal.data.datasource.PersonalDatasource
-import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalPageEntity
 import com.dezdeqness.personal.contract.repository.PersonalRepository
+import com.dezdeqness.personal.data.datasource.PersonalLocalDatasource
+import com.dezdeqness.personal.data.datasource.PersonalRemoteDatasource
 
 class PersonalRepositoryImpl(
-    private val personalDatasource: PersonalDatasource
+    private val localDatasource: PersonalLocalDatasource,
+    private val remoteDatasource: PersonalRemoteDatasource,
 ) : PersonalRepository {
-    override fun getPersonalAsFlow() = personalDatasource.getPersonalAsFlow()
 
-    override suspend fun containsById(id: Long) = personalDatasource.containsById(id)
+    override fun getFavoriteIdsAsFlow() = localDatasource.getFavoriteIdsAsFlow()
 
-    override suspend fun getPersonalList() = personalDatasource.getPersonalList()
+    override suspend fun containsById(id: Long) = localDatasource.contains(id)
 
-    override suspend fun deleteById(id: Long) {
-        personalDatasource.deleteById(id)
-    }
+    override suspend fun syncFavoriteIds(): Result<Unit> =
+        remoteDatasource.getFavoriteIds()
+            .onSuccess { ids -> localDatasource.replaceAll(ids) }
+            .map { }
 
-    override suspend fun add(item: PersonalEntity) {
-        personalDatasource.add(item)
+    override suspend fun addToFavorites(id: Long): Result<Unit> =
+        remoteDatasource.addToFavorites(id)
+            .onSuccess { ids -> localDatasource.replaceAll(ids) }
+            .map { }
+
+    override suspend fun removeFromFavorites(id: Long): Result<Unit> =
+        remoteDatasource.removeFromFavorites(id)
+            .onSuccess { ids -> localDatasource.replaceAll(ids) }
+            .map { }
+
+    override suspend fun getFavoriteReleases(page: Int): Result<PersonalPageEntity> =
+        remoteDatasource.getFavoriteReleases(page = page, limit = LIMIT)
+
+    private companion object {
+        private const val LIMIT = 20
     }
 }

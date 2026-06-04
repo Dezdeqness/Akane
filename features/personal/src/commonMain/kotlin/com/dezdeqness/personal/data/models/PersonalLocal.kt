@@ -7,7 +7,4 @@ import androidx.room.PrimaryKey
 data class PersonalLocal(
     @PrimaryKey
     val id: Long,
-    val name: String,
-    val poster: String,
-    val createdTimeStamp: Long,
 )

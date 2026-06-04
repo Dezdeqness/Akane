@@ -6,6 +6,9 @@ import org.koin.dsl.module
 
 val domainModule = module {
     single<PersonalRepository> {
-        PersonalRepositoryImpl(personalDatasource = get())
+        PersonalRepositoryImpl(
+            localDatasource = get(),
+            remoteDatasource = get(),
+        )
     }
 }

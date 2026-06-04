@@ -1,12 +1,13 @@
 package com.dezdeqness.personal.contract.repository
 
-import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalPageEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PersonalRepository {
-    fun getPersonalAsFlow(): Flow<List<PersonalEntity>>
+    fun getFavoriteIdsAsFlow(): Flow<List<Long>>
     suspend fun containsById(id: Long): Boolean
-    suspend fun getPersonalList(): List<PersonalEntity>
-    suspend fun deleteById(id: Long)
-    suspend fun add(item: PersonalEntity)
+    suspend fun syncFavoriteIds(): Result<Unit>
+    suspend fun addToFavorites(id: Long): Result<Unit>
+    suspend fun removeFromFavorites(id: Long): Result<Unit>
+    suspend fun getFavoriteReleases(page: Int): Result<PersonalPageEntity>
 }

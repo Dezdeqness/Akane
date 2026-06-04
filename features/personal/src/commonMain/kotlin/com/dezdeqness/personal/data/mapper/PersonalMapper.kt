@@ -1,18 +1,12 @@
 package com.dezdeqness.personal.data.mapper
 
 import com.dezdeqness.network.constants.BaseUrl
+import com.dezdeqness.network.models.core.GeneralResponse
 import com.dezdeqness.network.models.response.ReleaseResponse
-import com.dezdeqness.personal.core.currentTimeMillis
-import com.dezdeqness.personal.data.models.PersonalLocal
 import com.dezdeqness.personal.contract.model.PersonalEntity
+import com.dezdeqness.personal.contract.model.PersonalPageEntity
 
 class PersonalMapper {
-    fun fromLocal(item: PersonalLocal) =
-        PersonalEntity(
-            id = item.id,
-            name = item.name,
-            poster = item.poster,
-        )
 
     fun fromRelease(response: ReleaseResponse) =
         PersonalEntity(
@@ -21,11 +15,15 @@ class PersonalMapper {
             poster = BaseUrl.BASE_URL_IMAGES + response.poster.src,
         )
 
-    fun toLocal(item: PersonalEntity) =
-        PersonalLocal(
-            id = item.id,
-            name = item.name,
-            poster = item.poster,
-            createdTimeStamp = currentTimeMillis(),
+    fun toPage(response: GeneralResponse<List<ReleaseResponse>>): PersonalPageEntity {
+        val items = response.data.orEmpty().map(::fromRelease)
+        val pagination = response.meta.pagination
+        val currentPage = pagination.currentPage
+        return PersonalPageEntity(
+            items = items,
+            currentPage = currentPage,
+            nextPage = currentPage + 1,
+            hasNextPage = currentPage < pagination.totalPages,
         )
+    }
 }

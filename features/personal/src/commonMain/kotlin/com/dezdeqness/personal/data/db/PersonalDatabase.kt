@@ -9,7 +9,7 @@ import com.dezdeqness.personal.data.models.PersonalLocal
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 
-@Database(entities = [PersonalLocal::class], version = 1)
+@Database(entities = [PersonalLocal::class], version = 2)
 @ConstructedBy(AppDatabaseConstructor::class)
 abstract class PersonalDatabase : RoomDatabase() {
     abstract fun personalDao(): PersonalDao
@@ -22,6 +22,7 @@ expect object AppDatabaseConstructor : RoomDatabaseConstructor<PersonalDatabase>
 
 fun getPersonalDatabase(builder: RoomDatabase.Builder<PersonalDatabase>): PersonalDatabase {
     return builder
+        .addMigrations(MIGRATION_1_2)
         .setDriver(BundledSQLiteDriver())
         .setQueryCoroutineContext(Dispatchers.IO)
         .build()

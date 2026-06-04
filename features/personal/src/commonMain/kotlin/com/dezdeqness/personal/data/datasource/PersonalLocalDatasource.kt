@@ -1,12 +1,11 @@
 package com.dezdeqness.personal.data.datasource
 
-import com.dezdeqness.personal.contract.model.PersonalEntity
 import kotlinx.coroutines.flow.Flow
 
 interface PersonalLocalDatasource {
-    fun getPersonalAsFlow(): Flow<List<PersonalEntity>>
-    suspend fun containsById(id: Long): Boolean
-    suspend fun getPersonalList(): List<PersonalEntity>
-    suspend fun deleteById(id: Long)
-    suspend fun add(item: PersonalEntity)
+    fun getFavoriteIdsAsFlow(): Flow<List<Long>>
+    suspend fun contains(id: Long): Boolean
+    suspend fun replaceAll(ids: List<Long>)
+    suspend fun add(id: Long)
+    suspend fun delete(id: Long)
 }

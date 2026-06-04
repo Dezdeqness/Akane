@@ -6,9 +6,13 @@ class ApiErrorMapper : ErrorMapper {
 
     override fun map(exception: Throwable): ErrorEntity = when (exception) {
         is ApiException -> {
-            ErrorEntity.UnknownErrorEntity(
-                "Code: ${exception.code}, message=${exception.message}",
-            )
+            if (exception.code == HTTP_UNAUTHORIZED || exception.code == HTTP_FORBIDDEN) {
+                ErrorEntity.UnauthorizedErrorEntity
+            } else {
+                ErrorEntity.UnknownErrorEntity(
+                    "Code: ${exception.code}, message=${exception.message}",
+                )
+            }
         }
 
         else -> {
@@ -16,5 +20,10 @@ class ApiErrorMapper : ErrorMapper {
                 "Message: ${exception.message}, stack: ${exception.stackTraceToString()}",
             )
         }
+    }
+
+    private companion object {
+        private const val HTTP_UNAUTHORIZED = 401
+        private const val HTTP_FORBIDDEN = 403
     }
 }
