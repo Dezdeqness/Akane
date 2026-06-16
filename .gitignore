@@ -63,3 +63,7 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Claude Code — version project skills, ignore everything else (local settings, secrets)
+/.claude/*
+!/.claude/skills/
