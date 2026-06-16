@@ -75,6 +75,7 @@ include(":contract:personal")
 include(":contract:calendar")
 include(":contract:auth")
 include(":contract:profile")
+include(":contract:genre")
 
 include(":features:feed")
 include(":features:details")
