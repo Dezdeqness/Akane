@@ -120,7 +120,6 @@ fun GenreReleasesPage(
                             columnCount = columns,
                             contentPadding = PaddingValues(
                                 horizontal = horizontalPadding,
-                                vertical = 8.dp,
                             ),
                             onLoadMore = {
                                 viewModel.onLoadMore()
