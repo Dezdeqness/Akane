@@ -9,7 +9,7 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(project(":contract:feed"))
+            api(project(":contract:catalog"))
         }
     }
 }
