@@ -1,6 +1,6 @@
-package com.dezdeqness.feed.ui.model
+package com.dezdeqness.catalog.ui.model
 
-data class FeedAnimeUiModel(
+data class ReleaseListUiModel(
     val id: Long,
     val title: String,
     val summary: String,

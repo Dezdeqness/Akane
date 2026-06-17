@@ -12,10 +12,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.dezdeqness.catalog.ui.ReleaseGrid
+import com.dezdeqness.catalog.ui.ReleaseListLoading
 import com.dezdeqness.feed.ui.composable.FeedEmpty
 import com.dezdeqness.feed.ui.composable.FeedError
-import com.dezdeqness.feed.ui.composable.FeedGrid
-import com.dezdeqness.feed.ui.composable.FeedLoading
 
 @Composable
 fun FeedContent(
@@ -35,7 +35,7 @@ fun FeedContent(
     ) {
         when (state.status) {
             Status.Initial, Status.Loading -> {
-                FeedLoading(
+                ReleaseListLoading(
                     modifier = Modifier.fillMaxSize(),
                     gridElementCount = columns,
                 )
@@ -64,7 +64,7 @@ fun FeedContent(
                     isPageLoading = false
                 }
 
-                FeedGrid(
+                ReleaseGrid(
                     list = state.items,
                     hasNextPage = state.hasNextPage,
                     isPageLoading = isPageLoading,

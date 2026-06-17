@@ -3,13 +3,12 @@ plugins {
 }
 
 android {
-    namespace = "com.dezdeqness.feed.contract"
+    namespace = "com.dezdeqness.catalog.contract"
 }
 
 kotlin {
     sourceSets {
         commonMain.dependencies {
-            api(project(":contract:catalog"))
         }
     }
 }

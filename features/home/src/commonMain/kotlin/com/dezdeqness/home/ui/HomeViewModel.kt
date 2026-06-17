@@ -6,7 +6,7 @@ import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
 import com.dezdeqness.calendar.contract.repository.CalendarRepository
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.feed.contract.model.ReleaseEntity
+import com.dezdeqness.catalog.contract.model.ReleaseEntity
 import com.dezdeqness.feed.contract.repository.FeedRepository
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi

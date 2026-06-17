@@ -1,12 +1,12 @@
 package com.dezdeqness.feed.ui
 
 import androidx.compose.runtime.Immutable
+import com.dezdeqness.catalog.ui.model.ReleaseListUiModel
 import com.dezdeqness.feed.contract.model.CatalogFilter
-import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 @Immutable
 data class FeedState(
-    val items: List<FeedAnimeUiModel> = listOf(),
+    val items: List<ReleaseListUiModel> = listOf(),
     val status: Status = Status.Initial,
     val currentPage: Int = 1,
     val hasNextPage: Boolean = false,

@@ -15,6 +15,7 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":common:analytics"))
+            implementation(project(":shared:catalog-ui"))
             api(project(":contract:feed"))
         }
 

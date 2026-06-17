@@ -1,8 +1,8 @@
 package com.dezdeqness.feed.data.datasource.impl
 
+import com.dezdeqness.catalog.contract.model.ReleasesPageEntity
 import com.dezdeqness.feed.data.datasource.FeedApiDatasource
 import com.dezdeqness.feed.data.mapper.FeedMapper
-import com.dezdeqness.feed.contract.model.FeedEntity
 import com.dezdeqness.feed.contract.model.ProductionStatus
 import com.dezdeqness.feed.contract.model.PublishStatus
 import com.dezdeqness.feed.contract.model.Sorting
@@ -65,7 +65,7 @@ class FeedApiDatasourceImpl(
             val currentPage = (body?.meta?.pagination?.currentPage ?: 0)
             val totalPages = body?.meta?.pagination?.totalPages ?: 0
             Result.success(
-                FeedEntity(
+                ReleasesPageEntity(
                     items = items,
                     nextPage = nextPage,
                     currentPage = currentPage,

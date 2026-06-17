@@ -1,4 +1,4 @@
-package com.dezdeqness.feed.contract.model
+package com.dezdeqness.catalog.contract.model
 
 data class ReleaseEntity(
     val id: Long,

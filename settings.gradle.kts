@@ -76,6 +76,9 @@ include(":contract:calendar")
 include(":contract:auth")
 include(":contract:profile")
 include(":contract:genre")
+include(":contract:catalog")
+
+include(":shared:catalog-ui")
 
 include(":features:feed")
 include(":features:details")

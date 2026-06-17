@@ -1,4 +1,4 @@
-package com.dezdeqness.feed.ui.composable
+package com.dezdeqness.catalog.ui
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,7 +17,7 @@ import com.dezdeqness.core.ui.views.rememberShimmerOffset
 import com.dezdeqness.core.ui.views.shimmer
 
 @Composable
-fun FeedLoading(
+fun ReleaseListLoading(
     modifier: Modifier = Modifier,
     times: Int = 5,
     gridElementCount: Int = 3,
@@ -33,25 +33,25 @@ fun FeedLoading(
             )
     ) {
         repeat(times) { _ ->
-            FeedPairLoading(shimmerOffset = shimmerOffset, gridElementCount = gridElementCount)
+            ReleasePairLoading(shimmerOffset = shimmerOffset, gridElementCount = gridElementCount)
         }
     }
 }
 
 @Composable
-fun FeedItemLoading(
+fun ReleaseItemLoading(
     modifier: Modifier = Modifier,
     shimmerOffset: Float,
 ) {
     Box(
         modifier = modifier
-            .aspectRatio(FeedItemAspectRatio)
+            .aspectRatio(ReleaseCardAspectRatio)
             .shimmer(shimmerOffset = shimmerOffset, color = AppTheme.colors.surface)
     )
 }
 
 @Composable
-private fun FeedPairLoading(
+private fun ReleasePairLoading(
     modifier: Modifier = Modifier,
     shimmerOffset: Float,
     gridElementCount: Int,
@@ -61,11 +61,10 @@ private fun FeedPairLoading(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         repeat(gridElementCount) {
-            FeedItemLoading(
+            ReleaseItemLoading(
                 modifier = Modifier.weight(1f),
                 shimmerOffset = shimmerOffset,
             )
-
         }
     }
 }

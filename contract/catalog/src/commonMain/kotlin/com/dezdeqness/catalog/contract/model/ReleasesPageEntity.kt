@@ -1,6 +1,6 @@
-package com.dezdeqness.feed.contract.model
+package com.dezdeqness.catalog.contract.model
 
-data class FeedEntity(
+data class ReleasesPageEntity(
     val items: List<ReleaseEntity>,
     val currentPage: Int,
     val nextPage: Int,

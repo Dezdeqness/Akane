@@ -6,8 +6,9 @@ import co.touchlab.kermit.Logger
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
+import com.dezdeqness.catalog.contract.model.ReleasesPageEntity
+import com.dezdeqness.catalog.ui.mapper.ReleaseUiMapper
 import com.dezdeqness.feed.contract.model.CatalogFilter
-import com.dezdeqness.feed.contract.model.FeedEntity
 import com.dezdeqness.feed.contract.repository.FeedRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -24,7 +25,7 @@ import kotlinx.coroutines.flow.update
 
 class FeedViewModel(
     private val feedRepository: FeedRepository,
-    private val feedUiMapper: FeedUiMapper,
+    private val releaseUiMapper: ReleaseUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
     private val errorReporter: AkaneErrorReporter,
@@ -58,7 +59,7 @@ class FeedViewModel(
             val result = loadResult.result
 
             result.onSuccess { response ->
-                val mappedList = response.items.map(feedUiMapper::map)
+                val mappedList = response.items.map(releaseUiMapper::map)
                 val updatedList = when (event) {
                     is LoadEvent.Refresh, is LoadEvent.Initial -> mappedList
                     is LoadEvent.LoadMore -> previous.items + mappedList
@@ -174,7 +175,7 @@ class FeedViewModel(
 
     private data class LoadResult(
         val event: LoadEvent,
-        val result: Result<FeedEntity>,
+        val result: Result<ReleasesPageEntity>,
     )
 
     companion object {

@@ -1,4 +1,4 @@
-package com.dezdeqness.feed.ui.composable
+package com.dezdeqness.catalog.ui
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,18 +14,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.times
+import com.dezdeqness.catalog.ui.model.ReleaseListUiModel
 import com.dezdeqness.core.ui.views.rememberShimmerOffset
-import com.dezdeqness.feed.ui.model.FeedAnimeUiModel
 
 private const val PAGINATION_LOAD_FACTOR = 0.75
 
 @Composable
-fun FeedGrid(
+fun ReleaseGrid(
     modifier: Modifier = Modifier,
-    list: List<FeedAnimeUiModel>,
+    list: List<ReleaseListUiModel>,
     hasNextPage: Boolean,
     isPageLoading: Boolean,
     columnCount: Int = 3,
+    contentPadding: PaddingValues = PaddingValues(),
     onLoadMore: () -> Unit,
     onReleaseClicked: (Long, String) -> Unit,
 ) {
@@ -50,6 +51,7 @@ fun FeedGrid(
         state = gridState,
         columns = GridCells.Fixed(columnCount),
         modifier = modifier.fillMaxSize(),
+        contentPadding = contentPadding,
     ) {
         items(
             count = list.size,
@@ -59,15 +61,13 @@ fun FeedGrid(
 
             val padding = calculateItemPadding(index, columnCount)
 
-            FeedItem(
+            ReleaseCard(
                 item = item,
                 modifier = Modifier
                     .animateItem()
                     .padding(padding),
                 onReleaseClicked = {
-                    val id = item.id
-                    val title = item.title
-                    onReleaseClicked.invoke(id, title)
+                    onReleaseClicked.invoke(item.id, item.title)
                 }
             )
         }
@@ -76,7 +76,7 @@ fun FeedGrid(
             repeat(columnCount) { index ->
                 val padding = calculateItemPadding(index, columnCount)
                 item {
-                    FeedItemLoading(
+                    ReleaseItemLoading(
                         modifier = Modifier.padding(padding), shimmerOffset = shimmerOffset,
                     )
                 }
