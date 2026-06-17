@@ -13,6 +13,9 @@ object ApiEndPoints {
     const val RELEASE = "${ANIME}releases/{id}"
     const val FRANCHISE = "${ANIME}franchises/release/{id}"
     const val SCHEDULE_NOW = "${ANIME}schedule/now"
+    const val GENRES = "${ANIME}genres"
+    const val GENRES_RANDOM = "${ANIME}genres/random"
+    const val GENRE_RELEASES = "${ANIME}genres/{id}/releases"
 
     const val AUTH_LOGIN = "${ACCOUNTS_AUTH}login"
     const val AUTH_LOGOUT = "${ACCOUNTS_AUTH}logout"

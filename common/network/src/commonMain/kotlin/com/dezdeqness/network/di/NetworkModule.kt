@@ -10,12 +10,14 @@ import com.dezdeqness.network.services.CalendarService
 import com.dezdeqness.network.services.CatalogService
 import com.dezdeqness.network.services.FavoritesService
 import com.dezdeqness.network.services.FranchiseService
+import com.dezdeqness.network.services.GenreService
 import com.dezdeqness.network.services.ProfileService
 import com.dezdeqness.network.services.createAuthService
 import com.dezdeqness.network.services.createCalendarService
 import com.dezdeqness.network.services.createCatalogService
 import com.dezdeqness.network.services.createFavoritesService
 import com.dezdeqness.network.services.createFranchiseService
+import com.dezdeqness.network.services.createGenreService
 import com.dezdeqness.network.services.createProfileService
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
@@ -95,5 +97,9 @@ val networkModule = module {
 
     single<FavoritesService> {
         get<Ktorfit>().createFavoritesService()
+    }
+
+    single<GenreService> {
+        get<Ktorfit>().createGenreService()
     }
 }

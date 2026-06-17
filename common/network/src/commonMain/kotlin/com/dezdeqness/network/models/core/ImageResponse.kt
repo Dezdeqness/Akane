@@ -12,5 +12,6 @@ data class Image(
 @Serializable
 data class Optimized(
     val src: String?,
+    val preview: String?,
     val thumbnail: String?,
 )
