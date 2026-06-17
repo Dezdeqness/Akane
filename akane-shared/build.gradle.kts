@@ -34,6 +34,7 @@ kotlin {
             implementation(projects.features.downloads)
             implementation(projects.features.auth)
             implementation(projects.features.profile)
+            implementation(projects.features.genre)
 
             implementation(compose.runtime)
             implementation(compose.material3)

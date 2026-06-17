@@ -12,6 +12,9 @@ import androidx.navigation3.ui.NavDisplay
 import com.dezdeqness.auth.navigation.authEntries
 import com.dezdeqness.downloads.navigation.downloadsEntries
 import com.dezdeqness.feed.navigation.feedEntries
+import com.dezdeqness.genre.navigation.genreEntries
+import com.dezdeqness.genre.navigation.navigateToGenreReleases
+import com.dezdeqness.genre.navigation.navigateToGenres
 import com.dezdeqness.home.navigation.homeEntries
 import com.dezdeqness.personal.navigation.personalEntries
 import com.dezdeqness.profile.navigation.profileEntries
@@ -38,7 +41,22 @@ fun RootNavigationHost(
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            homeEntries(onItemClicked = rootControllerNavigateToDetails)
+            homeEntries(
+                onItemClicked = rootControllerNavigateToDetails,
+                onGenreClicked = { genreId, genreName ->
+                    currentTabStack.navigateToGenreReleases(genreId, genreName)
+                },
+                onAllGenresClicked = {
+                    currentTabStack.navigateToGenres()
+                },
+            )
+            genreEntries(
+                onBackPressed = { currentTabStack.removeLastOrNull() },
+                onGenreClicked = { genreId, genreName ->
+                    currentTabStack.navigateToGenreReleases(genreId, genreName)
+                },
+                onReleaseClicked = rootControllerNavigateToDetails,
+            )
             feedEntries(onReleaseClicked = rootControllerNavigateToDetails)
             personalEntries(
                 onItemClicked = rootControllerNavigateToDetails,
