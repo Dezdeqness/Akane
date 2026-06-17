@@ -8,8 +8,16 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object HomeRoute : NavKey
 
-fun EntryProviderScope<NavKey>.homeEntries(onItemClicked: (Long, String) -> Unit) {
+fun EntryProviderScope<NavKey>.homeEntries(
+    onItemClicked: (Long, String) -> Unit,
+    onGenreClicked: (Int, String) -> Unit,
+    onAllGenresClicked: () -> Unit,
+) {
     entry<HomeRoute> {
-        HomePageStandalone(onItemClicked = onItemClicked)
+        HomePageStandalone(
+            onItemClicked = onItemClicked,
+            onGenreClicked = onGenreClicked,
+            onAllGenresClicked = onAllGenresClicked,
+        )
     }
 }

@@ -7,6 +7,7 @@ import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.downloads.di.downloadsModule
 import com.dezdeqness.feed.di.feedModule
 import com.dezdeqness.foundation.di.coreModule
+import com.dezdeqness.genre.di.genreModule
 import com.dezdeqness.home.di.homeModule
 import com.dezdeqness.network.di.networkModule
 import com.dezdeqness.personal.di.personalModule
@@ -46,6 +47,7 @@ object KoinModules {
         add(downloadsModule)
         add(authModule)
         add(profileModule)
+        add(genreModule)
         add(appModule)
     }
 

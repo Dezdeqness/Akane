@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.dezdeqness.home.ui.HomeActions
 import com.dezdeqness.home.ui.HomeState
 import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesWideSection
+import com.dezdeqness.home.ui.composables.genres.GenresWideSection
 import com.dezdeqness.home.ui.composables.HomeWideSection
 
 @Composable
@@ -47,6 +48,13 @@ fun HomePageWide(
                 title = "Лучшее за все время",
                 items = state.bestRated,
                 onItemClicked = actions::onItemClicked,
+            )
+        }
+        item {
+            GenresWideSection(
+                genres = state.genres,
+                onGenreClicked = actions::onGenreClicked,
+                onAllClicked = actions::onAllGenresClicked,
             )
         }
     }

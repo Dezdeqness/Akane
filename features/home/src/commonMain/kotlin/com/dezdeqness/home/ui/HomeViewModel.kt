@@ -8,6 +8,8 @@ import com.dezdeqness.calendar.contract.repository.CalendarRepository
 import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.catalog.contract.model.ReleaseEntity
 import com.dezdeqness.feed.contract.repository.FeedRepository
+import com.dezdeqness.genre.contract.model.GenreEntity
+import com.dezdeqness.genre.contract.repository.GenreRepository
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
@@ -25,6 +27,7 @@ import kotlinx.coroutines.flow.stateIn
 class HomeViewModel(
     private val feedRepository: FeedRepository,
     private val calendarRepository: CalendarRepository,
+    private val genreRepository: GenreRepository,
     private val homeUiMapper: HomeUiMapper,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val errorReporter: AkaneErrorReporter,
@@ -38,21 +41,23 @@ class HomeViewModel(
             .onStart { emit(Unit) }
             .flatMapLatest {
                 flow {
-                    val (ongoing, released, best, calendar) = coroutineScope {
+                    val (ongoing, released, best, calendar, genres) = coroutineScope {
                         val ongoingD = async { feedRepository.getFeedOngoing() }
                         val releasedD = async { feedRepository.getFeedReleased() }
                         val bestD = async { feedRepository.getFeedBestRating() }
                         val calendarD = async { calendarRepository.getScheduleNow() }
+                        val genresD = async { genreRepository.getRandomGenres() }
 
                         HomeParallelResult(
                             ongoing = ongoingD.await(),
                             released = releasedD.await(),
                             best = bestD.await(),
                             calendar = calendarD.await(),
+                            genres = genresD.await(),
                         )
                     }
 
-                    val results = listOf(ongoing, released, best, calendar)
+                    val results = listOf(ongoing, released, best, calendar, genres)
 
                     if (results.any { it.isFailure }) {
                         results
@@ -70,6 +75,7 @@ class HomeViewModel(
                             released = released.getOrThrow().map(homeUiMapper::toUiModel),
                             bestRated = best.getOrThrow().map(homeUiMapper::toUiModel),
                             freshUpdates = calendar.getOrThrow().today.map(homeUiMapper::toUiModelSchedule),
+                            genres = genres.getOrThrow().map(homeUiMapper::toGenrePanel),
                             status = StateStatus.Loaded
                         )
                     )
@@ -103,4 +109,5 @@ private data class HomeParallelResult(
     val released: Result<List<ReleaseEntity>>,
     val best: Result<List<ReleaseEntity>>,
     val calendar: Result<CalendarScheduleEntity>,
+    val genres: Result<List<GenreEntity>>,
 )

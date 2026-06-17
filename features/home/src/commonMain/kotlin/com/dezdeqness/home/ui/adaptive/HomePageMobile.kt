@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.dp
 import com.dezdeqness.home.ui.HomeActions
 import com.dezdeqness.home.ui.HomeState
 import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesSection
+import com.dezdeqness.home.ui.composables.genres.GenresSection
 import com.dezdeqness.home.ui.composables.HomeSection
 
 @Composable
@@ -47,6 +48,13 @@ fun HomePageMobile(
                 title = "Лучшее за все время",
                 items = state.bestRated,
                 onItemClicked = actions::onItemClicked,
+            )
+        }
+        item {
+            GenresSection(
+                genres = state.genres,
+                onGenreClicked = actions::onGenreClicked,
+                onAllClicked = actions::onAllGenresClicked,
             )
         }
     }

@@ -12,6 +12,7 @@ kotlin {
             api(libs.bundles.ktorfit.common)
             implementation(libs.coil.compose)
             implementation(libs.compose.material3)
+            implementation(compose.components.resources)
             implementation(libs.kermit)
             implementation(project(":common:analytics"))
             implementation(project(":contract:feed"))

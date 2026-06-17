@@ -6,7 +6,7 @@ import com.dezdeqness.genre.contract.model.GenreEntity
 interface GenreRepository {
     suspend fun getGenres(): Result<List<GenreEntity>>
 
-    suspend fun getRandomGenres(limit: Int): Result<List<GenreEntity>>
+    suspend fun getRandomGenres(limit: Int = 10): Result<List<GenreEntity>>
 
     suspend fun getGenreReleases(
         genreId: Int,
