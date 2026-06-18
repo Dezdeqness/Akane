@@ -77,6 +77,8 @@ include(":contract:auth")
 include(":contract:profile")
 include(":contract:genre")
 include(":contract:catalog")
+include(":contract:promo")
+include(":contract:franchise")
 
 include(":shared:catalog-ui")
 
