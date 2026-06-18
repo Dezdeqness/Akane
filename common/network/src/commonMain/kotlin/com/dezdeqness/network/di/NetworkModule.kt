@@ -12,6 +12,7 @@ import com.dezdeqness.network.services.FavoritesService
 import com.dezdeqness.network.services.FranchiseService
 import com.dezdeqness.network.services.GenreService
 import com.dezdeqness.network.services.ProfileService
+import com.dezdeqness.network.services.PromotionsService
 import com.dezdeqness.network.services.createAuthService
 import com.dezdeqness.network.services.createCalendarService
 import com.dezdeqness.network.services.createCatalogService
@@ -19,6 +20,7 @@ import com.dezdeqness.network.services.createFavoritesService
 import com.dezdeqness.network.services.createFranchiseService
 import com.dezdeqness.network.services.createGenreService
 import com.dezdeqness.network.services.createProfileService
+import com.dezdeqness.network.services.createPromotionsService
 import de.jensklingenberg.ktorfit.Ktorfit
 import de.jensklingenberg.ktorfit.converter.ResponseConverterFactory
 import io.ktor.client.HttpClient
@@ -101,5 +103,9 @@ val networkModule = module {
 
     single<GenreService> {
         get<Ktorfit>().createGenreService()
+    }
+
+    single<PromotionsService> {
+        get<Ktorfit>().createPromotionsService()
     }
 }
