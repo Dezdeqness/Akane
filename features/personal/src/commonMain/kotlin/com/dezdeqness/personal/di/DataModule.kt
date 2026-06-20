@@ -10,7 +10,7 @@ import com.dezdeqness.personal.data.mapper.PersonalMapper
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { PersonalMapper() }
+    single { PersonalMapper(imageUrlBuilder = get()) }
     single<PersonalLocalDatasource> {
         PersonalLocalDatasourceImpl(
             personalDao = get<PersonalDatabase>().personalDao(),
