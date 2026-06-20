@@ -7,8 +7,10 @@ import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.downloads.di.downloadsModule
 import com.dezdeqness.feed.di.feedModule
 import com.dezdeqness.foundation.di.coreModule
+import com.dezdeqness.franchise.di.franchiseModule
 import com.dezdeqness.genre.di.genreModule
 import com.dezdeqness.home.di.homeModule
+import com.dezdeqness.promo.di.promoModule
 import com.dezdeqness.network.di.networkModule
 import com.dezdeqness.personal.di.personalModule
 import com.dezdeqness.profile.di.profileModule
@@ -48,6 +50,8 @@ object KoinModules {
         add(authModule)
         add(profileModule)
         add(genreModule)
+        add(promoModule)
+        add(franchiseModule)
         add(appModule)
     }
 

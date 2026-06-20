@@ -12,6 +12,9 @@ import androidx.navigation3.ui.NavDisplay
 import com.dezdeqness.auth.navigation.authEntries
 import com.dezdeqness.downloads.navigation.downloadsEntries
 import com.dezdeqness.feed.navigation.feedEntries
+import com.dezdeqness.franchise.navigation.franchiseEntries
+import com.dezdeqness.franchise.navigation.navigateToFranchiseDetail
+import com.dezdeqness.franchise.navigation.navigateToFranchises
 import com.dezdeqness.genre.navigation.genreEntries
 import com.dezdeqness.genre.navigation.navigateToGenreReleases
 import com.dezdeqness.genre.navigation.navigateToGenres
@@ -49,11 +52,24 @@ fun RootNavigationHost(
                 onAllGenresClicked = {
                     currentTabStack.navigateToGenres()
                 },
+                onFranchiseClicked = { franchiseId, franchiseName ->
+                    currentTabStack.navigateToFranchiseDetail(franchiseId, franchiseName)
+                },
+                onAllFranchisesClicked = {
+                    currentTabStack.navigateToFranchises()
+                },
             )
             genreEntries(
                 onBackPressed = { currentTabStack.removeLastOrNull() },
                 onGenreClicked = { genreId, genreName ->
                     currentTabStack.navigateToGenreReleases(genreId, genreName)
+                },
+                onReleaseClicked = rootControllerNavigateToDetails,
+            )
+            franchiseEntries(
+                onBackPressed = { currentTabStack.removeLastOrNull() },
+                onFranchiseClicked = { franchiseId, franchiseName ->
+                    currentTabStack.navigateToFranchiseDetail(franchiseId, franchiseName)
                 },
                 onReleaseClicked = rootControllerNavigateToDetails,
             )

@@ -36,6 +36,7 @@ kotlin {
             implementation(projects.features.profile)
             implementation(projects.features.genre)
             implementation(projects.features.franchise)
+            implementation(projects.features.promo)
 
             implementation(compose.runtime)
             implementation(compose.material3)

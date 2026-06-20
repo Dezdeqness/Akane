@@ -9,6 +9,8 @@ import com.dezdeqness.downloads.navigation.ActiveDownloadsRoute
 import com.dezdeqness.downloads.navigation.DownloadsRoute
 import com.dezdeqness.downloads.navigation.ReleaseEpisodesRoute
 import com.dezdeqness.feed.navigation.FeedRoute
+import com.dezdeqness.franchise.navigation.FranchiseDetailRoute
+import com.dezdeqness.franchise.navigation.FranchisesRoute
 import com.dezdeqness.genre.navigation.GenreReleasesRoute
 import com.dezdeqness.genre.navigation.GenresRoute
 import com.dezdeqness.home.navigation.HomeRoute
@@ -37,6 +39,8 @@ val navKeysSerializersModule = SerializersModule {
         subclass(ActiveDownloadsRoute::class, serializer<ActiveDownloadsRoute>())
         subclass(GenresRoute::class, serializer<GenresRoute>())
         subclass(GenreReleasesRoute::class, serializer<GenreReleasesRoute>())
+        subclass(FranchisesRoute::class, serializer<FranchisesRoute>())
+        subclass(FranchiseDetailRoute::class, serializer<FranchiseDetailRoute>())
     }
 }
 
