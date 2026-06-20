@@ -8,9 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.home.ui.HomeActions
 import com.dezdeqness.home.ui.HomeState
-import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesSection
-import com.dezdeqness.home.ui.composables.genres.GenresSection
+import com.dezdeqness.home.ui.composables.HomeSecondPartFooter
 import com.dezdeqness.home.ui.composables.HomeSection
+import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesSection
+import com.dezdeqness.home.ui.composables.franchise.FranchisesSection
+import com.dezdeqness.home.ui.composables.genres.GenresSection
+import com.dezdeqness.home.ui.composables.promo.PromoSection
 
 @Composable
 fun HomePageMobile(
@@ -20,9 +23,15 @@ fun HomePageMobile(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(28.dp),
+        verticalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
     ) {
+        item {
+            PromoSection(
+                promos = state.promos,
+                onReleaseClicked = actions::onPromoReleaseClicked,
+            )
+        }
         item {
             FreshUpdatesSection(
                 items = state.freshUpdates,
@@ -44,6 +53,13 @@ fun HomePageMobile(
             )
         }
         item {
+            FranchisesSection(
+                franchises = state.franchises,
+                onFranchiseClicked = actions::onFranchiseClicked,
+                onAllClicked = actions::onAllFranchisesClicked,
+            )
+        }
+        item {
             HomeSection(
                 title = "Лучшее за все время",
                 items = state.bestRated,
@@ -55,6 +71,12 @@ fun HomePageMobile(
                 genres = state.genres,
                 onGenreClicked = actions::onGenreClicked,
                 onAllClicked = actions::onAllGenresClicked,
+            )
+        }
+        item {
+            HomeSecondPartFooter(
+                status = state.status,
+                onRetry = actions::onRetryClicked,
             )
         }
     }

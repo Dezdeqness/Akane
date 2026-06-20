@@ -3,97 +3,83 @@ package com.dezdeqness.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneErrorReporter
-import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
-import com.dezdeqness.calendar.contract.repository.CalendarRepository
-import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
-import com.dezdeqness.catalog.contract.model.ReleaseEntity
-import com.dezdeqness.feed.contract.repository.FeedRepository
-import com.dezdeqness.genre.contract.model.GenreEntity
-import com.dezdeqness.genre.contract.repository.GenreRepository
+import com.dezdeqness.home.domain.HomeFeedStage
+import com.dezdeqness.home.domain.LoadHomeFeedUseCase
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.async
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
 
 class HomeViewModel(
-    private val feedRepository: FeedRepository,
-    private val calendarRepository: CalendarRepository,
-    private val genreRepository: GenreRepository,
+    private val loadHomeFeedUseCase: LoadHomeFeedUseCase,
     private val homeUiMapper: HomeUiMapper,
-    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val errorReporter: AkaneErrorReporter,
 ) : ViewModel() {
 
     private val reloadTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val homeState : StateFlow<HomeState> =
-        reloadTrigger
-            .onStart { emit(Unit) }
-            .flatMapLatest {
-                flow {
-                    val (ongoing, released, best, calendar, genres) = coroutineScope {
-                        val ongoingD = async { feedRepository.getFeedOngoing() }
-                        val releasedD = async { feedRepository.getFeedReleased() }
-                        val bestD = async { feedRepository.getFeedBestRating() }
-                        val calendarD = async { calendarRepository.getScheduleNow() }
-                        val genresD = async { genreRepository.getRandomGenres() }
+    val homeState: StateFlow<HomeState> = reloadTrigger
+        .onStart { emit(Unit) }
+        .flatMapLatest {
+            loadHomeFeedUseCase()
+                .scan(HomeState(status = StateStatus.Loading)) { state, stage ->
+                    reduce(state, stage)
+                }
+        }
+        .catch { throwable ->
+            captureError(throwable)
+            emit(HomeState(status = StateStatus.Error))
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Lazily,
+            initialValue = HomeState(status = StateStatus.Loading),
+        )
 
-                        HomeParallelResult(
-                            ongoing = ongoingD.await(),
-                            released = releasedD.await(),
-                            best = bestD.await(),
-                            calendar = calendarD.await(),
-                            genres = genresD.await(),
-                        )
-                    }
-
-                    val results = listOf(ongoing, released, best, calendar, genres)
-
-                    if (results.any { it.isFailure }) {
-                        results
-                            .first { it.isFailure }
-                            .onFailure { throwable ->
-                                captureError(throwable)
-                            }
-                        emit(HomeState(status = StateStatus.Error))
-                        return@flow
-                    }
-
-                    emit(
-                        HomeState(
-                            onGoing = ongoing.getOrThrow().map(homeUiMapper::toUiModel),
-                            released = released.getOrThrow().map(homeUiMapper::toUiModel),
-                            bestRated = best.getOrThrow().map(homeUiMapper::toUiModel),
-                            freshUpdates = calendar.getOrThrow().today.map(homeUiMapper::toUiModelSchedule),
-                            genres = genres.getOrThrow().map(homeUiMapper::toGenrePanel),
-                            status = StateStatus.Loaded
-                        )
-                    )
-                }.flowOn(coroutineDispatcherProvider.io())
-            }
-            .catch { throwable ->
-                captureError(throwable)
-                emit(HomeState(status = StateStatus.Error))
-            }
-            .stateIn(
-                scope = viewModelScope,
-                started = SharingStarted.Lazily,
-                initialValue = HomeState(status = StateStatus.Loading)
-            )
-
-    fun onRetryClicked() {
+    fun retry() {
         reloadTrigger.tryEmit(Unit)
     }
+
+    private fun reduce(state: HomeState, stage: HomeFeedStage): HomeState =
+        when (stage) {
+            is HomeFeedStage.FirstPart -> stage.result.fold(
+                onSuccess = { data ->
+                    state.copy(
+                        promos = data.promos.map(homeUiMapper::toPromoPanel),
+                        freshUpdates = data.freshUpdates.map(homeUiMapper::toUiModelSchedule),
+                        onGoing = data.onGoing.map(homeUiMapper::toUiModel),
+                        status = StateStatus.LoadingMore,
+                    )
+                },
+                onFailure = { throwable ->
+                    captureError(throwable)
+                    state.copy(status = StateStatus.Error)
+                },
+            )
+
+            is HomeFeedStage.SecondPart -> stage.result.fold(
+                onSuccess = { data ->
+                    state.copy(
+                        franchises = data.franchises.map(homeUiMapper::toFranchisePanel),
+                        released = data.released.map(homeUiMapper::toUiModel),
+                        bestRated = data.bestRated.map(homeUiMapper::toUiModel),
+                        genres = data.genres.map(homeUiMapper::toGenrePanel),
+                        status = StateStatus.Loaded,
+                    )
+                },
+                onFailure = { throwable ->
+                    captureError(throwable)
+                    state.copy(status = StateStatus.SecondPartError)
+                },
+            )
+        }
 
     private fun captureError(throwable: Throwable) {
         errorReporter.captureException(
@@ -103,11 +89,3 @@ class HomeViewModel(
         )
     }
 }
-
-private data class HomeParallelResult(
-    val ongoing: Result<List<ReleaseEntity>>,
-    val released: Result<List<ReleaseEntity>>,
-    val best: Result<List<ReleaseEntity>>,
-    val calendar: Result<CalendarScheduleEntity>,
-    val genres: Result<List<GenreEntity>>,
-)

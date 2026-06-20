@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables.genres
+package com.dezdeqness.home.ui.composables.franchise
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,16 +21,16 @@ import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.header.Header
 import com.dezdeqness.home.ui.composables.rememberHomeWideSectionLayout
-import com.dezdeqness.home.ui.model.GenrePanelUiModel
+import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 
 @Composable
-fun GenresWideSection(
+fun FranchisesWideSection(
     modifier: Modifier = Modifier,
-    genres: List<GenrePanelUiModel>,
-    onGenreClicked: (GenrePanelUiModel) -> Unit,
+    franchises: List<FranchisePanelUiModel>,
+    onFranchiseClicked: (FranchisePanelUiModel) -> Unit,
     onAllClicked: () -> Unit,
 ) {
-    if (genres.isEmpty()) return
+    if (franchises.isEmpty()) return
 
     BoxWithConstraints(modifier = modifier) {
         val layout = rememberHomeWideSectionLayout(maxWidth)
@@ -40,7 +40,7 @@ fun GenresWideSection(
         ) {
             Box(modifier = Modifier.widthIn(max = 600.dp)) {
                 Header(
-                    title = "Жанры",
+                    title = "Франшизы",
                     titleStyle = AppTheme.typography.labelLarge.copy(fontSize = layout.sectionTitleSize),
                 )
                 Text(
@@ -49,7 +49,7 @@ fun GenresWideSection(
                     color = AppTheme.colors.textSecondary,
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
-                        .padding(end = 8.dp)
+                        .padding(end = 12.dp)
                         .clip(RoundedCornerShape(8.dp))
                         .clickable { onAllClicked() }
                         .padding(horizontal = 8.dp, vertical = 4.dp),
@@ -62,14 +62,14 @@ fun GenresWideSection(
                 contentPadding = PaddingValues(start = 16.dp, end = 12.dp),
             ) {
                 items(
-                    items = genres,
+                    items = franchises,
                     key = { it.id },
-                ) { genre ->
-                    GenrePanelItem(
-                        item = genre,
+                ) { franchise ->
+                    FranchisePanelItem(
+                        item = franchise,
                         cardWidth = layout.cardWidth,
                         titleStyle = AppTheme.typography.bodyMedium.copy(fontSize = layout.cardTitleSize),
-                        onClick = { onGenreClicked(genre) },
+                        onClick = { onFranchiseClicked(franchise) },
                     )
                 }
             }

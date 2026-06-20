@@ -1,4 +1,4 @@
-package com.dezdeqness.home.ui.composables.genres
+package com.dezdeqness.home.ui.composables.franchise
 
 import akane.features.home.generated.resources.Res
 import akane.features.home.generated.resources.releases_count
@@ -21,21 +21,20 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.image.AppImage
-import com.dezdeqness.home.ui.model.GenrePanelUiModel
+import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import org.jetbrains.compose.resources.pluralStringResource
 
-private const val GenrePosterAspectRatio = 2 / 3f
+private const val FranchisePosterAspectRatio = 2 / 3f
 
 @Composable
-fun GenrePanelItem(
-    modifier: Modifier = Modifier,
-    item: GenrePanelUiModel,
+fun FranchisePanelItem(
+    item: FranchisePanelUiModel,
     cardWidth: Dp,
     titleStyle: TextStyle,
     onClick: () -> Unit,
 ) {
     Column(
-        modifier = modifier
+        modifier = Modifier
             .width(cardWidth)
             .clip(RoundedCornerShape(12.dp))
             .clickable { onClick() },
@@ -46,7 +45,7 @@ fun GenrePanelItem(
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxWidth()
-                .aspectRatio(GenrePosterAspectRatio)
+                .aspectRatio(FranchisePosterAspectRatio)
                 .clip(RoundedCornerShape(12.dp)),
         )
         Text(

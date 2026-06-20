@@ -18,6 +18,8 @@ kotlin {
             implementation(project(":contract:feed"))
             implementation(project(":contract:calendar"))
             implementation(project(":contract:genre"))
+            implementation(project(":contract:promo"))
+            implementation(project(":contract:franchise"))
 
             implementation(libs.compottie)
             implementation(libs.compottie.dot)

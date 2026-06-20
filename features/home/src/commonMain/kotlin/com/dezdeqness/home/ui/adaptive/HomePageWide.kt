@@ -8,9 +8,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.home.ui.HomeActions
 import com.dezdeqness.home.ui.HomeState
-import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesWideSection
-import com.dezdeqness.home.ui.composables.genres.GenresWideSection
+import com.dezdeqness.home.ui.composables.HomeSecondPartFooter
 import com.dezdeqness.home.ui.composables.HomeWideSection
+import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesWideSection
+import com.dezdeqness.home.ui.composables.franchise.FranchisesWideSection
+import com.dezdeqness.home.ui.composables.genres.GenresWideSection
+import com.dezdeqness.home.ui.composables.promo.PromoWideSection
 
 @Composable
 fun HomePageWide(
@@ -20,9 +23,15 @@ fun HomePageWide(
 ) {
     LazyColumn(
         modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(36.dp),
+        verticalArrangement = Arrangement.spacedBy(32.dp),
         contentPadding = PaddingValues(horizontal = 28.dp, vertical = 28.dp),
     ) {
+        item {
+            PromoWideSection(
+                promos = state.promos,
+                onReleaseClicked = actions::onPromoReleaseClicked,
+            )
+        }
         item {
             FreshUpdatesWideSection(
                 items = state.freshUpdates,
@@ -44,6 +53,13 @@ fun HomePageWide(
             )
         }
         item {
+            FranchisesWideSection(
+                franchises = state.franchises,
+                onFranchiseClicked = actions::onFranchiseClicked,
+                onAllClicked = actions::onAllFranchisesClicked,
+            )
+        }
+        item {
             HomeWideSection(
                 title = "Лучшее за все время",
                 items = state.bestRated,
@@ -55,6 +71,12 @@ fun HomePageWide(
                 genres = state.genres,
                 onGenreClicked = actions::onGenreClicked,
                 onAllClicked = actions::onAllGenresClicked,
+            )
+        }
+        item {
+            HomeSecondPartFooter(
+                status = state.status,
+                onRetry = actions::onRetryClicked,
             )
         }
     }

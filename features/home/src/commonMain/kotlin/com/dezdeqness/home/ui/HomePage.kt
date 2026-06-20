@@ -24,25 +24,23 @@ fun HomePage(
 ) {
     val state by stateFlow.collectAsStateOnLifecycle()
 
-    val isLoading = state.status == StateStatus.Loading || state.status == StateStatus.Initial
-    val isError = state.status == StateStatus.Error
-
     Box(
         modifier.fillMaxSize()
     ) {
-        when {
-            isLoading -> HomeLoading(modifier = Modifier.fillMaxSize())
+        when (state.status) {
+            StateStatus.Initial,
+            StateStatus.Loading -> HomeLoading(modifier = Modifier.fillMaxSize())
 
-            isError -> HomeError(
+            StateStatus.Error -> HomeError(
                 modifier = Modifier.align(Alignment.Center),
                 onAction = actions::onRetryClicked,
             )
 
-            else -> {
+            StateStatus.LoadingMore,
+            StateStatus.SecondPartError,
+            StateStatus.Loaded -> {
                 AdaptiveLayout {
-                    val type = LocalLayoutType.current
-
-                    val isMobile = type == LayoutType.Mobile
+                    val isMobile = LocalLayoutType.current == LayoutType.Mobile
 
                     if (isMobile) {
                         HomePageMobile(state, actions)
@@ -50,7 +48,6 @@ fun HomePage(
                         HomePageWide(state, actions)
                     }
                 }
-
             }
         }
     }
