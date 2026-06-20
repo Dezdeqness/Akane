@@ -7,16 +7,18 @@ import com.dezdeqness.details.ui.model.EpisodeTimingUiModel
 import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.downloads.contract.model.DownloadStatus
-import com.dezdeqness.network.constants.BaseUrl
+import com.dezdeqness.network.constants.ImageUrlBuilder
 
-class EpisodesUiMapper {
+class EpisodesUiMapper(
+    private val imageUrlBuilder: ImageUrlBuilder,
+) {
 
     fun map(item: EpisodeEntity, downloads: List<DownloadEntity> = emptyList()) : EpisodesUiModel {
         val download = downloads.find { it.episodeId == item.id }
         return EpisodesUiModel(
             id = item.id,
             name = item.name,
-            previewUrl = if (item.previewUrl.isNotEmpty()) BaseUrl.BASE_URL_IMAGES + item.previewUrl else "",
+            previewUrl = imageUrlBuilder.build(item.previewUrl),
             ordinal = item.ordinal,
             episodeUrls = LinkedHashMap(item.episodeUrls.map { (quality, url) ->
                 quality.nameQuality to url

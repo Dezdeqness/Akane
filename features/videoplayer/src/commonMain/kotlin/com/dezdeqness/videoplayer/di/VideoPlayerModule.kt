@@ -10,7 +10,7 @@ import org.koin.dsl.module
 val videoPlayerModule = module {
     includes(domainModule, playerModule)
     factory { get<VideoPlayerProvider>().create() }
-    single { VideoPlayerUiMapper() }
+    single { VideoPlayerUiMapper(get()) }
     single { MediaItemMapper() }
     viewModel { (id: Long, episodeId: String, downloadReleaseId: Long, downloadStartEpisodeId: String) ->
         VideoPlayerViewModel(

@@ -7,8 +7,8 @@ import com.dezdeqness.genre.data.mapper.GenreReleaseMapper
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { GenreMapper() }
-    single { GenreReleaseMapper() }
+    single { GenreMapper(imageUrlBuilder = get()) }
+    single { GenreReleaseMapper(imageUrlBuilder = get()) }
     single<GenreApiDatasource> {
         GenreApiDatasourceImpl(
             genreService = get(),

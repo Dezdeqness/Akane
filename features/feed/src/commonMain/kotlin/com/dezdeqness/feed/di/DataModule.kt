@@ -10,7 +10,7 @@ import org.koin.dsl.module
 val dataModule = module {
     single { GenreProvider() }
     single { CatalogFilterMapper() }
-    single { FeedMapper() }
+    single { FeedMapper(imageUrlBuilder = get()) }
     single<FeedApiDatasource> {
         FeedApiDatasourceImpl(
             catalogService = get(),

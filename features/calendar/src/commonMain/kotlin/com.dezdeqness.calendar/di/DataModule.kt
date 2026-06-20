@@ -6,7 +6,7 @@ import com.dezdeqness.calendar.data.mapper.CalendarMapper
 import org.koin.dsl.module
 
 val dataModule = module {
-    single { CalendarMapper() }
+    single { CalendarMapper(imageUrlBuilder = get()) }
     single<CalendarApiDatasource> {
         CalendarApiDatasourceImpl(
             calendarService = get(),

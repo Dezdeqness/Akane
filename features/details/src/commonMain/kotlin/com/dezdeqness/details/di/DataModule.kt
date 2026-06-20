@@ -11,7 +11,7 @@ import org.koin.dsl.module
 
 val dataModule = module {
     single { EpisodesManager() }
-    single { ReleaseMapper(get()) }
+    single { ReleaseMapper(get(), get()) }
     single { FranchiseMapper(get()) }
     single<ReleaseApiDatasource> {
         ReleaseApiDatasourceImpl(

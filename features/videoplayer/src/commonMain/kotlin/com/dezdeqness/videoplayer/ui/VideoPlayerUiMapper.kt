@@ -2,16 +2,18 @@ package com.dezdeqness.videoplayer.ui
 
 import com.dezdeqness.release.contract.model.EpisodeEntity
 import com.dezdeqness.release.contract.model.TimingEntity
-import com.dezdeqness.network.constants.BaseUrl
+import com.dezdeqness.network.constants.ImageUrlBuilder
 import com.dezdeqness.videoplayer.ui.model.EpisodeUiItem
 import com.dezdeqness.videoplayer.ui.model.TimingUiItem
 
-class VideoPlayerUiMapper {
+class VideoPlayerUiMapper(
+    private val imageUrlBuilder: ImageUrlBuilder,
+) {
 
     fun map(item: EpisodeEntity) = EpisodeUiItem(
         id = item.id,
         name = item.name,
-        previewUrl = item.previewUrl.toAbsoluteImageUrl(),
+        previewUrl = imageUrlBuilder.build(item.previewUrl),
         ordinal = item.ordinal,
         episodeUrls = item.episodeUrls,
         nameEnglish = item.nameEnglish,
@@ -30,9 +32,4 @@ class VideoPlayerUiMapper {
         }
     }
 
-}
-
-private fun String.toAbsoluteImageUrl(): String {
-    if (isBlank()) return ""
-    return if (startsWith("http://") || startsWith("https://")) this else BaseUrl.BASE_URL_IMAGES + this
 }
