@@ -35,6 +35,7 @@ kotlin {
             implementation(projects.features.auth)
             implementation(projects.features.profile)
             implementation(projects.features.genre)
+            implementation(projects.features.franchise)
 
             implementation(compose.runtime)
             implementation(compose.material3)

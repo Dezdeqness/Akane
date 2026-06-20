@@ -1,0 +1,90 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "0d83c42a0132d0ba8a695315d1e395cf",
+    "entities": [
+      {
+        "tableName": "franchise_cache",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `nameEnglish` TEXT NOT NULL, `imageUrl` TEXT NOT NULL, `rating` REAL NOT NULL, `firstYear` INTEGER NOT NULL, `lastYear` INTEGER NOT NULL, `totalReleases` INTEGER NOT NULL, `totalEpisodes` INTEGER NOT NULL, `totalDuration` TEXT, `totalDurationInSeconds` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "fields": [
+          {
+            "fieldPath": "id",
+            "columnName": "id",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "name",
+            "columnName": "name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nameEnglish",
+            "columnName": "nameEnglish",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "imageUrl",
+            "columnName": "imageUrl",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "rating",
+            "columnName": "rating",
+            "affinity": "REAL",
+            "notNull": true
+          },
+          {
+            "fieldPath": "firstYear",
+            "columnName": "firstYear",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastYear",
+            "columnName": "lastYear",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalReleases",
+            "columnName": "totalReleases",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalEpisodes",
+            "columnName": "totalEpisodes",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "totalDuration",
+            "columnName": "totalDuration",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "totalDurationInSeconds",
+            "columnName": "totalDurationInSeconds",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "id"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '0d83c42a0132d0ba8a695315d1e395cf')"
+    ]
+  }
+}
