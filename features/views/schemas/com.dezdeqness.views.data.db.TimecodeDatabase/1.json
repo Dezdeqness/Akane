@@ -1,0 +1,55 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "920ca1716ef38f1df3d3bea3093bb54f",
+    "entities": [
+      {
+        "tableName": "episode_timecode",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`releaseEpisodeId` TEXT NOT NULL, `releaseId` INTEGER NOT NULL, `timeMs` INTEGER NOT NULL, `isWatched` INTEGER NOT NULL, `isSynced` INTEGER NOT NULL, PRIMARY KEY(`releaseEpisodeId`))",
+        "fields": [
+          {
+            "fieldPath": "releaseEpisodeId",
+            "columnName": "releaseEpisodeId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "releaseId",
+            "columnName": "releaseId",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "timeMs",
+            "columnName": "timeMs",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isWatched",
+            "columnName": "isWatched",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSynced",
+            "columnName": "isSynced",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "releaseEpisodeId"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '920ca1716ef38f1df3d3bea3093bb54f')"
+    ]
+  }
+}

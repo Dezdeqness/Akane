@@ -18,6 +18,7 @@ import com.dezdeqness.auth.contract.session.SessionManager
 import com.dezdeqness.shared.AppViewModel
 import com.dezdeqness.shared.session.SessionManagerImpl
 import com.dezdeqness.videoplayer.di.videoPlayerModule
+import com.dezdeqness.views.di.viewsModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.viewModelOf
@@ -52,6 +53,7 @@ object KoinModules {
         add(genreModule)
         add(promoModule)
         add(franchiseModule)
+        add(viewsModule)
         add(appModule)
     }
 
