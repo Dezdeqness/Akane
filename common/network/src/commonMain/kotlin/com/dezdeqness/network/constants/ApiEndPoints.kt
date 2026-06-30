@@ -9,6 +9,8 @@ object ApiEndPoints {
     const val FAVORITES = "${ACCOUNTS_ME}favorites"
     const val FAVORITES_IDS = "${ACCOUNTS_ME}favorites/ids"
     const val FAVORITES_RELEASES = "${ACCOUNTS_ME}favorites/releases"
+    const val VIEWS_TIMECODES = "${ACCOUNTS_ME}views/timecodes"
+    const val RELEASE_EPISODES_TIMECODES = "${ANIME}releases/{id}/episodes/timecodes"
     const val CATALOG_RELEASES = "${ANIME}catalog/releases"
     const val RELEASE = "${ANIME}releases/{id}"
     const val FRANCHISE = "${ANIME}franchises/release/{id}"
