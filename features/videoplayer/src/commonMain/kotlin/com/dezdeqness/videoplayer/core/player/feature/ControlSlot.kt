@@ -13,5 +13,6 @@ sealed interface ControlSlot {
     data object BottomActionsStart : ControlSlot
     data object BottomActionsEnd : ControlSlot
     data object Overlay : ControlSlot
+    data object OverlayCenter : ControlSlot
     data object SidePanel  : ControlSlot
 }

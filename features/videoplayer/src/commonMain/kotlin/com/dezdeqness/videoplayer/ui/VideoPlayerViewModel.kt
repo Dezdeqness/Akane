@@ -9,7 +9,12 @@ import com.dezdeqness.release.contract.repository.ReleaseRepository
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
+import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
 import com.dezdeqness.videoplayer.core.player.feature.installPlatformFeatures
+import com.dezdeqness.videoplayer.core.player.feature.raw.TimecodeFeature
+import com.dezdeqness.videoplayer.core.player.feature.ui.ResumePromptFeature
+import com.dezdeqness.videoplayer.core.player.feature.ui.SkipFeature
+import com.dezdeqness.views.contract.repository.ViewsRepository
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +31,7 @@ class VideoPlayerViewModel(
     player: VideoPlayer,
     private val releaseRepository: ReleaseRepository,
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
+    private val viewsRepository: ViewsRepository,
     private val uiMapper: VideoPlayerUiMapper,
     private val mediaItemMapper: MediaItemMapper,
     private val dispatchers: CoroutineDispatcherProvider,
@@ -41,6 +47,9 @@ class VideoPlayerViewModel(
 
     private val isDownloadedPlaylist: Boolean = downloadReleaseId > 0
 
+    // TODO: settings page decider
+    private val resumeMode: ResumeMode = ResumeMode.PROMPT
+
     data class ScreenState(
         val title: String = "",
         val isLoading: Boolean = true,
@@ -52,6 +61,22 @@ class VideoPlayerViewModel(
 
     init {
         manager.installPlatformFeatures()
+        manager.installFeature(
+            TimecodeFeature(
+                viewsRepository = viewsRepository,
+                releaseId = releaseId,
+                dispatcher = dispatchers.io(),
+            ),
+        )
+        if (resumeMode == ResumeMode.PROMPT) {
+            val resumePromptFeature = ResumePromptFeature(
+                viewsRepository = viewsRepository,
+                releaseId = releaseId,
+            )
+            manager.installFeature(resumePromptFeature)
+            manager.registry.getFeature<SkipFeature>(FeatureKey.Skip)
+                ?.bindSuppression(resumePromptFeature.isPromptVisible)
+        }
 
         viewModelScope.launch {
             manager.currentItem
@@ -90,6 +115,16 @@ class VideoPlayerViewModel(
         manager.release()
     }
 
+    private suspend fun resolveResumePosition(startEpisodeId: String?): Long {
+        if (startEpisodeId == null) return 0L
+        return viewsRepository.getReleaseTimecodes(releaseId)
+            .getOrNull()
+            ?.firstOrNull { it.releaseEpisodeId == startEpisodeId && !it.isWatched }
+            ?.timeMs
+            ?.coerceAtLeast(0L)
+            ?: 0L
+    }
+
     private fun loadStreamingRelease(): StateFlow<ScreenState> =
         flow { emit(releaseRepository.getReleaseById(releaseId)) }
             .flowOn(dispatchers.io())
@@ -122,7 +157,12 @@ class VideoPlayerViewModel(
                 } else {
                     val items = episodes.map(mediaItemMapper::toMultiQualityMediaItem)
                     val startIndex = items.indexOfFirst { it.id == initialEpisodeId }.coerceAtLeast(0)
-                    manager.setPlaylist(items, startIndex)
+                    val startPositionMs = if (resumeMode == ResumeMode.AUTO) {
+                        resolveResumePosition(items.getOrNull(startIndex)?.id)
+                    } else {
+                        0L
+                    }
+                    manager.setPlaylist(items, startIndex, startPositionMs)
                     ScreenState(
                         title = result.getOrNull()?.name.orEmpty(),
                         isLoading = false,

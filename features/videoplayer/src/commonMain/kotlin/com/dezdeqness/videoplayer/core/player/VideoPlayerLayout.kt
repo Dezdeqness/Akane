@@ -136,6 +136,16 @@ fun VideoPlayerLayout(
                 ) {
                     engine.registry.SlotContent(ControlSlot.Overlay)
                 }
+
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(outerPadding)
+                        .padding(bottom = bottomPadding),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    engine.registry.SlotContent(ControlSlot.OverlayCenter)
+                }
             }
 
             if (layoutType == LayoutType.Desktop) {

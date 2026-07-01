@@ -20,6 +20,7 @@ import com.dezdeqness.videoplayer.core.player.feature.FeatureKey
 import com.dezdeqness.videoplayer.core.player.feature.UiFeature
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 private const val PRE_SHOW_MS = 5_000L
@@ -30,11 +31,19 @@ class SkipFeature : UiFeature {
     override val slots: Set<ControlSlot> = setOf(ControlSlot.Overlay)
 
     private var playerContext: PlayerContext? = null
+    private var scope: CoroutineScope? = null
     private val _openingRange = MutableStateFlow<SkipRange?>(null)
     private val _endingRange = MutableStateFlow<SkipRange?>(null)
 
+    private val _suppressed = MutableStateFlow(false)
+
+    fun bindSuppression(source: StateFlow<Boolean>) {
+        scope?.launch { source.collect { _suppressed.value = it } }
+    }
+
     override fun install(context: PlayerContext, scope: CoroutineScope) {
         playerContext = context
+        this.scope = scope
         scope.launch {
             context.currentItem.collect { item ->
                 _openingRange.value = item?.opening
@@ -45,6 +54,7 @@ class SkipFeature : UiFeature {
 
     override fun dispose() {
         playerContext = null
+        scope = null
     }
 
     @Composable
@@ -53,6 +63,7 @@ class SkipFeature : UiFeature {
         val state by context.playerState.collectAsStateOnLifecycle()
         val openingRange by _openingRange.collectAsStateOnLifecycle()
         val endingRange by _endingRange.collectAsStateOnLifecycle()
+        val suppressed by _suppressed.collectAsStateOnLifecycle()
         val pos = state.position
 
         val skipState by remember(openingRange, endingRange) {
@@ -63,7 +74,7 @@ class SkipFeature : UiFeature {
 
         val currentSkip = resolveSkipState(pos, openingRange, endingRange)
         AnimatedVisibility(
-            visible = currentSkip != null,
+            visible = currentSkip != null && !suppressed,
             enter = slideInHorizontally(tween(300)) { it },
             exit = slideOutHorizontally(tween(300)) { it },
         ) {

@@ -69,6 +69,8 @@ class VideoPlayerManager(
 
     private val _selectedQuality = MutableStateFlow(MediaQuality.q720)
     override val selectedQuality: StateFlow<MediaQuality> = _selectedQuality
+    // For Auto mode
+    private var pendingStartPositionMs = 0L
 
     private val _registry = FeatureRegistry()
     val registry get() = _registry
@@ -94,7 +96,12 @@ class VideoPlayerManager(
                                 it.quality != key.quality
                     } == true
 
-                    val startPositionMs = if (qualityOnlySwitch) _playerState.value.position else 0L
+                    val startPositionMs = when {
+                        qualityOnlySwitch -> _playerState.value.position
+                        pendingStartPositionMs > 0L -> pendingStartPositionMs
+                        else -> 0L
+                    }
+                    pendingStartPositionMs = 0L
                     previousKey = key
 
                     player.setMediaItems(
@@ -119,6 +126,7 @@ class VideoPlayerManager(
         startIndex: Int = 0,
         startPositionMs: Long = 0L,
     ) {
+        pendingStartPositionMs = startPositionMs.coerceAtLeast(0L)
         _currentIndex.value = startIndex.coerceAtLeast(0)
         _playlist.value = items
         dismissEpisodeEndOverlay()

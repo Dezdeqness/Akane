@@ -11,6 +11,8 @@ interface FeatureKey {
     data object Skip : FeatureKey
     data object Screenshot : FeatureKey
     data object Playlist : FeatureKey
+    data object Timecode : FeatureKey
+    data object ResumePrompt : FeatureKey
 
     data class Custom(val id: String) : FeatureKey
 }

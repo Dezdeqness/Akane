@@ -25,6 +25,7 @@ kotlin {
 
             implementation(project(":contract:release"))
             implementation(project(":contract:downloads"))
+            implementation(project(":contract:views"))
         }
 
         androidMain.dependencies {

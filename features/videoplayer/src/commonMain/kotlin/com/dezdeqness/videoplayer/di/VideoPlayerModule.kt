@@ -17,6 +17,7 @@ val videoPlayerModule = module {
             player = get(),
             releaseRepository = get(),
             downloadEpisodeRepository = get(),
+            viewsRepository = get(),
             mediaItemMapper = get(),
             uiMapper = get(),
             dispatchers = get(),
