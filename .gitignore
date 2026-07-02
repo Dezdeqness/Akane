@@ -58,6 +58,7 @@ render.experimental.xml
 *.jks
 *.keystore
 
+/dist/
 akane-ios/fastlane/.env
 akane-ios/fastlane/report.xml
 akane-ios/fastlane/README.md
