@@ -58,6 +58,14 @@ render.experimental.xml
 *.jks
 *.keystore
 
+akane-ios/fastlane/.env
+akane-ios/fastlane/report.xml
+akane-ios/fastlane/README.md
+*.p8
+*.ipa
+*.dSYM.zip
+*.mobileprovision
+
 # Google Services (e.g. APIs or Firebase)
 google-services.json
 

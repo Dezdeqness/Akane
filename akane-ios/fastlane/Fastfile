@@ -1,0 +1,83 @@
+default_platform(:ios)
+
+XCODEPROJ = "iosApp.xcodeproj"
+SCHEME = "iosApp"
+OUTPUT_DIR = "build/fastlane"
+
+platform :ios do
+  desc "Assemble Release build"
+  lane :build do
+    ensure_team_configured
+    archive
+  end
+
+  desc "Assemble Release build and upload to Testflight"
+  lane :buildAndUpload do
+    ensure_team_configured
+    api_key = asc_api_key
+
+    latest = latest_testflight_build_number(
+      api_key: api_key,
+      initial_build_number: 0
+    )
+    increment_build_number(
+      build_number: latest + 1,
+      xcodeproj: XCODEPROJ
+    )
+    UI.important("Build number: #{latest + 1}")
+
+    archive
+
+    upload_to_testflight(
+      api_key: api_key,
+      skip_waiting_for_build_processing: true
+    )
+    UI.success("Uploading is done")
+  end
+
+  desc "Set build number manually: fastlane bump build:42"
+  lane :bump do |options|
+    UI.user_error!("Set proper mumber: fastlane bump build:42") unless options[:build]
+    increment_build_number(build_number: options[:build], xcodeproj: XCODEPROJ)
+  end
+
+  private_lane :archive do
+    build_app(
+      project: XCODEPROJ,
+      scheme: SCHEME,
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: OUTPUT_DIR,
+      output_name: "Akane.ipa",
+      clean: true,
+      xcargs: "-allowProvisioningUpdates"
+    )
+  end
+
+  private_lane :asc_api_key do
+    missing = %w[ASC_KEY_ID ASC_ISSUER_ID ASC_KEY_PATH].select { |v| ENV[v].to_s.empty? }
+    unless missing.empty?
+      UI.user_error!(
+        "Missed creds for App Store Connect: #{missing.join(', ')}.\n"
+      )
+    end
+    unless File.exist?(File.expand_path(ENV["ASC_KEY_PATH"], __dir__ + "/.."))
+      UI.user_error!("File not found: #{ENV['ASC_KEY_PATH']}")
+    end
+
+    app_store_connect_api_key(
+      key_id: ENV["ASC_KEY_ID"],
+      issuer_id: ENV["ASC_ISSUER_ID"],
+      key_filepath: ENV["ASC_KEY_PATH"]
+    )
+  end
+
+  private_lane :ensure_team_configured do
+    xcconfig = File.read(File.expand_path("../Configuration/Config.xcconfig", __dir__))
+    if xcconfig.match?(/^TEAM_ID=\s*$/)
+      UI.user_error!(
+        "TEAM_ID is empty in akane-ios/Configuration/Config.xcconfig.\n" \
+      )
+    end
+  end
+end
