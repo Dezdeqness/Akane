@@ -1,4 +1,4 @@
-app_identifier("com.dezdeqness.akane.Akane")
+app_identifier("com.dezdeqness.akane")
 
 apple_id(ENV["FASTLANE_APPLE_ID"]) if ENV["FASTLANE_APPLE_ID"].to_s != ""
 team_id(ENV["APPLE_TEAM_ID"]) if ENV["APPLE_TEAM_ID"].to_s != ""
