@@ -67,6 +67,7 @@ include(":common:network")
 include(":common:designsystem")
 include(":common:foundation")
 include(":common:analytics")
+include(":common:cache")
 
 include(":contract:release")
 include(":contract:downloads")
