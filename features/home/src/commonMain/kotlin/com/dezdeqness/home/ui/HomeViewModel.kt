@@ -49,37 +49,52 @@ class HomeViewModel(
 
     private fun reduce(state: HomeState, stage: HomeFeedStage): HomeState =
         when (stage) {
-            is HomeFeedStage.FirstPart -> stage.result.fold(
-                onSuccess = { data ->
-                    state.copy(
-                        promos = data.promos.map(homeUiMapper::toPromoPanel),
-                        freshUpdates = data.freshUpdates.map(homeUiMapper::toUiModelSchedule),
-                        onGoing = data.onGoing.map(homeUiMapper::toUiModel),
-                        status = StateStatus.LoadingMore,
-                    )
-                },
-                onFailure = { throwable ->
-                    captureError(throwable)
-                    state.copy(status = StateStatus.Error)
-                },
+            is HomeFeedStage.Promos -> stage.result.fold(
+                onSuccess = { loaded(state.copy(promos = it.value.map(homeUiMapper::toPromoPanel))) },
+                onFailure = { onSectionError(state, it) },
             )
 
-            is HomeFeedStage.SecondPart -> stage.result.fold(
-                onSuccess = { data ->
-                    state.copy(
-                        franchises = data.franchises.map(homeUiMapper::toFranchisePanel),
-                        released = data.released.map(homeUiMapper::toUiModel),
-                        bestRated = data.bestRated.map(homeUiMapper::toUiModel),
-                        genres = data.genres.map(homeUiMapper::toGenrePanel),
-                        status = StateStatus.Loaded,
-                    )
-                },
-                onFailure = { throwable ->
-                    captureError(throwable)
-                    state.copy(status = StateStatus.SecondPartError)
-                },
+            is HomeFeedStage.Schedule -> stage.result.fold(
+                onSuccess = { loaded(state.copy(freshUpdates = it.value.today.map(homeUiMapper::toUiModelSchedule))) },
+                onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.OnGoing -> stage.result.fold(
+                onSuccess = { loaded(state.copy(onGoing = it.value.map(homeUiMapper::toUiModel))) },
+                onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.Franchises -> stage.result.fold(
+                onSuccess = { loaded(state.copy(franchises = it.value.map(homeUiMapper::toFranchisePanel))) },
+                onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.Released -> stage.result.fold(
+                onSuccess = { loaded(state.copy(released = it.value.map(homeUiMapper::toUiModel))) },
+                onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.BestRated -> stage.result.fold(
+                onSuccess = { loaded(state.copy(bestRated = it.value.map(homeUiMapper::toUiModel))) },
+                onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.Genres -> stage.result.fold(
+                onSuccess = { loaded(state.copy(genres = it.value.map(homeUiMapper::toGenrePanel))) },
+                onFailure = { onSectionError(state, it) },
             )
         }
+
+    private fun loaded(state: HomeState) = state.copy(status = StateStatus.Loaded)
+
+    private fun onSectionError(state: HomeState, throwable: Throwable): HomeState {
+        captureError(throwable)
+        return if (state.status == StateStatus.Loading || state.status == StateStatus.Initial) {
+            state.copy(status = StateStatus.Error)
+        } else {
+            state
+        }
+    }
 
     private fun captureError(throwable: Throwable) {
         errorReporter.captureException(

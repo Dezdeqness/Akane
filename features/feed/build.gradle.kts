@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.dezdeqness.cmp.feature)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -14,6 +15,9 @@ kotlin {
             implementation(libs.kermit)
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(project(":common:cache"))
+            implementation(project(":common:foundation"))
             implementation(project(":common:analytics"))
             implementation(project(":shared:catalog-ui"))
             api(project(":contract:feed"))

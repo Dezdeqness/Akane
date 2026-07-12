@@ -14,6 +14,7 @@ kotlin {
             implementation(libs.compose.material3)
             implementation(compose.components.resources)
             implementation(libs.kermit)
+            implementation(project(":common:cache"))
             implementation(project(":common:analytics"))
             implementation(project(":contract:feed"))
             implementation(project(":contract:calendar"))

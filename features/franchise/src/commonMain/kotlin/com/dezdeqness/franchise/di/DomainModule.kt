@@ -9,6 +9,8 @@ val domainModule = module {
         FranchiseRepositoryImpl(
             franchiseApiDatasource = get(),
             franchiseCache = get(),
+            jsonCacheStore = get(),
+            franchiseSnapshotMapper = get(),
         )
     }
 }

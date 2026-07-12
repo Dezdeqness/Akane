@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.dezdeqness.cmp.feature)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -20,6 +21,9 @@ kotlin {
             implementation(libs.compottie.dot)
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+            implementation(libs.kotlinx.serialization.json)
+            implementation(project(":common:cache"))
+            implementation(project(":common:foundation"))
             implementation(project(":common:analytics"))
             implementation(project(":shared:catalog-ui"))
             api(project(":contract:franchise"))
