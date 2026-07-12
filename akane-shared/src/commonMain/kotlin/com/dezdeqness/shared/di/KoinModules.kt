@@ -6,6 +6,7 @@ import com.dezdeqness.calendar.di.calendarModule
 import com.dezdeqness.details.di.detailsModule
 import com.dezdeqness.downloads.di.downloadsModule
 import com.dezdeqness.feed.di.feedModule
+import com.dezdeqness.foundation.cache.cacheStoreModule
 import com.dezdeqness.foundation.di.coreModule
 import com.dezdeqness.franchise.di.franchiseModule
 import com.dezdeqness.genre.di.genreModule
@@ -41,6 +42,7 @@ object KoinModules {
         add(analyticsModule())
         add(networkModule)
         add(coreModule)
+        add(cacheStoreModule())
         add(feedModule)
         add(detailsModule)
         add(videoPlayerModule)

@@ -1,7 +1,9 @@
 package com.dezdeqness.calendar.contract.repository
 
+import com.dezdeqness.cache.CachedResult
 import com.dezdeqness.calendar.contract.model.CalendarScheduleEntity
+import kotlinx.coroutines.flow.Flow
 
 interface CalendarRepository {
-    suspend fun getScheduleNow(): Result<CalendarScheduleEntity>
+    fun getScheduleNow(): Flow<Result<CachedResult<CalendarScheduleEntity>>>
 }

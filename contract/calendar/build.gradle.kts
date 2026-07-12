@@ -9,6 +9,8 @@ android {
 kotlin {
     sourceSets {
         commonMain.dependencies {
+            api(libs.kotlinx.coroutines.core)
+            api(project(":common:cache"))
         }
     }
 }
