@@ -1,9 +1,7 @@
 package com.dezdeqness.downloads.data.manager
 
 import co.touchlab.kermit.Logger
-import com.dezdeqness.analytics.core.AkaneErrorReporter
 import com.dezdeqness.downloads.data.platform.DownloadDirectoryProvider
-import com.dezdeqness.downloads.data.platform.VideoRemuxer
 import com.dezdeqness.downloads.contract.model.DownloadEntity
 import okio.BufferedSink
 import okio.FileSystem
@@ -14,8 +12,6 @@ import okio.buffer
 
 class DownloadFileManager(
     private val downloadDirectoryProvider: DownloadDirectoryProvider,
-    private val videoRemuxer: VideoRemuxer,
-    private val errorReporter: AkaneErrorReporter,
     private val fileSystem: FileSystem = FileSystem.SYSTEM,
 ) {
 
@@ -69,11 +65,6 @@ class DownloadFileManager(
         segmentsDir / "segment_$index.ts.part"
 
     fun fileExists(path: Path): Boolean = fileSystem.exists(path)
-
-    fun getMp4Path(tsPath: Path): Path {
-        val mp4Name = tsPath.name.removeSuffix(".ts") + ".mp4"
-        return (tsPath.parent ?: tsPath) / mp4Name
-    }
 
     fun segmentExists(path: Path): Boolean {
         if (!fileSystem.exists(path)) return false
@@ -141,40 +132,6 @@ class DownloadFileManager(
             fileSystem.delete(segmentsDir)
         }.onFailure {
             Logger.w(TAG) { "Failed to cleanup temp segments for $segmentsDir: ${it.message}" }
-        }
-    }
-
-    suspend fun remux(tsOutputPath: Path): RemuxResult {
-        val tsPath = tsOutputPath.toString()
-        val mp4Path = tsPath.removeSuffix(".ts") + ".mp4"
-
-        Logger.d(TAG) { "Remuxing $tsPath → $mp4Path" }
-
-        val success = try {
-            videoRemuxer.remux(tsPath, mp4Path)
-        } catch (e: Exception) {
-            Logger.e(TAG, e) { "Remux exception: ${e.message}" }
-            errorReporter.captureException(
-                throwable = e,
-                message = "Video remux failed",
-                tags = mapOf("feature" to "downloads"),
-            )
-            false
-        }
-
-        val mp4Exists = fileSystem.exists(mp4Path.toPath())
-
-        return if (success && mp4Exists) {
-            Logger.d(TAG) { "Remux successful, mp4 exists, deleting .ts file" }
-            deleteIfExists(tsOutputPath)
-            RemuxResult(filePath = mp4Path, success = true)
-        } else {
-            Logger.w(TAG) { "Remux failed or mp4 not found (success=$success, mp4Exists=$mp4Exists), keeping .ts file" }
-            errorReporter.captureMessage(
-                message = "Video remux finished unsuccessfully",
-                tags = mapOf("feature" to "downloads"),
-            )
-            RemuxResult(filePath = tsPath, success = false)
         }
     }
 
@@ -293,11 +250,6 @@ class DownloadFileManager(
 
         return totalBytesRead
     }
-
-    data class RemuxResult(
-        val filePath: String,
-        val success: Boolean,
-    )
 
     companion object {
         private const val TAG = "DownloadFileManager"

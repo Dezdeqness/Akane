@@ -26,10 +26,6 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
         }
-        androidMain.dependencies {
-            implementation(libs.media3.transformer)
-            implementation(libs.media3.common)
-        }
     }
 }
 

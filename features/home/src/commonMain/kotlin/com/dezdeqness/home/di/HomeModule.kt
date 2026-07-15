@@ -23,6 +23,7 @@ val homeModule = module {
             loadHomeFeedUseCase = get(),
             homeUiMapper = get(),
             errorReporter = get(),
+            coroutineDispatcherProvider = get(),
         )
     }
 }

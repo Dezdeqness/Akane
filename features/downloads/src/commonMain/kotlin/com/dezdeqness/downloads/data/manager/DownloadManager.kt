@@ -39,7 +39,6 @@ class DownloadManager(
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
     private val analytics: AkaneAnalytics,
     private val errorReporter: AkaneErrorReporter,
-    private val remuxEnabled: Boolean = false,
 ) {
     private val jobsMutex = Mutex()
     private val activeJobs = mutableMapOf<Long, Job>()
@@ -59,13 +58,8 @@ class DownloadManager(
 
         for (download in staleDownloads) {
             when (download.status) {
-                DownloadStatus.REMUXING -> {
-                    Logger.d(TAG) { "Recovering stale REMUXING id=${download.id}, restarting remux" }
-                    coroutineScope.launch(coroutineDispatcherProvider.io()) {
-                        recoverRemux(download)
-                    }
-                }
-
+                // REMUXING is legacy (remux was removed); recover such records by re-downloading.
+                DownloadStatus.REMUXING,
                 DownloadStatus.DOWNLOADING,
                 DownloadStatus.QUEUED -> {
                     Logger.d(TAG) { "Recovering stale ${download.status} id=${download.id}, re-enqueuing" }
@@ -80,49 +74,6 @@ class DownloadManager(
 
                 else -> Unit
             }
-        }
-    }
-
-    private suspend fun recoverRemux(download: DownloadEntity) {
-        try {
-            val outputPath = fileManager.getOutputPath(download)
-            val mp4Path = fileManager.getMp4Path(outputPath)
-
-            if (fileManager.fileExists(mp4Path)) {
-                Logger.d(TAG) { "[${download.id}] .mp4 already exists at $mp4Path, marking completed" }
-                fileManager.deleteIfExists(outputPath)
-                syncRepository.updateFilePath(download.id, fileManager.toRelativePath(mp4Path.toString()))
-                syncRepository.markCompleted(download.id)
-                return
-            }
-
-            if (fileManager.fileExists(outputPath)) {
-                if (remuxEnabled) {
-                    Logger.d(TAG) { "[${download.id}] .ts file found, attempting remux" }
-                    syncRepository.updateStatus(download.id, DownloadStatus.REMUXING)
-                    val remuxResult = fileManager.remux(outputPath)
-                    syncRepository.updateFilePath(download.id, fileManager.toRelativePath(remuxResult.filePath))
-                    syncRepository.markCompleted(download.id)
-                } else {
-                    Logger.d(TAG) { "[${download.id}] .ts file found, marking completed" }
-                    syncRepository.updateFilePath(download.id, fileManager.toRelativePath(outputPath.toString()))
-                    syncRepository.markCompleted(download.id)
-                }
-                return
-            }
-
-            Logger.w(TAG) { "[${download.id}] No .ts found, re-enqueuing" }
-            syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
-            enqueue(download.id)
-        } catch (e: Exception) {
-            Logger.e(TAG, e) { "[${download.id}] Recovery error: ${e.message}" }
-            errorReporter.captureException(
-                throwable = e,
-                message = "Recover remux failed",
-                tags = mapOf("feature" to "downloads"),
-                extras = download.errorExtras(),
-            )
-            syncRepository.updateStatus(download.id, DownloadStatus.FAILED)
         }
     }
 
@@ -459,56 +410,27 @@ class DownloadManager(
     ) {
         val downloadId = download.id
 
-        if (remuxEnabled) {
-            Logger.d(TAG) { "[$downloadId] Merging $totalSegments segments into $outputPath" }
-            val totalBytesWritten = fileManager.mergeSegments(segmentsDir, totalSegments, outputPath)
-            fileManager.cleanupSegmentsDir(segmentsDir, totalSegments)
+        val episodeDir = fileManager.getEpisodeDir(download)
+        Logger.d(TAG) { "[$downloadId] Moving $totalSegments segments to $episodeDir" }
 
-            Logger.d(TAG) {
-                "[$downloadId] Download complete: $totalSegments segments, total size: " +
-                        DownloadFileManager.formatSize(totalBytesWritten)
-            }
+        fileManager.moveSegmentsToEpisodeDir(segmentsDir, totalSegments, episodeDir)
+        fileManager.cleanupSegmentsDir(segmentsDir, totalSegments)
 
-            syncRepository.updateStatus(downloadId, DownloadStatus.REMUXING)
-            Logger.d(TAG) { "[$downloadId] Remuxing..." }
+        val playlistPath = fileManager.generateLocalPlaylist(
+            episodeDir = episodeDir,
+            totalSegments = totalSegments,
+            segmentDurations = segmentDurations,
+            targetDuration = targetDuration,
+        )
+        Logger.d(TAG) { "[$downloadId] Generated local playlist: $playlistPath" }
 
-            val remuxResult = fileManager.remux(outputPath)
-            syncRepository.updateFilePath(downloadId, fileManager.toRelativePath(remuxResult.filePath))
-            syncRepository.markCompleted(downloadId)
-            analytics.trackEpisodeDownloadSucceeded(
-                episodeId = download.episodeId,
-                animeId = download.releaseId,
-                animeTitle = download.releaseTitle,
-            )
-
-            if (remuxResult.success) {
-                Logger.d(TAG) { "[$downloadId] Remux successful: ${remuxResult.filePath}" }
-            } else {
-                Logger.w(TAG) { "[$downloadId] Remux failed, keeping .ts: ${remuxResult.filePath}" }
-            }
-        } else {
-            val episodeDir = fileManager.getEpisodeDir(download)
-            Logger.d(TAG) { "[$downloadId] Moving $totalSegments segments to $episodeDir" }
-
-            fileManager.moveSegmentsToEpisodeDir(segmentsDir, totalSegments, episodeDir)
-            fileManager.cleanupSegmentsDir(segmentsDir, totalSegments)
-
-            val playlistPath = fileManager.generateLocalPlaylist(
-                episodeDir = episodeDir,
-                totalSegments = totalSegments,
-                segmentDurations = segmentDurations,
-                targetDuration = targetDuration,
-            )
-            Logger.d(TAG) { "[$downloadId] Generated local playlist: $playlistPath" }
-
-            syncRepository.updateFilePath(downloadId, fileManager.toRelativePath(playlistPath.toString()))
-            syncRepository.markCompleted(downloadId)
-            analytics.trackEpisodeDownloadSucceeded(
-                episodeId = download.episodeId,
-                animeId = download.releaseId,
-                animeTitle = download.releaseTitle,
-            )
-        }
+        syncRepository.updateFilePath(downloadId, fileManager.toRelativePath(playlistPath.toString()))
+        syncRepository.markCompleted(downloadId)
+        analytics.trackEpisodeDownloadSucceeded(
+            episodeId = download.episodeId,
+            animeId = download.releaseId,
+            animeTitle = download.releaseTitle,
+        )
     }
 
     private suspend fun downloadSegmentToFile(

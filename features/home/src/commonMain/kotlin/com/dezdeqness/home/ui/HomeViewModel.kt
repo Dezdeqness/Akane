@@ -3,6 +3,7 @@ package com.dezdeqness.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.analytics.core.AkaneErrorReporter
+import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.home.domain.HomeFeedStage
 import com.dezdeqness.home.domain.LoadHomeFeedUseCase
 import com.dezdeqness.home.ui.mapper.HomeUiMapper
@@ -12,6 +13,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.flow.stateIn
@@ -20,6 +22,7 @@ class HomeViewModel(
     private val loadHomeFeedUseCase: LoadHomeFeedUseCase,
     private val homeUiMapper: HomeUiMapper,
     private val errorReporter: AkaneErrorReporter,
+    private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) : ViewModel() {
 
     private val reloadTrigger = MutableSharedFlow<Unit>(extraBufferCapacity = 1)
@@ -33,6 +36,8 @@ class HomeViewModel(
                     reduce(state, stage)
                 }
         }
+        // Entity -> UI mapping in reduce() must not run on the main thread.
+        .flowOn(coroutineDispatcherProvider.io())
         .catch { throwable ->
             captureError(throwable)
             emit(HomeState(status = StateStatus.Error))
