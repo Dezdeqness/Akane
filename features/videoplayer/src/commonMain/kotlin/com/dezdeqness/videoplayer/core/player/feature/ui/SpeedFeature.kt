@@ -71,7 +71,7 @@ class SpeedFeature(
                     _menuVisible.value = true
                     playerContext?.pauseAutoHide()
                 },
-                contentColor = Color.Black.copy(alpha = 0.5f)
+                contentColor = Color.Transparent,
             ) {
                 Text(speed.label, color = Color.White)
             }
