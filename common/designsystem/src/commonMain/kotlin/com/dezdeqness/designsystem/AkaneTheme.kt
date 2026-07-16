@@ -57,6 +57,15 @@ fun toLightMaterialScheme(): ColorScheme = lightColorScheme(
     surfaceVariant = AkaneLightColors.SurfaceVariant,
     onSurfaceVariant = AkaneLightColors.OnSurface,
 
+    surfaceContainerLowest = AkaneLightColors.Background,
+    surfaceContainerLow = AkaneLightColors.Surface,
+    surfaceContainer = AkaneLightColors.Surface,
+    surfaceContainerHigh = AkaneLightColors.Surface,
+    surfaceContainerHighest = AkaneLightColors.SurfaceVariant,
+    surfaceBright = AkaneLightColors.Surface,
+    surfaceDim = AkaneLightColors.Background,
+    surfaceTint = AkaneLightColors.Primary,
+
     error = AkaneLightColors.Error,
     onError = Color.White,
     errorContainer = AkaneLightColors.Error.copy(alpha = 0.1f),
@@ -93,6 +102,15 @@ fun toDarkMaterialScheme(): ColorScheme = darkColorScheme(
     onSurface = AkaneDarkColors.OnSurface,
     surfaceVariant = AkaneDarkColors.SurfaceVariant,
     onSurfaceVariant = AkaneDarkColors.OnSurface,
+
+    surfaceContainerLowest = AkaneDarkColors.Background,
+    surfaceContainerLow = AkaneDarkColors.Surface,
+    surfaceContainer = AkaneDarkColors.Surface,
+    surfaceContainerHigh = AkaneDarkColors.Surface,
+    surfaceContainerHighest = AkaneDarkColors.SurfaceVariant,
+    surfaceBright = AkaneDarkColors.SurfaceVariant,
+    surfaceDim = AkaneDarkColors.Background,
+    surfaceTint = AkaneDarkColors.Primary,
 
     error = AkaneDarkColors.Error,
     onError = Color.White,
