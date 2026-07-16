@@ -23,6 +23,7 @@ fun ReleaseDetailsLoaded(
     onBackPressed: () -> Unit,
     favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
@@ -42,6 +43,7 @@ fun ReleaseDetailsLoaded(
                         onBackPressed = onBackPressed,
                         favouriteButtonState = favouriteButtonState,
                         onFavouriteClicked = onFavouriteClicked,
+                        onReleaseClicked = onReleaseClicked,
                     )
                 }
 
@@ -57,6 +59,7 @@ fun ReleaseDetailsLoaded(
                         onBackPressed = onBackPressed,
                         favouriteButtonState = favouriteButtonState,
                         onFavouriteClicked = onFavouriteClicked,
+                        onReleaseClicked = onReleaseClicked,
                     )
                 }
             }

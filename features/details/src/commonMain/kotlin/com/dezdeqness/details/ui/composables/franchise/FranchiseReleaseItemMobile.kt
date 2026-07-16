@@ -1,5 +1,6 @@
 package com.dezdeqness.details.ui.composables.franchise
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,11 +26,20 @@ import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 
 @Composable
-fun FranchiseReleaseItemMobile(release: FranchiseReleaseUiModel) {
+fun FranchiseReleaseItemMobile(
+    modifier: Modifier = Modifier,
+    release: FranchiseReleaseUiModel,
+    onReleaseClicked: (Long, String) -> Unit,
+) {
     Card(
-        modifier = Modifier
+        modifier = modifier
             .padding(vertical = 4.dp, horizontal = 16.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .clickable(
+                onClick = {
+                    onReleaseClicked.invoke(release.id, release.title)
+                }
+            ),
         colors = CardDefaults.cardColors().copy(containerColor = AppTheme.colors.background),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
@@ -44,9 +54,9 @@ fun FranchiseReleaseItemMobile(release: FranchiseReleaseUiModel) {
                     .size(75.dp, 100.dp)
                     .clip(RoundedCornerShape(4.dp))
             )
-            
+
             Spacer(modifier = Modifier.width(12.dp))
-            
+
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     release.title,

@@ -16,8 +16,9 @@ import kotlin.collections.forEach
 
 @Composable
 fun FranchiseReleasesGridWide(
+    modifier: Modifier = Modifier,
     franchise: DetailsTab.FranchiseTab,
-    modifier: Modifier,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     BoxWithConstraints(modifier = modifier) {
         val minCardWidth = 200.dp
@@ -37,8 +38,9 @@ fun FranchiseReleasesGridWide(
                 ) {
                     row.forEach { release ->
                         FranchiseReleaseItemWide(
+                            modifier = Modifier.width(cardWidth),
                             release = release,
-                            modifier = Modifier.width(cardWidth)
+                            onReleaseClicked = onReleaseClicked,
                         )
                     }
 

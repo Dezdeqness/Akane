@@ -43,6 +43,7 @@ fun ReleaseDetailsLoadedWide(
     onBackPressed: () -> Unit,
     favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -107,6 +108,7 @@ fun ReleaseDetailsLoadedWide(
                         onCancelDownloadClick = onCancelDownloadClick,
                         onDownloadAllClick = onDownloadAllClick,
                         onCancelAllDownloadsClick = onCancelAllDownloadsClick,
+                        onReleaseClicked = onReleaseClicked,
                     )
                 }
 

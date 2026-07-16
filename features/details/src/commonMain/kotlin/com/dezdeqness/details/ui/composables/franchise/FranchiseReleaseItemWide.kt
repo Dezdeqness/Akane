@@ -1,6 +1,7 @@
 package com.dezdeqness.details.ui.composables.franchise
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -26,11 +27,16 @@ import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 
 @Composable
 fun FranchiseReleaseItemWide(
-    release: FranchiseReleaseUiModel,
     modifier: Modifier = Modifier,
+    release: FranchiseReleaseUiModel,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     Card(
-        modifier = modifier,
+        modifier = modifier.clickable(
+            onClick = {
+                onReleaseClicked.invoke(release.id, release.title)
+            }
+        ),
         shape = RoundedCornerShape(8.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {

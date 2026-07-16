@@ -15,6 +15,7 @@ data class DetailsRoute(val releaseId: Long) : NavKey
 fun EntryProviderScope<NavKey>.detailsEntries(
     onBackPressed: () -> Unit,
     onEpisodeClick: (Long, String) -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     entry<DetailsRoute> { key ->
         val viewModel: ReleaseDetailsViewModel = koinViewModel { parametersOf(key.releaseId) }
@@ -22,6 +23,7 @@ fun EntryProviderScope<NavKey>.detailsEntries(
             viewModel = viewModel,
             onBackPressed = onBackPressed,
             onEpisodeClick = onEpisodeClick,
+            onReleaseClicked = onReleaseClicked,
         )
     }
 }

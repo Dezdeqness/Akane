@@ -20,7 +20,10 @@ import com.dezdeqness.details.ui.composables.core.MetadataRow
 import com.dezdeqness.details.ui.model.DetailsTab
 
 @Composable
-fun FranchiseTabContent(franchise: DetailsTab.FranchiseTab) {
+fun FranchiseTabContent(
+    franchise: DetailsTab.FranchiseTab,
+    onReleaseClicked: (Long, String) -> Unit,
+) {
     val items = listOf(
         "Общая длительность" to franchise.totalDuration,
         "Всего релизов" to franchise.totalReleases.toString(),
@@ -77,7 +80,10 @@ fun FranchiseTabContent(franchise: DetailsTab.FranchiseTab) {
                 LayoutType.Mobile -> {
                     Column {
                         franchise.releases.forEach { release ->
-                            FranchiseReleaseItemMobile(release)
+                            FranchiseReleaseItemMobile(
+                                release = release,
+                                onReleaseClicked = onReleaseClicked,
+                            )
                         }
                     }
                 }
@@ -86,8 +92,9 @@ fun FranchiseTabContent(franchise: DetailsTab.FranchiseTab) {
                 LayoutType.Desktop,
                     -> {
                     FranchiseReleasesGridWide(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                         franchise = franchise,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp)
+                        onReleaseClicked = onReleaseClicked,
                     )
                 }
             }

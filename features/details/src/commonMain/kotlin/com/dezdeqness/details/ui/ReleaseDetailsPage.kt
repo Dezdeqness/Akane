@@ -25,6 +25,7 @@ fun DetailsPage(
     viewModel: ReleaseDetailsViewModel = koinViewModel(),
     onEpisodeClick: (Long, String) -> Unit,
     onBackPressed: () -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     val state by viewModel.releaseDetailsStateFlow.collectAsStateOnLifecycle()
 
@@ -74,9 +75,11 @@ fun DetailsPage(
                     },
                     onBackPressed = onBackPressed,
                     favouriteButtonState = state.favouriteButtonState,
-                ) {
-                    viewModel.onFavouriteClicked(details.id)
-                }
+                    onReleaseClicked = onReleaseClicked,
+                    onFavouriteClicked = {
+                        viewModel.onFavouriteClicked(details.id)
+                    }
+                )
             }
         }
 

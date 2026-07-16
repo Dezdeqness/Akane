@@ -62,6 +62,7 @@ fun ReleaseDetailsLoadedMobile(
     onBackPressed: () -> Unit,
     favouriteButtonState: FavouriteButtonState,
     onFavouriteClicked: () -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     var selectedTabIndex by remember { mutableStateOf(0) }
 
@@ -209,7 +210,10 @@ fun ReleaseDetailsLoadedMobile(
 
                             is DetailsTab.FranchiseTab -> {
                                 item {
-                                    FranchiseTabContent(franchise = item)
+                                    FranchiseTabContent(
+                                        franchise = item,
+                                        onReleaseClicked = onReleaseClicked,
+                                    )
                                 }
                             }
 

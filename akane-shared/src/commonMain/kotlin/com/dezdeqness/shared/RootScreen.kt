@@ -142,6 +142,14 @@ fun RootScreen(
                     onPlayDownloadedClicked = { releaseId, episodeId ->
                         currentTabStack.navigateToDownloadedPlaylist(releaseId, episodeId)
                     },
+                    onReleaseClicked = { id, title ->
+                        analytics.trackDetailsOpened(animeId = id, title = title)
+                        if (isWideLayout) {
+                            currentTabStack.navigateToDetailsScreen(id)
+                        } else {
+                            rootBackStack.navigateToDetailsScreen(id)
+                        }
+                    }
                 )
             },
         )
@@ -152,10 +160,12 @@ private fun EntryProviderScope<NavKey>.tabFullScreenEntriesForWideLayout(
     currentTabStack: NavBackStack<NavKey>,
     onEpisodeClick: (Long, String) -> Unit,
     onPlayDownloadedClicked: (Long, String) -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     detailsEntries(
         onBackPressed = { currentTabStack.removeLastOrNull() },
         onEpisodeClick = onEpisodeClick,
+        onReleaseClicked = onReleaseClicked,
     )
     releaseEpisodesEntries(
         onBackPressed = { currentTabStack.removeLastOrNull() },

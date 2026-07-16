@@ -48,6 +48,7 @@ fun ReleaseDetailsWideContent(
     onCancelDownloadClick: (String) -> Unit,
     onDownloadAllClick: () -> Unit,
     onCancelAllDownloadsClick: () -> Unit,
+    onReleaseClicked: (Long, String) -> Unit,
 ) {
     val tabs = details.tabs
 
@@ -155,7 +156,10 @@ fun ReleaseDetailsWideContent(
 
                     is DetailsTab.FranchiseTab -> {
                         item {
-                            FranchiseTabContent(franchise = item)
+                            FranchiseTabContent(
+                                franchise = item,
+                                onReleaseClicked = onReleaseClicked,
+                            )
                         }
                     }
 

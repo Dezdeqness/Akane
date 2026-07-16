@@ -11,16 +11,19 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberNavBackStack
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
+import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.details.navigation.detailsEntries
+import com.dezdeqness.details.navigation.navigateToDetailsScreen
 import com.dezdeqness.downloads.navigation.activeDownloadsEntries
 import com.dezdeqness.downloads.navigation.releaseEpisodesEntries
 import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.videoController
 import com.dezdeqness.videoplayer.navigation.videoPlayerEntries
 import kotlinx.serialization.Serializable
+import org.koin.compose.koinInject
 
 @Serializable
 data object RootShellKey : NavKey
@@ -28,6 +31,7 @@ data object RootShellKey : NavKey
 @Composable
 fun App() {
     val controller = remember { videoController() }
+    val analytics: AkaneAnalytics = koinInject()
 
     CompositionLocalProvider(
         LocalAstImageLoader provides getImageLoader()
@@ -52,6 +56,10 @@ fun App() {
                         onEpisodeClick = { id, episodeId ->
                             controller.navigateToPlayer(rootBackStack, id, episodeId)
                         },
+                        onReleaseClicked = { id, title ->
+                            analytics.trackDetailsOpened(animeId = id, title = title)
+                            rootBackStack.navigateToDetailsScreen(id)
+                        }
                     )
                     videoPlayerEntries(onBackPressed = { rootBackStack.removeLastOrNull() })
                     downloadedPlaylistEntries(onBackPressed = { rootBackStack.removeLastOrNull() })
