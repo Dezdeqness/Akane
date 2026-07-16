@@ -158,35 +158,37 @@ fun ReleaseDetailsLoadedMobile(
                                     it.downloadStatus in activeStatuses
                                 }
 
-                                item {
-                                    if (hasActiveDownloads) {
-                                        AppErrorButton(
-                                            title = "Отменить все",
-                                            onClick = onCancelAllDownloadsClick,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                                            leadingIcon = {
-                                                Icon(
-                                                    Icons.Default.Cancel,
-                                                    contentDescription = null,
-                                                )
-                                            },
-                                        )
-                                    } else {
-                                        AppPrimaryButton(
-                                            title = "Скачать все",
-                                            onClick = onDownloadAllClick,
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .padding(horizontal = 16.dp, vertical = 8.dp),
-                                            leadingIcon = {
-                                                Icon(
-                                                    Icons.Default.Download,
-                                                    contentDescription = null,
-                                                )
-                                            },
-                                        )
+                                if (item.episodes.size > 1) {
+                                    item {
+                                        if (hasActiveDownloads) {
+                                            AppErrorButton(
+                                                title = "Отменить все",
+                                                onClick = onCancelAllDownloadsClick,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                                leadingIcon = {
+                                                    Icon(
+                                                        Icons.Default.Cancel,
+                                                        contentDescription = null,
+                                                    )
+                                                },
+                                            )
+                                        } else {
+                                            AppPrimaryButton(
+                                                title = "Скачать все",
+                                                onClick = onDownloadAllClick,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(horizontal = 16.dp, vertical = 8.dp),
+                                                leadingIcon = {
+                                                    Icon(
+                                                        Icons.Default.Download,
+                                                        contentDescription = null,
+                                                    )
+                                                },
+                                            )
+                                        }
                                     }
                                 }
                                 items(item.episodes.size) { index ->

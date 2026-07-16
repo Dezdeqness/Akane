@@ -21,6 +21,7 @@ import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.core.ui.theme.AppTheme
@@ -99,29 +100,39 @@ fun ReleaseDetailsWideContent(
                             it.downloadStatus in activeStatuses
                         }
 
-                        item {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp, vertical = 12.dp),
-                                horizontalArrangement = Arrangement.End,
-                            ) {
-                                if (hasActiveDownloads) {
-                                    AppErrorButton(
-                                        title = "Отменить все",
-                                        onClick = onCancelAllDownloadsClick,
-                                        leadingIcon = {
-                                            Icon(Icons.Default.Cancel, null)
-                                        },
+
+                        if (item.episodes.size > 1) {
+                            item {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp, vertical = 12.dp),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically,
+                                ) {
+                                    Text(
+                                        text = "Эпизоды · ${item.episodes.size}",
+                                        style = AppTheme.typography.titleMedium,
+                                        color = AppTheme.colors.textPrimary,
                                     )
-                                } else {
-                                    AppPrimaryButton(
-                                        title = "Скачать все",
-                                        onClick = onDownloadAllClick,
-                                        leadingIcon = {
-                                            Icon(Icons.Default.Download, null)
-                                        },
-                                    )
+
+                                    if (hasActiveDownloads) {
+                                        AppErrorButton(
+                                            title = "Отменить все",
+                                            onClick = onCancelAllDownloadsClick,
+                                            leadingIcon = {
+                                                Icon(Icons.Default.Cancel, null)
+                                            },
+                                        )
+                                    } else {
+                                        AppPrimaryButton(
+                                            title = "Скачать все",
+                                            onClick = onDownloadAllClick,
+                                            leadingIcon = {
+                                                Icon(Icons.Default.Download, null)
+                                            },
+                                        )
+                                    }
                                 }
                             }
                         }
