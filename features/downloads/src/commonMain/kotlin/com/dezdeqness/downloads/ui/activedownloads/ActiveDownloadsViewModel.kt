@@ -7,6 +7,7 @@ import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
+import com.dezdeqness.downloads.ui.model.ReleaseGroup
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -16,12 +17,12 @@ import kotlinx.coroutines.launch
 data class ActiveDownloadsState(
     val activeDownloads: List<DownloadUiModel> = emptyList(),
     val historyDownloads: List<DownloadUiModel> = emptyList(),
-    val completedDownloads: List<DownloadUiModel> = emptyList(),
+    val completedGroups: List<ReleaseGroup> = emptyList(),
 ) {
     val isEmptyState
         get() = activeDownloads.isEmpty()
                 && historyDownloads.isEmpty()
-                && completedDownloads.isEmpty()
+                && completedGroups.isEmpty()
 }
 
 class ActiveDownloadsViewModel(
@@ -67,9 +68,20 @@ class ActiveDownloadsViewModel(
                     .sortedBy { it.episodeOrdinal },
                 historyDownloads = uiModels.filter { it.status in historyStatuses }
                     .sortedBy { it.episodeOrdinal },
-                completedDownloads = uiModels
+                completedGroups = uiModels
                     .filter { it.status == DownloadStatus.COMPLETED && !it.hiddenFromHistory }
-                    .sortedBy { it.episodeOrdinal },
+                    .groupBy { it.releaseId }
+                    .map { (releaseId, episodes) ->
+                        val sorted = episodes.sortedBy { it.episodeOrdinal }
+                        ReleaseGroup(
+                            releaseId = releaseId,
+                            releaseTitle = sorted.first().releaseTitle,
+                            previewUrl = sorted.first().previewUrl,
+                            episodes = sorted,
+                            totalSize = sorted.size,
+                        )
+                    }
+                    .sortedBy { it.releaseTitle },
             )
         }
         .stateIn(

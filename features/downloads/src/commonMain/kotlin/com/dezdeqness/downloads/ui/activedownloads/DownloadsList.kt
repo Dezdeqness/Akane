@@ -11,16 +11,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
+import com.dezdeqness.downloads.ui.model.ReleaseGroup
 
 @Composable
 internal fun DownloadsList(
     activeDownloads: List<DownloadUiModel>,
     historyDownloads: List<DownloadUiModel>,
-    completedDownloads: List<DownloadUiModel>,
+    completedGroups: List<ReleaseGroup>,
     onDeleteClicked: (Long) -> Unit,
     onRetryClicked: (Long) -> Unit,
     onCancelClicked: (Long) -> Unit,
@@ -70,7 +72,7 @@ internal fun DownloadsList(
                 )
             }
         }
-        if (completedDownloads.isNotEmpty()) {
+        if (completedGroups.isNotEmpty()) {
             if (activeDownloads.isNotEmpty() || historyDownloads.isNotEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(8.dp))
@@ -79,20 +81,41 @@ internal fun DownloadsList(
             item {
                 SectionHeader("История")
             }
-            items(
-                items = completedDownloads,
-                key = { "completed_${it.id}" },
-            ) { download ->
-                DownloadItem(
-                    download = download,
-                    onDeleteClicked = { onHideFromHistoryClicked(download.id) },
-                    onRetryClicked = { },
-                    onCancelClicked = { },
-                    onPauseClicked = { },
-                )
+            completedGroups.forEach { group ->
+                item(key = "release_${group.releaseId}") {
+                    ReleaseHeader(group.releaseTitle)
+                }
+                items(
+                    items = group.episodes,
+                    key = { "completed_${it.id}" },
+                ) { download ->
+                    DownloadItem(
+                        download = download,
+                        onDeleteClicked = { onHideFromHistoryClicked(download.id) },
+                        onRetryClicked = { },
+                        onCancelClicked = { },
+                        onPauseClicked = { },
+                    )
+                }
             }
         }
     }
+}
+
+@Composable
+private fun ReleaseHeader(title: String) {
+    Text(
+        text = title,
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Medium,
+        color = AppTheme.colors.textPrimary,
+        maxLines = 2,
+        overflow = TextOverflow.Ellipsis,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .padding(top = 12.dp, bottom = 2.dp),
+    )
 }
 
 @Composable

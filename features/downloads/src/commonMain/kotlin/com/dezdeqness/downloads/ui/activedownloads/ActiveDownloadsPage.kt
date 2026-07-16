@@ -65,7 +65,7 @@ fun ActiveDownloadsPage(
                     modifier = Modifier.widthIn(max = 800.dp),
                     activeDownloads = state.activeDownloads,
                     historyDownloads = state.historyDownloads,
-                    completedDownloads = state.completedDownloads,
+                    completedGroups = state.completedGroups,
                     onDeleteClicked = viewModel::onDeleteClicked,
                     onRetryClicked = viewModel::onRetryClicked,
                     onCancelClicked = viewModel::onCancelClicked,
