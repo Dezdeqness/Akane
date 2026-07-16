@@ -1,9 +1,13 @@
 package com.dezdeqness.details.ui.composables.episodes
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -20,6 +24,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.BlurredEdgeTreatment
@@ -32,6 +37,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.details.ui.model.DownloadStatusUi
@@ -89,6 +95,11 @@ fun EpisodeItem(
                     ),
                     fontWeight = FontWeight.Bold,
                     color = Color.White,
+                )
+
+                EpisodeProgressBar(
+                    progress = episode.progress,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
                 )
             }
 
@@ -161,5 +172,35 @@ fun EpisodeItem(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun EpisodeProgressBar(
+    progress: Float?,
+    modifier: Modifier = Modifier,
+) {
+    if (progress == null) return
+
+    val animatedProgress by animateFloatAsState(
+        targetValue = progress.coerceIn(0f, 1f),
+        animationSpec = tween(250),
+        label = "episodeProgress"
+    )
+
+    Box(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(3.dp)
+            .clip(RoundedCornerShape(100))
+            .background(Color.White.copy(alpha = 0.3f))
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxHeight()
+                .fillMaxWidth(animatedProgress)
+                .clip(RoundedCornerShape(100))
+                .background(AppTheme.colors.primary)
+        )
     }
 }

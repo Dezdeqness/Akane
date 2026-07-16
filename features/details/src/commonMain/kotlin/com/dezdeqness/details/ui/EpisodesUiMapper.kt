@@ -8,13 +8,21 @@ import com.dezdeqness.details.ui.model.EpisodesUiModel
 import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.network.constants.ImageUrlBuilder
+import com.dezdeqness.views.contract.model.EpisodeTimecodeEntity
+
+private const val MS_IN_SECOND = 1_000L
 
 class EpisodesUiMapper(
     private val imageUrlBuilder: ImageUrlBuilder,
 ) {
 
-    fun map(item: EpisodeEntity, downloads: List<DownloadEntity> = emptyList()) : EpisodesUiModel {
+    fun map(
+        item: EpisodeEntity,
+        downloads: List<DownloadEntity> = emptyList(),
+        timecodes: List<EpisodeTimecodeEntity> = emptyList(),
+    ): EpisodesUiModel {
         val download = downloads.find { it.episodeId == item.id }
+        val timecode = timecodes.find { it.releaseEpisodeId == item.id }
         return EpisodesUiModel(
             id = item.id,
             name = item.name,
@@ -24,6 +32,7 @@ class EpisodesUiMapper(
                 quality.nameQuality to url
             }.toMap()),
             downloadStatus = download?.status?.toUi(),
+            progress = timecode?.fractionOf(item.duration * MS_IN_SECOND),
             opening = item.opening?.toUi(),
             ending = item.ending?.toUi(),
         )

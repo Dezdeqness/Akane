@@ -18,6 +18,7 @@ val detailsModule = module {
             personalRepository = get(),
             sessionManager = get(),
             downloadEpisodeRepository = get(),
+            viewsRepository = get(),
             enqueueDownloadUseCase = get(),
             cancelDownloadUseCase = get(),
             cancelAllDownloadsUseCase = get(),

@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TimecodeDao {
@@ -16,6 +17,9 @@ interface TimecodeDao {
 
     @Query("SELECT * FROM episode_timecode WHERE releaseId = :releaseId")
     suspend fun getByRelease(releaseId: Long): List<TimecodeLocal>
+
+    @Query("SELECT * FROM episode_timecode WHERE releaseId = :releaseId")
+    fun getByReleaseAsFlow(releaseId: Long): Flow<List<TimecodeLocal>>
 
     @Query("SELECT * FROM episode_timecode WHERE isSynced = 0")
     suspend fun getUnsynced(): List<TimecodeLocal>

@@ -20,6 +20,7 @@ kotlin {
             implementation(project(":contract:personal"))
             implementation(project(":contract:auth"))
             implementation(project(":contract:downloads"))
+            implementation(project(":contract:views"))
             implementation(project(":features:downloads"))
         }
         val desktopMain by getting

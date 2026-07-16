@@ -7,6 +7,7 @@ import com.dezdeqness.details.ui.model.FranchiseReleaseUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsHeaderUiModel
 import com.dezdeqness.details.ui.model.ReleaseDetailsUiModel
 import com.dezdeqness.downloads.contract.model.DownloadEntity
+import com.dezdeqness.views.contract.model.EpisodeTimecodeEntity
 
 class ReleaseDetailsUiMapper(
     private val episodesUiMapper: EpisodesUiMapper,
@@ -16,8 +17,9 @@ class ReleaseDetailsUiMapper(
         item: ReleaseDetailsEntity,
         franchise: FranchiseEntity? = null,
         downloads: List<DownloadEntity> = emptyList(),
+        timecodes: List<EpisodeTimecodeEntity> = emptyList(),
     ): MappedReleaseDetails {
-        val tabs = composeTabs(item, franchise, downloads)
+        val tabs = composeTabs(item, franchise, downloads, timecodes)
         val episodes = tabs.filterIsInstance<DetailsTab.EpisodesTab>()
             .firstOrNull()?.episodes.orEmpty()
         val commonQualities = episodes
@@ -49,17 +51,22 @@ class ReleaseDetailsUiMapper(
         entity: ReleaseDetailsEntity,
         franchise: FranchiseEntity?,
         downloads: List<DownloadEntity>,
+        timecodes: List<EpisodeTimecodeEntity>,
     ): List<DetailsTab> {
         return buildList {
             add(mapInfo(entity))
-            add(mapEpisodes(entity, downloads))
+            add(mapEpisodes(entity, downloads, timecodes))
             if (franchise != null) add(mapFranchise(franchise))
             add(mapStats(entity))
         }
     }
 
-    private fun mapEpisodes(item: ReleaseDetailsEntity, downloads: List<DownloadEntity>) = DetailsTab.EpisodesTab(
-        episodes = item.episodes.map { episodesUiMapper.map(it, downloads) }
+    private fun mapEpisodes(
+        item: ReleaseDetailsEntity,
+        downloads: List<DownloadEntity>,
+        timecodes: List<EpisodeTimecodeEntity>,
+    ) = DetailsTab.EpisodesTab(
+        episodes = item.episodes.map { episodesUiMapper.map(it, downloads, timecodes) }
     )
 
     private fun mapInfo(item: ReleaseDetailsEntity) = DetailsTab.InfoTab(

@@ -19,8 +19,11 @@ import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.domain.usecase.CancelAllDownloadsUseCase
 import com.dezdeqness.downloads.domain.usecase.CancelDownloadUseCase
 import com.dezdeqness.downloads.domain.usecase.EnqueueDownloadUseCase
+import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.downloads.contract.model.DownloadTiming
 import com.dezdeqness.personal.contract.repository.PersonalRepository
+import com.dezdeqness.views.contract.model.EpisodeTimecodeEntity
+import com.dezdeqness.views.contract.repository.ViewsRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -43,6 +46,7 @@ class ReleaseDetailsViewModel(
     private val personalRepository: PersonalRepository,
     private val sessionManager: SessionManager,
     downloadEpisodeRepository: DownloadEpisodeRepository,
+    viewsRepository: ViewsRepository,
     private val enqueueDownloadUseCase: EnqueueDownloadUseCase,
     private val cancelDownloadUseCase: CancelDownloadUseCase,
     private val cancelAllDownloadsUseCase: CancelAllDownloadsUseCase,
@@ -113,13 +117,20 @@ class ReleaseDetailsViewModel(
             previous
         }
 
+    private val episodesStateFlow = combine(
+        downloadEpisodeRepository.getAllDownloadsAsFlow(),
+        viewsRepository.getReleaseTimecodesAsFlow(releaseId),
+    ) { downloads, timecodes ->
+        EpisodesState(downloads = downloads, timecodes = timecodes)
+    }
+
     val releaseDetailsStateFlow: StateFlow<ReleaseDetailsState> = combine(
         detailsFlow,
         personalRepository.getFavoriteIdsAsFlow(),
-        downloadEpisodeRepository.getAllDownloadsAsFlow(),
+        episodesStateFlow,
         _dialogState,
         favouriteStateFlow,
-    ) { cache, favoriteIds, downloads, dialogState, favouriteState ->
+    ) { cache, favoriteIds, episodesState, dialogState, favouriteState ->
         val favouriteButtonState = when {
             favouriteState.sessionState != SessionState.Authenticated -> FavouriteButtonState.Hidden
             favouriteState.uiState.isLoading -> FavouriteButtonState.Loading
@@ -132,7 +143,12 @@ class ReleaseDetailsViewModel(
                 dialogState = dialogState,
             )
         } else {
-            val mapped = releaseDetailsUiMapper.map(cache.release, cache.franchise, downloads)
+            val mapped = releaseDetailsUiMapper.map(
+                item = cache.release,
+                franchise = cache.franchise,
+                downloads = episodesState.downloads,
+                timecodes = episodesState.timecodes,
+            )
             ReleaseDetailsState(
                 status = Status.Loaded,
                 details = mapped.details,
@@ -284,6 +300,11 @@ class ReleaseDetailsViewModel(
         val status: Status = Status.Loading,
         val release: ReleaseDetailsEntity? = null,
         val franchise: FranchiseEntity? = null,
+    )
+
+    private data class EpisodesState(
+        val downloads: List<DownloadEntity>,
+        val timecodes: List<EpisodeTimecodeEntity>,
     )
 
     private data class FavouriteUiState(
