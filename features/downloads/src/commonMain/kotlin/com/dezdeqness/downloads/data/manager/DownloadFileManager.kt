@@ -29,6 +29,8 @@ class DownloadFileManager(
     }
 
     fun resolveFilePath(relativePath: String): String {
+        if (relativePath.startsWith("http://") || relativePath.startsWith("https://")) return relativePath
+        if (relativePath.startsWith("bookmark://")) return relativePath
         if (isAbsolutePath(relativePath)) return normalizePath(relativePath)
 
         val root = normalizePath(downloadDirectoryProvider.getDownloadDirectory())
