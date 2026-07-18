@@ -26,6 +26,14 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
         }
+        androidMain.dependencies {
+            implementation(libs.androidx.core.ktx)
+            implementation(libs.media3.exoplayer)
+            implementation(libs.media3.hls)
+            implementation(libs.media3.database)
+            implementation(libs.media3.datasource)
+            implementation(libs.media3.datasource.okhttp)
+        }
     }
 }
 

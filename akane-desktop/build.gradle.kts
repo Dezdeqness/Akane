@@ -18,6 +18,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(projects.akaneShared)
             implementation(projects.common.analytics)
+            implementation(projects.features.downloads)
 
             implementation(compose.desktop.currentOs)
             implementation(libs.koin.core)

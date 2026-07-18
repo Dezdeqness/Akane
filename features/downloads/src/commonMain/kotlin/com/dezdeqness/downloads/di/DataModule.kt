@@ -7,6 +7,8 @@ import com.dezdeqness.downloads.data.manager.DownloadManager
 import com.dezdeqness.downloads.data.mapper.DownloadMapper
 import com.dezdeqness.downloads.data.network.HlsDownloadService
 import com.dezdeqness.downloads.data.network.createHlsDownloadService
+import com.dezdeqness.downloads.notification.DownloadEventDispatcher
+import com.dezdeqness.downloads.notification.DownloadNotificationController
 import de.jensklingenberg.ktorfit.Ktorfit
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CoroutineScope
@@ -38,12 +40,20 @@ internal val dataModule = module {
             downloadDirectoryProvider = get(),
         )
     }
+    single { DownloadEventDispatcher() }
     single {
         DownloadManager(
             engine = get(),
             downloadEpisodeRepository = get(),
             coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
             errorReporter = get(),
+        )
+    }
+    single {
+        DownloadNotificationController(
+            eventBus = get(),
+            notifier = get(),
+            coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.Default),
         )
     }
 }
