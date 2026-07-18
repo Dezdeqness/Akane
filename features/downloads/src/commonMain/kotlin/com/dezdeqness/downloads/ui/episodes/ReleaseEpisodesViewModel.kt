@@ -55,7 +55,7 @@ class ReleaseEpisodesViewModel(
 
     fun onDeleteClicked(id: Long) {
         viewModelScope.launch {
-            downloadManager.cancel(id)
+            downloadManager.delete(id)
             syncRepository.delete(id)
         }
     }

@@ -54,7 +54,6 @@ class ActiveDownloadsViewModel(
             val activeStatuses = setOf(
                 DownloadStatus.DOWNLOADING,
                 DownloadStatus.QUEUED,
-                DownloadStatus.REMUXING,
                 DownloadStatus.PAUSED,
             )
 
@@ -92,7 +91,7 @@ class ActiveDownloadsViewModel(
 
     fun onDeleteClicked(id: Long) {
         viewModelScope.launch {
-            downloadManager.cancel(id)
+            downloadManager.delete(id)
             syncRepository.delete(id)
         }
     }

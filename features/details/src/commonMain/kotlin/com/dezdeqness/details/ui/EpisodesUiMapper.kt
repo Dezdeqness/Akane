@@ -40,7 +40,7 @@ class EpisodesUiMapper(
 
     private fun DownloadStatus.toUi(): DownloadStatusUi? = when (this) {
         DownloadStatus.QUEUED -> DownloadStatusUi.QUEUED
-        DownloadStatus.DOWNLOADING, DownloadStatus.REMUXING -> DownloadStatusUi.DOWNLOADING
+        DownloadStatus.DOWNLOADING -> DownloadStatusUi.DOWNLOADING
         DownloadStatus.PAUSED -> DownloadStatusUi.PAUSED
         DownloadStatus.COMPLETED -> DownloadStatusUi.COMPLETED
         DownloadStatus.FAILED -> DownloadStatusUi.FAILED

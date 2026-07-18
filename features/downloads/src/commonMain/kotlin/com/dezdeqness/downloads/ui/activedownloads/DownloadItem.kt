@@ -111,7 +111,6 @@ internal fun DownloadItem(
             }
 
             DownloadStatus.DOWNLOADING,
-            DownloadStatus.REMUXING,
             DownloadStatus.QUEUED,
                 -> {
                 AppIconButton(onClick = onPauseClicked, contentColor = AppTheme.colors.background) {
@@ -158,7 +157,6 @@ private fun statusSubtitle(download: DownloadUiModel): String {
     return when (download.status) {
         DownloadStatus.QUEUED -> "$quality • В очереди"
         DownloadStatus.DOWNLOADING -> "$quality • ${(download.progress * 100).toInt()}%"
-        DownloadStatus.REMUXING -> "$quality • Обработка"
         DownloadStatus.COMPLETED -> "$quality • Завершено"
         DownloadStatus.FAILED -> "$quality • Ошибка сети"
         DownloadStatus.PAUSED -> "$quality • Пауза"
@@ -168,8 +166,7 @@ private fun statusSubtitle(download: DownloadUiModel): String {
 
 private fun statusIcon(status: DownloadStatus): ImageVector {
     return when (status) {
-        DownloadStatus.DOWNLOADING,
-        DownloadStatus.REMUXING,
+        DownloadStatus.DOWNLOADING
             -> Icons.Default.ArrowDownward
 
         DownloadStatus.QUEUED -> Icons.Default.Schedule
@@ -184,8 +181,6 @@ private fun statusIcon(status: DownloadStatus): ImageVector {
 private fun statusColor(status: DownloadStatus): Color {
     return when (status) {
         DownloadStatus.DOWNLOADING,
-        DownloadStatus.REMUXING,
-            -> Color(0xFF5D866C)
 
         DownloadStatus.QUEUED -> Color(0xFFEAB308)
         DownloadStatus.PAUSED -> Color(0xFF94A3B8)

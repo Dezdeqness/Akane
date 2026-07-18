@@ -15,7 +15,6 @@ class CancelAllDownloadsUseCase(
         val activeStatuses = listOf(
             DownloadStatus.QUEUED,
             DownloadStatus.DOWNLOADING,
-            DownloadStatus.REMUXING,
             DownloadStatus.PAUSED,
         )
         val activeDownloads = downloadEpisodeRepository.getByStatuses(activeStatuses)

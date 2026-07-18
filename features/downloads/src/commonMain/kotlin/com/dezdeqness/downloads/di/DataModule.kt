@@ -40,14 +40,9 @@ internal val dataModule = module {
     }
     single {
         DownloadManager(
-            hlsDownloadService = get(),
-            hlsParser = get(),
+            engine = get(),
             downloadEpisodeRepository = get(),
-            syncRepository = get(),
-            fileManager = get(),
             coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO),
-            coroutineDispatcherProvider = get(),
-            analytics = get(),
             errorReporter = get(),
         )
     }

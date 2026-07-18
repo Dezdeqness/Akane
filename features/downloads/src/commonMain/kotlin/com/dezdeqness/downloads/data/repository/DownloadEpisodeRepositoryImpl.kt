@@ -23,9 +23,8 @@ class DownloadEpisodeRepositoryImpl(
 
     override fun getActiveDownloadsCountAsFlow(): Flow<Int> {
         val activeStatuses = setOf(
-            com.dezdeqness.downloads.contract.model.DownloadStatus.QUEUED,
-            com.dezdeqness.downloads.contract.model.DownloadStatus.DOWNLOADING,
-            com.dezdeqness.downloads.contract.model.DownloadStatus.REMUXING,
+            DownloadStatus.QUEUED,
+            DownloadStatus.DOWNLOADING,
         )
         return getAllDownloadsAsFlow().map { list ->
             list.count { it.status in activeStatuses }
