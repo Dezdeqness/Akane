@@ -38,6 +38,8 @@ import kotlinx.cinterop.sizeOf
 import platform.CoreMedia.CMTimeRange
 import platform.Foundation.NSValue
 import platform.Foundation.NSFileManager
+import platform.Foundation.NSData
+import platform.Foundation.create
 
 private const val SEEK_INCREMENT_MS = 10_000L
 
@@ -198,8 +200,15 @@ class IosVideoPlayer : VideoPlayer {
         mediaItems.drop(startIndex).forEach { url ->
             val isLocalFile = url.startsWith("/")
 
-            if (isLocalFile && url.endsWith(".m3u8")) {
-                // Serve local HLS via HTTP server (AVPlayer can't play m3u8/ts from file://)
+            if (url.startsWith(BOOKMARK_PREFIX)) {
+                val nsUrl = resolveBookmarkUrl(url)
+                if (nsUrl == null) {
+                    Logger.e(TAG) { "Failed to resolve bookmark for downloaded asset" }
+                    return@forEach
+                }
+                Logger.d(TAG) { "Adding downloaded asset: ${nsUrl.path}" }
+                avPlayer.insertItem(AVPlayerItem(nsUrl), null)
+            } else if (isLocalFile && url.endsWith(".m3u8")) {
                 val dir = url.substringBeforeLast("/")
                 val playlistName = url.substringAfterLast("/")
                 val server = LocalFileServer()
@@ -236,7 +245,24 @@ class IosVideoPlayer : VideoPlayer {
         if (startPositionMs > 0) seekTo(startPositionMs)
     }
 
+    private fun resolveBookmarkUrl(url: String): NSURL? {
+        val base64 = url.removePrefix(BOOKMARK_PREFIX)
+        val data = NSData.create(base64EncodedString = base64, options = 0u) ?: return null
+
+        val resolved = NSURL.URLByResolvingBookmarkData(
+            bookmarkData = data,
+            options = 0u,
+            relativeToURL = null,
+            bookmarkDataIsStale = null,
+            error = null,
+        )
+
+        val path = resolved?.path ?: return null
+        return if (NSFileManager.defaultManager.fileExistsAtPath(path)) resolved else null
+    }
+
     companion object {
         private const val TAG = "IosVideoPlayer"
+        private const val BOOKMARK_PREFIX = "bookmark://"
     }
 }

@@ -4,14 +4,26 @@ import co.touchlab.kermit.Logger
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionSound
 import platform.UserNotifications.UNMutableNotificationContent
+import platform.UserNotifications.UNNotification
+import platform.UserNotifications.UNNotificationPresentationOptionBanner
+import platform.UserNotifications.UNNotificationPresentationOptionSound
+import platform.UserNotifications.UNNotificationPresentationOptions
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNUserNotificationCenter
+import platform.UserNotifications.UNUserNotificationCenterDelegateProtocol
+import platform.darwin.NSObject
 
 class IosDownloadNotifier : DownloadNotifier {
 
+    private val presentationDelegate = ForegroundPresentationDelegate()
+
     private val notificationCenter: UNUserNotificationCenter
         get() = UNUserNotificationCenter.currentNotificationCenter()
+
+    init {
+        notificationCenter.delegate = presentationDelegate
+    }
 
     override fun showProgress(info: DownloadNotificationInfo, progress: Float) = Unit
 
@@ -66,6 +78,19 @@ class IosDownloadNotifier : DownloadNotifier {
     }
 
     private fun identifier(downloadId: Long): String = "download_$downloadId"
+
+    private class ForegroundPresentationDelegate : NSObject(), UNUserNotificationCenterDelegateProtocol {
+
+        override fun userNotificationCenter(
+            center: UNUserNotificationCenter,
+            willPresentNotification: UNNotification,
+            withCompletionHandler: (UNNotificationPresentationOptions) -> Unit,
+        ) {
+            withCompletionHandler(
+                UNNotificationPresentationOptionBanner or UNNotificationPresentationOptionSound
+            )
+        }
+    }
 
     companion object {
         private const val TAG = "IosDownloadNotifier"

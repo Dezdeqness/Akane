@@ -6,6 +6,10 @@ import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSource
+import androidx.media3.datasource.DefaultDataSource
+import androidx.media3.datasource.cache.Cache
+import androidx.media3.datasource.cache.CacheDataSource
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.exoplayer.source.DefaultMediaSourceFactory
 import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
@@ -22,10 +26,13 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 @UnstableApi
-class AndroidVideoPlayer(context: Context) : VideoPlayer {
+class AndroidVideoPlayer(
+    context: Context,
+    downloadCache: Cache? = null,
+) : VideoPlayer {
 
     val exoPlayer = ExoPlayer.Builder(context)
-        .setMediaSourceFactory(DefaultMediaSourceFactory(context))
+        .setMediaSourceFactory(DefaultMediaSourceFactory(createDataSourceFactory(context, downloadCache)))
         .setSeekForwardIncrementMs(10000L)
         .setSeekBackIncrementMs(10000L)
         .build()
@@ -120,5 +127,18 @@ class AndroidVideoPlayer(context: Context) : VideoPlayer {
         exoPlayer.setMediaItems(items, startIndex, startPositionMs)
         exoPlayer.prepare()
         exoPlayer.play()
+    }
+
+    companion object {
+        private fun createDataSourceFactory(context: Context, cache: Cache?): DataSource.Factory {
+            val upstream = DefaultDataSource.Factory(context)
+            if (cache == null) return upstream
+
+            return CacheDataSource.Factory()
+                .setCache(cache)
+                .setUpstreamDataSourceFactory(upstream)
+                .setCacheWriteDataSinkFactory(null)
+                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
+        }
     }
 }

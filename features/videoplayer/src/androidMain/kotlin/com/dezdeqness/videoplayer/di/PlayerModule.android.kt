@@ -5,5 +5,5 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.dsl.module
 
 actual val playerModule = module {
-    single { VideoPlayerProvider(androidContext()) }
+    single { VideoPlayerProvider(androidContext(), getOrNull()) }
 }
