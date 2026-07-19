@@ -2,14 +2,11 @@ package com.dezdeqness.downloads.notification
 
 import co.touchlab.kermit.Logger
 import platform.UserNotifications.UNAuthorizationOptionAlert
-import platform.UserNotifications.UNAuthorizationOptionSound
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotification
-import platform.UserNotifications.UNNotificationPresentationOptionBanner
-import platform.UserNotifications.UNNotificationPresentationOptionSound
+import platform.UserNotifications.UNNotificationPresentationOptionList
 import platform.UserNotifications.UNNotificationPresentationOptions
 import platform.UserNotifications.UNNotificationRequest
-import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNUserNotificationCenter
 import platform.UserNotifications.UNUserNotificationCenterDelegateProtocol
 import platform.darwin.NSObject
@@ -52,7 +49,7 @@ class IosDownloadNotifier : DownloadNotifier {
     private fun post(downloadId: Long, title: String, body: String) {
         val center = notificationCenter
         center.requestAuthorizationWithOptions(
-            UNAuthorizationOptionAlert or UNAuthorizationOptionSound,
+            UNAuthorizationOptionAlert,
         ) { granted, error ->
             if (!granted) {
                 Logger.d(TAG) { "Notifications not authorized: ${error?.localizedDescription}" }
@@ -62,7 +59,6 @@ class IosDownloadNotifier : DownloadNotifier {
             val content = UNMutableNotificationContent().apply {
                 setTitle(title)
                 setBody(body)
-                setSound(UNNotificationSound.defaultSound)
             }
 
             val request = UNNotificationRequest.requestWithIdentifier(
@@ -86,9 +82,7 @@ class IosDownloadNotifier : DownloadNotifier {
             willPresentNotification: UNNotification,
             withCompletionHandler: (UNNotificationPresentationOptions) -> Unit,
         ) {
-            withCompletionHandler(
-                UNNotificationPresentationOptionBanner or UNNotificationPresentationOptionSound
-            )
+            withCompletionHandler(UNNotificationPresentationOptionList)
         }
     }
 
