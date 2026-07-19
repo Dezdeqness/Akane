@@ -22,6 +22,7 @@ import com.dezdeqness.videoplayer.di.videoPlayerModule
 import com.dezdeqness.views.di.viewsModule
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
+import org.koin.mp.KoinPlatformTools
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 
@@ -60,6 +61,7 @@ object KoinModules {
     }
 
     fun initKoinModules() {
+        if (KoinPlatformTools.defaultContext().getOrNull() != null) return
         startKoin {
             modules(KoinModules.modules())
         }
