@@ -88,6 +88,9 @@ class HomeViewModel(
                 onSuccess = { loaded(state.copy(genres = it.value.map(homeUiMapper::toGenrePanel))) },
                 onFailure = { onSectionError(state, it) },
             )
+
+            is HomeFeedStage.ContinueWatching ->
+                loaded(state.copy(continueWatching = stage.item?.let(homeUiMapper::toContinueWatching)))
         }
 
     private fun loaded(state: HomeState) = state.copy(status = StateStatus.Loaded)

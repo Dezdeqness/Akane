@@ -49,7 +49,10 @@ fun App() {
                 ),
                 entryProvider = entryProvider {
                     entry<RootShellKey> {
-                        RootScreen(rootBackStack = rootBackStack)
+                        RootScreen(
+                            rootBackStack = rootBackStack,
+                            videoPlayerController = controller,
+                        )
                     }
                     detailsEntries(
                         onBackPressed = { rootBackStack.removeLastOrNull() },

@@ -4,6 +4,8 @@ import com.dezdeqness.calendar.contract.model.ScheduleItemEntity
 import com.dezdeqness.catalog.contract.model.ReleaseEntity
 import com.dezdeqness.franchise.contract.model.FranchiseEntity
 import com.dezdeqness.genre.contract.model.GenreEntity
+import com.dezdeqness.home.domain.ContinueWatchingEntity
+import com.dezdeqness.home.ui.model.ContinueWatchingUiModel
 import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
@@ -52,5 +54,14 @@ class HomeUiMapper {
             name = data.name,
             imagePath = data.poster,
             description = data.description,
+        )
+
+    fun toContinueWatching(entity: ContinueWatchingEntity) =
+        ContinueWatchingUiModel(
+            releaseId = entity.releaseId,
+            episodeId = entity.episodeId,
+            title = entity.releaseTitle,
+            episodeTitle = entity.episodeName.ifBlank { "Серия ${entity.episodeOrdinal}" },
+            imagePath = entity.previewUrl,
         )
 }

@@ -17,6 +17,7 @@ class LoadHomeFeedUseCase(
     private val feedRepository: FeedRepository,
     private val franchiseRepository: FranchiseRepository,
     private val genreRepository: GenreRepository,
+    private val loadContinueWatchingUseCase: LoadContinueWatchingUseCase,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) {
 
@@ -28,5 +29,6 @@ class LoadHomeFeedUseCase(
         feedRepository.getFeedReleased().map(HomeFeedStage::Released),
         feedRepository.getFeedBestRating().map(HomeFeedStage::BestRated),
         genreRepository.getRandomGenres().map(HomeFeedStage::Genres),
+        loadContinueWatchingUseCase().map(HomeFeedStage::ContinueWatching),
     ).flowOn(coroutineDispatcherProvider.io())
 }

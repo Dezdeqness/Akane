@@ -1,6 +1,7 @@
 package com.dezdeqness.home.ui
 
 import androidx.compose.runtime.Immutable
+import com.dezdeqness.home.ui.model.ContinueWatchingUiModel
 import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
@@ -10,6 +11,7 @@ import com.dezdeqness.home.ui.model.PromoPanelUiModel
 data class HomeState(
     val promos: List<PromoPanelUiModel> = listOf(),
     val freshUpdates: List<HomeUiModel> = listOf(),
+    val continueWatching: ContinueWatchingUiModel? = null,
     val onGoing: List<HomeUiModel> = listOf(),
     val franchises: List<FranchisePanelUiModel> = listOf(),
     val released: List<HomeUiModel> = listOf(),

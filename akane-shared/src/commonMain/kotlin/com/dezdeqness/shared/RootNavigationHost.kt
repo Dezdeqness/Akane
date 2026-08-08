@@ -32,6 +32,7 @@ fun RootNavigationHost(
     onNavigateToFeed: () -> Unit,
     onNavigateToProfile: () -> Unit,
     onNavigateToReleaseEpisodes: (Long) -> Unit,
+    onNavigateToContinueWatching: (Long, String) -> Unit,
     onNavigateToActiveDownloads: () -> Unit,
     tabFullScreenEntries: EntryProviderScope<NavKey>.() -> Unit = {},
 ) {
@@ -46,6 +47,7 @@ fun RootNavigationHost(
         entryProvider = entryProvider {
             homeEntries(
                 onItemClicked = rootControllerNavigateToDetails,
+                onContinueWatchingClicked = onNavigateToContinueWatching,
                 onGenreClicked = { genreId, genreName ->
                     currentTabStack.navigateToGenreReleases(genreId, genreName)
                 },

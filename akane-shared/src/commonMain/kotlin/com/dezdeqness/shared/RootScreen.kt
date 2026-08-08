@@ -28,6 +28,7 @@ import com.dezdeqness.feed.navigation.FeedRoute
 import com.dezdeqness.home.navigation.HomeRoute
 import com.dezdeqness.personal.navigation.PersonalRoute
 import com.dezdeqness.profile.navigation.ProfileRoute
+import com.dezdeqness.videoplayer.navigation.VideoPlayerNavigationController
 import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
 import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
@@ -38,6 +39,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun RootScreen(
     rootBackStack: NavBackStack<NavKey>,
+    videoPlayerController: VideoPlayerNavigationController,
 ) {
     val analytics: AkaneAnalytics = koinInject()
 
@@ -124,6 +126,17 @@ fun RootScreen(
                     currentTabStack.navigateToReleaseEpisodes(id)
                 } else {
                     rootBackStack.navigateToReleaseEpisodes(id)
+                }
+            },
+            onNavigateToContinueWatching = { releaseId, episodeId ->
+                if (isWideLayout) {
+                    currentTabStack.navigateToDownloadedPlaylist(releaseId, episodeId)
+                } else {
+                    videoPlayerController.navigateToDownloadedPlaylist(
+                        backStack = rootBackStack,
+                        releaseId = releaseId,
+                        startEpisodeId = episodeId,
+                    )
                 }
             },
             onNavigateToActiveDownloads = {

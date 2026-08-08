@@ -10,6 +10,7 @@ import com.dezdeqness.home.ui.HomeActions
 import com.dezdeqness.home.ui.HomeState
 import com.dezdeqness.home.ui.composables.HomeSecondPartFooter
 import com.dezdeqness.home.ui.composables.HomeSection
+import com.dezdeqness.home.ui.composables.continuewatching.ContinueWatchingSection
 import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesSection
 import com.dezdeqness.home.ui.composables.franchise.FranchisesSection
 import com.dezdeqness.home.ui.composables.genres.GenresSection
@@ -37,6 +38,14 @@ fun HomePageMobile(
                 items = state.freshUpdates,
                 onItemClicked = actions::onItemClicked,
             )
+        }
+        if (state.continueWatching != null) {
+            item {
+                ContinueWatchingSection(
+                    item = state.continueWatching,
+                    onItemClicked = actions::onContinueWatchingClicked,
+                )
+            }
         }
         item {
             HomeSection(

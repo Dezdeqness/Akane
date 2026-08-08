@@ -21,6 +21,8 @@ kotlin {
             implementation(project(":contract:genre"))
             implementation(project(":contract:promo"))
             implementation(project(":contract:franchise"))
+            implementation(project(":contract:downloads"))
+            implementation(project(":contract:views"))
 
             implementation(libs.compottie)
             implementation(libs.compottie.dot)

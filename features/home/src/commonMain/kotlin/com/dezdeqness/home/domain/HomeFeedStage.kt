@@ -15,4 +15,5 @@ sealed interface HomeFeedStage {
     data class Released(val result: Result<CachedResult<List<ReleaseEntity>>>) : HomeFeedStage
     data class BestRated(val result: Result<CachedResult<List<ReleaseEntity>>>) : HomeFeedStage
     data class Genres(val result: Result<CachedResult<List<GenreEntity>>>) : HomeFeedStage
+    data class ContinueWatching(val item: ContinueWatchingEntity?) : HomeFeedStage
 }

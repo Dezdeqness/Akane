@@ -10,6 +10,7 @@ data object HomeRoute : NavKey
 
 fun EntryProviderScope<NavKey>.homeEntries(
     onItemClicked: (Long, String) -> Unit,
+    onContinueWatchingClicked: (Long, String) -> Unit,
     onGenreClicked: (Int, String) -> Unit,
     onAllGenresClicked: () -> Unit,
     onFranchiseClicked: (String, String) -> Unit,
@@ -18,6 +19,7 @@ fun EntryProviderScope<NavKey>.homeEntries(
     entry<HomeRoute> {
         HomePageStandalone(
             onItemClicked = onItemClicked,
+            onContinueWatchingClicked = onContinueWatchingClicked,
             onGenreClicked = onGenreClicked,
             onAllGenresClicked = onAllGenresClicked,
             onFranchiseClicked = onFranchiseClicked,
