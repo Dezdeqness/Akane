@@ -4,11 +4,12 @@ import com.dezdeqness.core.dispatcher.CoroutineDispatcherProvider
 import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.views.contract.model.EpisodeTimecodeEntity
 import com.dezdeqness.views.contract.repository.ViewsRepository
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.map
-import kotlin.collections.emptyList
 
 class LoadContinueWatchingUseCase(
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
@@ -17,17 +18,22 @@ class LoadContinueWatchingUseCase(
 ) {
 
     operator fun invoke(): Flow<ContinueWatchingEntity?> =
-        downloadEpisodeRepository.getAllDownloadsAsFlow()
-            .map { downloads -> resolveContinueWatching(downloads) }
+        combine(
+            downloadEpisodeRepository.getAllDownloadsAsFlow(),
+            viewsRepository.getTimecodesByRecencyAsFlow(),
+        ) { downloads, timecodes ->
+            resolveContinueWatching(downloads, timecodes)
+        }
+            .catch { emit(null) }
             .flowOn(coroutineDispatcherProvider.io())
 
-    private suspend fun resolveContinueWatching(
+    private fun resolveContinueWatching(
         downloads: List<DownloadEntity>,
+        timecodes: List<EpisodeTimecodeEntity>,
     ): ContinueWatchingEntity? {
         val completed = downloads.filter { it.status == DownloadStatus.COMPLETED }
         if (completed.isEmpty()) return null
 
-        val timecodes = viewsRepository.getTimecodesByRecency().getOrDefault(emptyList())
         val watchedEpisodeIds = timecodes
             .filter { it.isWatched }
             .mapTo(mutableSetOf()) { it.releaseEpisodeId }

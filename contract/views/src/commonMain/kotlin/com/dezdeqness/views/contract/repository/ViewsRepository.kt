@@ -9,6 +9,8 @@ interface ViewsRepository {
 
     suspend fun getTimecodesByRecency(): Result<List<EpisodeTimecodeEntity>>
 
+    fun getTimecodesByRecencyAsFlow(): Flow<List<EpisodeTimecodeEntity>>
+
     fun getReleaseTimecodesAsFlow(releaseId: Long): Flow<List<EpisodeTimecodeEntity>>
 
     suspend fun saveTimecode(releaseId: Long, timecode: EpisodeTimecodeEntity): Result<Unit>

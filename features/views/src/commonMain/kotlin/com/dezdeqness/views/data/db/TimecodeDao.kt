@@ -27,6 +27,9 @@ interface TimecodeDao {
     @Query("SELECT * FROM episode_timecode ORDER BY rowid DESC")
     suspend fun getByRecency(): List<TimecodeLocal>
 
+    @Query("SELECT * FROM episode_timecode ORDER BY rowid DESC")
+    fun getByRecencyAsFlow(): Flow<List<TimecodeLocal>>
+
     @Query("UPDATE episode_timecode SET isSynced = 1 WHERE releaseEpisodeId IN (:ids)")
     suspend fun markSynced(ids: List<String>)
 }

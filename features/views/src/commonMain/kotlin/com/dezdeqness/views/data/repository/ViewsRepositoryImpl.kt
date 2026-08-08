@@ -22,6 +22,10 @@ class ViewsRepositoryImpl(
             timecodeDao.getByRecency().map(timecodeMapper::toEntity)
         }
 
+    override fun getTimecodesByRecencyAsFlow(): Flow<List<EpisodeTimecodeEntity>> =
+        timecodeDao.getByRecencyAsFlow()
+            .map { locals -> locals.map(timecodeMapper::toEntity) }
+
     override fun getReleaseTimecodesAsFlow(releaseId: Long): Flow<List<EpisodeTimecodeEntity>> =
         timecodeDao.getByReleaseAsFlow(releaseId)
             .map { locals -> locals.map(timecodeMapper::toEntity) }
