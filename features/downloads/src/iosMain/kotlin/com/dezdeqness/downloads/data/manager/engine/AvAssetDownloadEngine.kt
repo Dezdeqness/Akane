@@ -29,6 +29,8 @@ import platform.Foundation.NSURL
 import platform.Foundation.NSURLSession
 import platform.Foundation.NSURLSessionConfiguration
 import platform.Foundation.NSURLSessionTask
+import platform.Foundation.NSURLSessionTaskStateRunning
+import platform.Foundation.NSURLSessionTaskStateSuspended
 import platform.Foundation.NSValue
 import platform.darwin.NSObject
 import platform.darwin.dispatch_async
@@ -67,10 +69,14 @@ class AvAssetDownloadEngine(
     }
 
     override suspend fun recover() {
+        println("AkaneDownloads: recover() start")
         cleanupLegacyDownloads()
+        println("AkaneDownloads: legacy cleanup done")
         verifyCompletedDownloads()
+        println("AkaneDownloads: verify completed done")
 
         val reattached = reattachDaemonTasks()
+        println("AkaneDownloads: reattached=$reattached")
 
         val staleStatuses = listOf(
             DownloadStatus.DOWNLOADING,
@@ -79,19 +85,17 @@ class AvAssetDownloadEngine(
         val staleDownloads = downloadEpisodeRepository.getByStatuses(staleStatuses)
             .filter { it.id !in reattached }
 
-        Logger.d(TAG) { "Recovery: reattached=${reattached.size}, re-enqueuing ${staleDownloads.size}" }
+        println("AkaneDownloads: re-enqueuing ${staleDownloads.map { it.id }}")
         staleDownloads.forEach(::enqueue)
     }
 
     override fun enqueue(download: DownloadEntity) {
-        coroutineScope.launch {
-            syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
-            eventBus.emit(DownloadEvent.Queued(DownloadNotificationInfo.from(download)))
-        }
-
+        println("AkaneDownloads: enqueue id=${download.id}")
         onMain {
             val downloadId = download.id
             when {
+                // Already downloading: do NOT re-write QUEUED over it, otherwise an
+                // active task masquerades as queued until the first progress tick.
                 downloadId in activeTasks -> Unit
 
                 downloadId in suspendedTasks -> {
@@ -99,8 +103,10 @@ class AvAssetDownloadEngine(
                         val task = suspendedTasks.remove(downloadId) ?: return@onMain
                         activeTasks[downloadId] = task
                         task.resume()
+                        markDownloading(downloadId)
                     } else if (downloadId !in pendingIds) {
                         pendingIds.addLast(downloadId)
+                        markQueued(download)
                     }
                 }
 
@@ -111,6 +117,7 @@ class AvAssetDownloadEngine(
                 else -> {
                     pendingEntities[downloadId] = download
                     pendingIds.addLast(downloadId)
+                    markQueued(download)
                 }
             }
         }
@@ -131,16 +138,23 @@ class AvAssetDownloadEngine(
     }
 
     override suspend fun cancel(downloadId: Long) {
+        // Status goes first: the -999 completion callback checks it to tell a user cancel
+        // from a system one, so it must already be CANCELLED when the task is cancelled.
+        syncRepository.updateStatus(downloadId, DownloadStatus.CANCELLED)
         onMain {
             removeTask(downloadId)?.cancel()
             pendingLocations.remove(downloadId)?.let(BookmarkPaths::deleteAt)
             startNextPending()
         }
-        syncRepository.updateStatus(downloadId, DownloadStatus.CANCELLED)
         emitWithInfo(downloadId) { DownloadEvent.Cancelled(it) }
     }
 
     override suspend fun delete(download: DownloadEntity) {
+        // Same reason as in cancel(): the -999 callback must not see QUEUED/DOWNLOADING
+        // and re-enqueue a download that is being deleted. Callers drop the row right after.
+        if (download.status == DownloadStatus.QUEUED || download.status == DownloadStatus.DOWNLOADING) {
+            syncRepository.updateStatus(download.id, DownloadStatus.CANCELLED)
+        }
         onMain {
             removeTask(download.id)?.cancel()
             pendingLocations.remove(download.id)?.let(BookmarkPaths::deleteAt)
@@ -175,6 +189,8 @@ class AvAssetDownloadEngine(
         task.taskDescription = download.id.toString()
         activeTasks[download.id] = task
         task.resume()
+        markDownloading(download.id)
+        println("AkaneDownloads: started task id=${download.id} state=${task.state} url=${download.hlsUrl.take(80)}")
     }
 
     private fun startNextPending() {
@@ -185,6 +201,7 @@ class AvAssetDownloadEngine(
             if (suspendedTask != null) {
                 activeTasks[nextId] = suspendedTask
                 suspendedTask.resume()
+                markDownloading(nextId)
                 continue
             }
 
@@ -199,8 +216,13 @@ class AvAssetDownloadEngine(
         return activeTasks.remove(downloadId) ?: suspendedTasks.remove(downloadId)
     }
 
+    private val progressLogged = mutableSetOf<Long>()
+
     private fun handleProgress(task: AVAssetDownloadTask, progress: Float) {
         val downloadId = downloadIdOf(task) ?: return
+        if (progressLogged.add(downloadId)) {
+            println("AkaneDownloads: first progress id=$downloadId progress=$progress")
+        }
         coroutineScope.launch {
             syncRepository.updateStatus(downloadId, DownloadStatus.DOWNLOADING)
             syncRepository.updateProgress(downloadId, progress, 0)
@@ -221,6 +243,10 @@ class AvAssetDownloadEngine(
     }
 
     private fun handleCompletion(task: NSURLSessionTask, error: NSError?) {
+        println(
+            "AkaneDownloads: completion task=${task.taskDescription} " +
+                    (error?.let { "error=${it.code} ${it.localizedDescription}" } ?: "success")
+        )
         val downloadId = task.taskDescription?.toLongOrNull() ?: return
 
         activeTasks.remove(downloadId)
@@ -246,6 +272,12 @@ class AvAssetDownloadEngine(
 
                 error != null && error.code == CANCELLED_ERROR_CODE -> {
                     location?.let(BookmarkPaths::deleteAt)
+                    val entity = downloadEpisodeRepository.getById(downloadId)
+                    if (entity != null &&
+                        (entity.status == DownloadStatus.QUEUED || entity.status == DownloadStatus.DOWNLOADING)
+                    ) {
+                        enqueue(entity)
+                    }
                 }
 
                 else -> {
@@ -258,7 +290,17 @@ class AvAssetDownloadEngine(
     }
 
     private suspend fun reattachDaemonTasks(): Set<Long> {
-        val tasks = allSessionTasks()
+        // Canceling/completed tasks (e.g. cancelled by iOS on app kill) must not count as
+        // reattached — otherwise recover() skips them and they hang in QUEUED forever.
+        println("AkaneDownloads: requesting session tasks")
+        val allTasks = allSessionTasks()
+        println(
+            "AkaneDownloads: session tasks: " +
+                    allTasks.joinToString { "${it.taskDescription}(state=${it.state})" }.ifEmpty { "none" }
+        )
+        val tasks = allTasks.filter {
+            it.state == NSURLSessionTaskStateRunning || it.state == NSURLSessionTaskStateSuspended
+        }
         val reattached = mutableSetOf<Long>()
 
         for (task in tasks) {
@@ -275,6 +317,7 @@ class AvAssetDownloadEngine(
                 if (activeTasks.size < MAX_ACTIVE_DOWNLOADS) {
                     activeTasks[downloadId] = assetTask
                     assetTask.resume()
+                    markDownloading(downloadId)
                 } else {
                     assetTask.suspend()
                     suspendedTasks[downloadId] = assetTask
@@ -315,6 +358,19 @@ class AvAssetDownloadEngine(
         for (download in legacy) {
             download.filePath?.let(fileManager::deleteOutputFile)
             syncRepository.delete(download.id)
+        }
+    }
+
+    private fun markDownloading(downloadId: Long) {
+        coroutineScope.launch {
+            syncRepository.updateStatus(downloadId, DownloadStatus.DOWNLOADING)
+        }
+    }
+
+    private fun markQueued(download: DownloadEntity) {
+        coroutineScope.launch {
+            syncRepository.updateStatus(download.id, DownloadStatus.QUEUED)
+            eventBus.emit(DownloadEvent.Queued(DownloadNotificationInfo.from(download)))
         }
     }
 

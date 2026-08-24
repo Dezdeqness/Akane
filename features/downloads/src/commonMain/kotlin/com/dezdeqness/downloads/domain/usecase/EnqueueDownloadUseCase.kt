@@ -16,9 +16,11 @@ class EnqueueDownloadUseCase(
 
     suspend operator fun invoke(params: Params) {
         val existing = downloadEpisodeRepository.getByEpisodeAndQuality(params.episodeId, params.quality)
-        if (existing != null && existing.status.isRetryable) {
-            syncDownloadsRepository.updateStatus(existing.id, DownloadStatus.QUEUED)
-            downloadManager.enqueue(existing.id)
+        if (existing != null) {
+            if (existing.status.isRetryable) {
+                syncDownloadsRepository.updateStatus(existing.id, DownloadStatus.QUEUED)
+                downloadManager.enqueue(existing.id)
+            }
             return
         }
 
