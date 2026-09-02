@@ -43,7 +43,7 @@ jetbrainsKotlinJvm = "2.2.21"
 
 materialIconsCore = "1.7.3"
 media3_version = "1.8.0"
-vlcj = "4.11.0"
+jna = "5.14.0"
 
 compottie = "2.0.2"
 okio = "3.9.1"
@@ -113,7 +113,7 @@ media3-database = { group = "androidx.media3", name = "media3-database", version
 media3-datasource = { group = "androidx.media3", name = "media3-datasource", version.ref = "media3_version" }
 media3-datasource-okhttp = { group = "androidx.media3", name = "media3-datasource-okhttp", version.ref = "media3_version" }
 media3-transformer = { group = "androidx.media3", name = "media3-transformer", version.ref = "media3_version" }
-vlcj = { module = "uk.co.caprica:vlcj", version.ref = "vlcj" }
+jna = { module = "net.java.dev.jna:jna", version.ref = "jna" }
 
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 android-tools-common = { group = "com.android.tools", name = "common", version.ref = "androidTools" }

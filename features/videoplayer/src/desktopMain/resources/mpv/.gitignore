@@ -1,0 +1,7 @@
+# Нативные libmpv НЕ храним в git — они тянутся на сборке Gradle-таском
+# downloadMpv (см. features/videoplayer/build.gradle.kts) из GitHub Release
+# с проверкой SHA-256. Здесь версионируется только README и этот .gitignore.
+*.dll
+*.dylib
+*.so
+*.so.*

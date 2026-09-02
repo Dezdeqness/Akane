@@ -47,6 +47,8 @@ class VideoPlayerViewModel(
 
     private val isDownloadedPlaylist: Boolean = downloadReleaseId > 0
 
+    private val effectiveReleaseId: Long = if (isDownloadedPlaylist) downloadReleaseId else releaseId
+
     // TODO: settings page decider
     private val resumeMode: ResumeMode = ResumeMode.PROMPT
 
@@ -64,14 +66,14 @@ class VideoPlayerViewModel(
         manager.installFeature(
             TimecodeFeature(
                 viewsRepository = viewsRepository,
-                releaseId = releaseId,
+                releaseId = effectiveReleaseId,
                 dispatcher = dispatchers.io(),
             ),
         )
         if (resumeMode == ResumeMode.PROMPT) {
             val resumePromptFeature = ResumePromptFeature(
                 viewsRepository = viewsRepository,
-                releaseId = releaseId,
+                releaseId = effectiveReleaseId,
             )
             manager.installFeature(resumePromptFeature)
             manager.registry.getFeature<SkipFeature>(FeatureKey.Skip)

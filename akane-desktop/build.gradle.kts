@@ -34,7 +34,14 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "Akane"
             packageVersion = "1.2.0"
-            includeAllModules = true
+
+            modules(
+                "java.instrument",
+                "java.management",
+                "java.scripting",
+                "jdk.unsupported",
+                "jdk.crypto.ec",
+            )
 
             windows {
                 menuGroup = "Akane"

@@ -1,3 +1,5 @@
+import org.gradle.language.jvm.tasks.ProcessResources
+
 plugins {
     alias(libs.plugins.dezdeqness.cmp.feature)
 }
@@ -33,6 +35,7 @@ kotlin {
             implementation(libs.media3.common)
             implementation(libs.media3.exoplayer)
             implementation(libs.media3.hls)
+            implementation(libs.media3.datasource)
         }
 
         val desktopMain by getting
@@ -40,7 +43,7 @@ kotlin {
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
             implementation(libs.kotlinx.coroutines.swing)
-            implementation(libs.vlcj)
+            implementation(libs.jna)
         }
     }
 
