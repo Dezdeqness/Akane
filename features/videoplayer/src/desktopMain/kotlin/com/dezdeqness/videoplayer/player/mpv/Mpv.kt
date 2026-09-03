@@ -25,7 +25,10 @@ import java.util.concurrent.atomic.AtomicBoolean
 internal class Mpv {
 
     private val lib = MpvLibraryLoader.load()
-    private val handle: Pointer = lib.mpv_create() ?: error("mpv_create() failed")
+    private val handle: Pointer = run {
+        MpvLibraryLoader.ensureCNumericLocale() // libmpv needs LC_NUMERIC=C, AWT breaks it
+        lib.mpv_create() ?: error("mpv_create() failed")
+    }
 
     private val _events = MutableSharedFlow<PlayerEvent>(extraBufferCapacity = 64)
     val events: Flow<PlayerEvent> = _events.asSharedFlow()
