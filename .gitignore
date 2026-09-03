@@ -76,3 +76,6 @@ google-services.json
 # Claude Code — version project skills, ignore everything else (local settings, secrets)
 /.claude/*
 !/.claude/skills/
+
+#mpv
+scripts/mpv/.work-macos
