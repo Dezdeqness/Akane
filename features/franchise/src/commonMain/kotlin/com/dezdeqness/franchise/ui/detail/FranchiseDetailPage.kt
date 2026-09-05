@@ -31,16 +31,6 @@ fun FranchiseDetailPage(
             .fillMaxSize()
             .background(AppTheme.colors.background),
     ) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            FranchiseDetailToolbar(
-                title = franchiseName,
-                onBackPressed = onBackPressed,
-            )
-            AdaptiveLayout(modifier = Modifier.fillMaxSize()) {
-                val columns = if (LocalLayoutType.current == LayoutType.Mobile) 3 else 4
-                FranchiseDetailLoading(columns = columns)
-            }
-        }
         when (state.status) {
             FranchiseDetailStatus.Loading -> {
                 Column(modifier = Modifier.fillMaxSize()) {

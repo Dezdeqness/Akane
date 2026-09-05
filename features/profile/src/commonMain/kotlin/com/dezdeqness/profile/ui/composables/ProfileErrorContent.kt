@@ -20,7 +20,6 @@ import com.dezdeqness.core.ui.views.buttons.AppPrimaryButton
 
 @Composable
 fun ProfileErrorContent(
-    message: String?,
     onRetryClicked: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -42,14 +41,6 @@ fun ProfileErrorContent(
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Center,
             )
-            message?.takeIf { it.isNotBlank() }?.let {
-                Text(
-                    text = it,
-                    color = AppTheme.colors.textSecondary,
-                    style = AppTheme.typography.bodyMedium,
-                    textAlign = TextAlign.Center,
-                )
-            }
             AppPrimaryButton(
                 title = "Повторить",
                 onClick = onRetryClicked,

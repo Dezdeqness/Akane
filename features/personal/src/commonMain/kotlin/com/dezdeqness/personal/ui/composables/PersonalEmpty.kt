@@ -1,11 +1,14 @@
 package com.dezdeqness.personal.ui.composables
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.dezdeqness.designsystem.state.EmptyState
@@ -33,21 +36,26 @@ fun PersonalEmpty(
         composition = composition,
     )
 
-    EmptyState(
-        modifier = modifier.padding(16.dp),
-        title = "Избранное пусто",
-        message = "Добавьте аниме в избранное на странице деталей",
-        buttonTitle = "Перейти на поиск",
-        onClick = onAction,
-        image = {
-            Image(
-                modifier = Modifier.size(120.dp).offset(y = 24.dp),
-                painter = rememberLottiePainter(
-                    composition = composition,
-                    progress = { progress },
-                ),
-                contentDescription = null,
-            )
-        }
-    )
+    Box(
+        modifier = modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center,
+    ) {
+        EmptyState(
+            modifier = Modifier.padding(16.dp),
+            title = "Избранное пусто",
+            message = "Добавьте аниме в избранное на странице деталей",
+            buttonTitle = "Перейти на поиск",
+            onClick = onAction,
+            image = {
+                Image(
+                    modifier = Modifier.size(120.dp).offset(y = 24.dp),
+                    painter = rememberLottiePainter(
+                        composition = composition,
+                        progress = { progress },
+                    ),
+                    contentDescription = null,
+                )
+            }
+        )
+    }
 }

@@ -44,7 +44,7 @@ class ProfileViewModel(
         when (state) {
             SessionState.Authenticated -> loadProfile()
             SessionState.Unauthenticated -> _state.update {
-                ProfileState(profile = null, isLoading = false, errorMessage = null)
+                ProfileState(profile = null, isLoading = false, isError = false)
             }
             SessionState.Loading -> Unit
         }
@@ -52,20 +52,20 @@ class ProfileViewModel(
 
     private fun loadProfile() {
         viewModelScope.launch(coroutineDispatcherProvider.io()) {
-            _state.update { it.copy(isLoading = true, errorMessage = null) }
+            _state.update { it.copy(isLoading = true, isError = false) }
             profileRepository.getProfile()
                 .onSuccess { profile ->
                     _state.update {
                         it.copy(
                             profile = profileUiMapper.map(profile),
                             isLoading = false,
-                            errorMessage = null,
+                            isError = false,
                         )
                     }
                 }
                 .onFailure { throwable ->
                     _state.update {
-                        it.copy(isLoading = false, errorMessage = throwable.message)
+                        it.copy(isLoading = false, isError = true)
                     }
                 }
         }

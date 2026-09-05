@@ -58,8 +58,7 @@ fun ProfilePage(
                     onLogoutClicked = onLogoutClicked,
                 )
 
-                profileState.errorMessage != null && !profileState.isLoading -> ProfileErrorContent(
-                    message = profileState.errorMessage,
+                profileState.isError && !profileState.isLoading -> ProfileErrorContent(
                     onRetryClicked = onRetryClicked,
                 )
 
