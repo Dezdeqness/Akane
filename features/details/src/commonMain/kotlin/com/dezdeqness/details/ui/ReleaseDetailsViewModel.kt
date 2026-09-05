@@ -74,6 +74,9 @@ class ReleaseDetailsViewModel(
         .onStart { emit(LoadEvent.Initial) }
         .flatMapLatest { event ->
             flow {
+                releaseRepository.getCachedReleaseById(releaseId)?.let { cached ->
+                    emit(LoadResult(event, Result.success(cached), franchiseResult = null))
+                }
                 val releaseResult = releaseRepository.getReleaseById(releaseId)
                 val franchiseResult = franchiseRepository.getReleaseFranchiseById(releaseId)
                 emit(LoadResult(event, releaseResult, franchiseResult))
@@ -82,7 +85,7 @@ class ReleaseDetailsViewModel(
         .scan(LoadResultCache()) { previous, result ->
             result
                 .franchiseResult
-                .onFailure { throwable ->
+                ?.onFailure { throwable ->
                     errorReporter.captureException(
                         throwable = throwable,
                         message = "Release details load failed",
@@ -94,7 +97,7 @@ class ReleaseDetailsViewModel(
             result
                 .releaseResult
                 .onSuccess { details ->
-                    val franchise = result.franchiseResult.getOrNull()
+                    val franchise = result.franchiseResult?.getOrNull() ?: previous.franchise
                     return@scan LoadResultCache(
                         status = Status.Loaded,
                         release = details,
@@ -112,7 +115,8 @@ class ReleaseDetailsViewModel(
                         tag = TAG,
                         messageString = throwable.message.orEmpty(),
                     )
-                    return@scan previous.copy(status = Status.Error)
+                    // Keep already loaded (e.g. cached) content instead of an error screen.
+                    return@scan if (previous.release != null) previous else previous.copy(status = Status.Error)
                 }
             previous
         }
@@ -293,7 +297,7 @@ class ReleaseDetailsViewModel(
     private data class LoadResult(
         val event: LoadEvent,
         val releaseResult: Result<ReleaseDetailsEntity>,
-        val franchiseResult: Result<FranchiseEntity>,
+        val franchiseResult: Result<FranchiseEntity>?,
     )
 
     private data class LoadResultCache(

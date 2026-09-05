@@ -31,6 +31,16 @@ class OkioJsonCacheStore(
     }
 
     override suspend fun <T> read(key: String, serializer: KSerializer<T>, ttlMillis: Long): T? =
+        readInternal(key, serializer, ttlMillis)
+
+    override suspend fun <T> read(key: String, serializer: KSerializer<T>): T? =
+        readInternal(key, serializer, ttlMillis = null)
+
+    private suspend fun <T> readInternal(
+        key: String,
+        serializer: KSerializer<T>,
+        ttlMillis: Long?,
+    ): T? =
         withContext(coroutineDispatcherProvider.io()) {
             val path = pathFor(key)
             if (!fileSystem.exists(path)) {
@@ -39,8 +49,11 @@ class OkioJsonCacheStore(
             runCatching {
                 val text = fileSystem.read(path) { readUtf8() }
                 val data = json.decodeFromString(CacheData.serializer(serializer), text)
-                val ageMillis = Clock.System.now().toEpochMilliseconds() - data.savedAtMillis
-                if (ageMillis in 0..ttlMillis) data.payload else null
+                val isFresh = ttlMillis == null || run {
+                    val ageMillis = Clock.System.now().toEpochMilliseconds() - data.savedAtMillis
+                    ageMillis in 0..ttlMillis
+                }
+                if (isFresh) data.payload else null
             }.getOrNull()
         }
 

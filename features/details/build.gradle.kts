@@ -16,6 +16,7 @@ kotlin {
             implementation(libs.compottie)
             implementation(libs.compottie.dot)
             implementation(project(":common:analytics"))
+            implementation(project(":common:foundation"))
             api(project(":contract:release"))
             implementation(project(":contract:personal"))
             implementation(project(":contract:auth"))

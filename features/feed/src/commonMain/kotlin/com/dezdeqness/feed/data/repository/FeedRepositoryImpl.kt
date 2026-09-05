@@ -51,7 +51,7 @@ class FeedRepositoryImpl(
 
     override suspend fun getCachedFeed(): ReleasesPageEntity? {
         val snapshot = jsonCacheStore
-            .read(KEY_STANDARD_FEED, SNAPSHOT_SERIALIZER, TTL_MILLIS)
+            .read(KEY_STANDARD_FEED, SNAPSHOT_SERIALIZER)
             ?.takeIf { it.isNotEmpty() }
             ?: return null
 

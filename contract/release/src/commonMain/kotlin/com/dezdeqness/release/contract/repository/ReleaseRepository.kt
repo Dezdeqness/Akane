@@ -6,4 +6,5 @@ interface ReleaseRepository {
 
     suspend fun getReleaseById(id: Long): Result<ReleaseDetailsEntity>
 
+    suspend fun getCachedReleaseById(id: Long): ReleaseDetailsEntity?
 }

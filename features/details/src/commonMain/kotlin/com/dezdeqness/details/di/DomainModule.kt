@@ -8,7 +8,11 @@ import org.koin.dsl.module
 
 val domainModule = module {
     single<ReleaseRepository> {
-        ReleaseRepositoryImpl(releaseApiDatasource = get())
+        ReleaseRepositoryImpl(
+            releaseApiDatasource = get(),
+            jsonCacheStore = get(),
+            releaseDetailsCacheMapper = get(),
+        )
     }
     single<FranchiseRepository> {
         FranchiseRepositoryImpl(franchiseDatasource = get())
