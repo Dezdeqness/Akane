@@ -41,6 +41,17 @@ class FeedViewModel(
         .onStart { emit(LoadEvent.Initial()) }
         .flatMapLatest { event ->
             flow {
+                if (event is LoadEvent.Initial) {
+                    feedRepository.getCachedFeed()?.let { cached ->
+                        emit(
+                            LoadResult(
+                                event = event,
+                                result = Result.success(cached),
+                            )
+                        )
+                    }
+                }
+
                 val result = feedRepository.getFeed(
                     page = event.page,
                     filter = event.input.filterCatalogFilter,
@@ -90,8 +101,9 @@ class FeedViewModel(
                         "search" to event.input.search.orEmpty(),
                     ),
                 )
-                val newStatus = when (event) {
-                    is LoadEvent.Initial -> Status.Error
+                val newStatus = when {
+                    previous.items.isNotEmpty() -> previous.status
+                    event is LoadEvent.Initial -> Status.Error
                     else -> previous.status
                 }
 

@@ -12,6 +12,7 @@ interface FeedRepository {
         filter: CatalogFilter,
     ): Result<ReleasesPageEntity>
 
+    suspend fun getCachedFeed(): ReleasesPageEntity?
     fun getFeedBestRating(): Flow<Result<CachedResult<List<ReleaseEntity>>>>
     fun getFeedOngoing(): Flow<Result<CachedResult<List<ReleaseEntity>>>>
     fun getFeedReleased(): Flow<Result<CachedResult<List<ReleaseEntity>>>>
