@@ -17,6 +17,7 @@ val downloadsModule = module {
             downloadEpisodeRepository = get(),
             syncRepository = get(),
             downloadManager = get(),
+            fileManager = get(),
         )
     }
 }

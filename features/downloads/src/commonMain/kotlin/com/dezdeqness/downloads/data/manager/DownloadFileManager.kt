@@ -68,6 +68,18 @@ class DownloadFileManager(
 
     fun fileExists(path: Path): Boolean = fileSystem.exists(path)
 
+    fun isFileAvailable(filePath: String?): Boolean {
+        if (filePath.isNullOrBlank()) return false
+        if (filePath.startsWith("http://") || filePath.startsWith("https://")) return true
+        if (filePath.startsWith("bookmark://")) return true
+
+        return runCatching {
+            val path = resolveFilePath(filePath).toPath()
+            if (!fileSystem.exists(path)) return@runCatching false
+            (fileSystem.metadata(path).size ?: 0L) > 0L
+        }.getOrDefault(false)
+    }
+
     fun segmentExists(path: Path): Boolean {
         if (!fileSystem.exists(path)) return false
         return (fileSystem.metadata(path).size ?: 0L) > 0L

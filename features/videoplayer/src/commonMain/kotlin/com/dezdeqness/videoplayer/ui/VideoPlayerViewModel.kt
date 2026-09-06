@@ -177,7 +177,7 @@ class VideoPlayerViewModel(
         val state = MutableStateFlow(ScreenState())
         viewModelScope.launch {
             try {
-                val downloads = downloadEpisodeRepository.getCompletedByReleaseId(downloadReleaseId)
+                val downloads = downloadEpisodeRepository.getAvailableCompletedByReleaseId(downloadReleaseId)
                 if (downloads.isEmpty()) {
                     errorReporter.captureMessage(
                         message = "Downloaded playlist is empty",
@@ -195,7 +195,7 @@ class VideoPlayerViewModel(
                     return@launch
                 }
 
-                val items = downloads.filter { it.filePath != null }.map(mediaItemMapper::toFilePathMediaItem)
+                val items = downloads.map(mediaItemMapper::toFilePathMediaItem)
                 val startIndex = downloads.indexOfFirst { it.episodeId == downloadStartEpisodeId }
                     .coerceAtLeast(0)
 

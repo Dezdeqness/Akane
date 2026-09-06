@@ -12,6 +12,7 @@ interface DownloadEpisodeRepository {
     suspend fun getByEpisodeId(episodeId: String): List<DownloadEntity>
     suspend fun insert(entity: DownloadEntity): Long
     suspend fun getCompletedByReleaseId(releaseId: Long): List<DownloadEntity>
+    suspend fun getAvailableCompletedByReleaseId(releaseId: Long): List<DownloadEntity>
     fun getCompletedByReleaseIdAsFlow(releaseId: Long): Flow<List<DownloadEntity>>
     suspend fun getByStatuses(statuses: List<DownloadStatus>): List<DownloadEntity>
     suspend fun deleteRecord(id: Long)

@@ -2,6 +2,7 @@ package com.dezdeqness.downloads.ui.episodes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.data.manager.DownloadManager
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
 import com.dezdeqness.downloads.contract.repository.SyncDownloadsEpisodeRepository
@@ -22,6 +23,7 @@ class ReleaseEpisodesViewModel(
     private val downloadEpisodeRepository: DownloadEpisodeRepository,
     private val syncRepository: SyncDownloadsEpisodeRepository,
     private val downloadManager: DownloadManager,
+    private val fileManager: DownloadFileManager,
 ) : ViewModel() {
 
     val state: StateFlow<ReleaseEpisodesState> = downloadEpisodeRepository
@@ -40,6 +42,7 @@ class ReleaseEpisodesViewModel(
                     status = entity.status,
                     previewUrl = entity.previewUrl,
                     filePath = entity.filePath,
+                    isAvailable = fileManager.isFileAvailable(entity.filePath),
                 )
             }
             ReleaseEpisodesState(

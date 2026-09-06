@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.downloads.contract.repository.DownloadEpisodeRepository
+import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 import com.dezdeqness.downloads.ui.model.ReleaseGroup
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,6 +18,7 @@ data class LibraryState(
 
 class LibraryViewModel(
     downloadEpisodeRepository: DownloadEpisodeRepository,
+    private val fileManager: DownloadFileManager,
 ) : ViewModel() {
 
     val state: StateFlow<LibraryState> = downloadEpisodeRepository
@@ -37,6 +39,7 @@ class LibraryViewModel(
                         status = entity.status,
                         previewUrl = entity.previewUrl,
                         filePath = entity.filePath,
+                        isAvailable = fileManager.isFileAvailable(entity.filePath),
                     )
                 }
 
@@ -50,6 +53,7 @@ class LibraryViewModel(
                         previewUrl = sorted.first().previewUrl,
                         episodes = sorted,
                         totalSize = sorted.size,
+                        availableCount = sorted.count { it.isAvailable },
                     )
                 }
                 .sortedBy { it.releaseTitle }

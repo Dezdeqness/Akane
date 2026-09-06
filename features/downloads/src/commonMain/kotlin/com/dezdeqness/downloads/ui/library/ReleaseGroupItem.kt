@@ -61,9 +61,13 @@ fun ReleaseGroupItemMobile(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "${group.totalSize} ${episodeCountText(group.totalSize)}",
+                text = groupCountText(group),
                 fontSize = 13.sp,
-                color = AppTheme.colors.textSecondary,
+                color = if (group.availableCount < group.totalSize) {
+                    AppTheme.colors.error
+                } else {
+                    AppTheme.colors.textSecondary
+                },
             )
         }
 
@@ -110,14 +114,25 @@ fun ReleaseGroupItemWide(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = "${group.totalSize} ${episodeCountText(group.totalSize)}",
+                text = groupCountText(group),
                 fontSize = 13.sp,
-                color = AppTheme.colors.textSecondary,
+                color = if (group.availableCount < group.totalSize) {
+                    AppTheme.colors.error
+                } else {
+                    AppTheme.colors.textSecondary
+                },
             )
         }
     }
 }
 
+
+private fun groupCountText(group: ReleaseGroup): String =
+    if (group.availableCount < group.totalSize) {
+        "${group.availableCount} из ${group.totalSize} ${episodeCountText(group.totalSize)} доступно"
+    } else {
+        "${group.totalSize} ${episodeCountText(group.totalSize)}"
+    }
 
 private fun episodeCountText(count: Int): String {
     val mod10 = count % 10

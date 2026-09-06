@@ -16,6 +16,7 @@ internal val domainModule = module {
             downloadEpisodeDao = get(),
             syncDownloadEpisodeDao = get(),
             downloadMapper = get(),
+            fileManager = get(),
         )
     }
     single<SyncDownloadsEpisodeRepository> {

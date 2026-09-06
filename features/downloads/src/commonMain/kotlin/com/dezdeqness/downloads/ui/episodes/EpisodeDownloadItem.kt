@@ -41,7 +41,13 @@ fun EpisodeDownloadItemMobile(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .clickable(onClick = onPlayClicked)
+            .then(
+                if (episode.isAvailable) {
+                    Modifier.clickable(onClick = onPlayClicked)
+                } else {
+                    Modifier
+                }
+            )
             .padding(horizontal = 16.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
@@ -68,21 +74,27 @@ fun EpisodeDownloadItemMobile(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = episode.quality,
+                text = if (episode.isAvailable) episode.quality else "Файл недоступен",
                 fontSize = 12.sp,
-                color = AppTheme.colors.textSecondary,
+                color = if (episode.isAvailable) {
+                    AppTheme.colors.textSecondary
+                } else {
+                    AppTheme.colors.error
+                },
             )
         }
 
         Row(
             horizontalArrangement = Arrangement.End,
         ) {
-            AppIconButton(onClick = onPlayClicked, contentColor = AppTheme.colors.background) {
-                Icon(
-                    Icons.Default.PlayArrow,
-                    contentDescription = null,
-                    tint = AppTheme.colors.textSecondary,
-                )
+            if (episode.isAvailable) {
+                AppIconButton(onClick = onPlayClicked, contentColor = AppTheme.colors.background) {
+                    Icon(
+                        Icons.Default.PlayArrow,
+                        contentDescription = null,
+                        tint = AppTheme.colors.textSecondary,
+                    )
+                }
             }
             AppIconButton(onClick = onDeleteClicked, contentColor = AppTheme.colors.background) {
                 Icon(
@@ -105,7 +117,13 @@ fun EpisodeDownloadItemWide(
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(8.dp))
-            .clickable(onClick = onPlayClicked)
+            .then(
+                if (episode.isAvailable) {
+                    Modifier.clickable(onClick = onPlayClicked)
+                } else {
+                    Modifier
+                }
+            )
     ) {
 
         Box {
@@ -118,6 +136,19 @@ fun EpisodeDownloadItemWide(
                     .aspectRatio(16 / 9f)
                     .clip(RoundedCornerShape(8.dp)),
             )
+
+            if (!episode.isAvailable) {
+                Text(
+                    text = "Файл недоступен",
+                    fontSize = 12.sp,
+                    color = AppTheme.colors.textPrimary,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .clip(RoundedCornerShape(4.dp))
+                        .background(AppTheme.colors.error.copy(alpha = 0.85f))
+                        .padding(horizontal = 8.dp, vertical = 4.dp),
+                )
+            }
 
             AppIconButton(
                 onClick = onDeleteClicked,

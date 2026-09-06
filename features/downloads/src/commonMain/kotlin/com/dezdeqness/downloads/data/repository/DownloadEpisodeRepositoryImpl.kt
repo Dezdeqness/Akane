@@ -2,6 +2,7 @@ package com.dezdeqness.downloads.data.repository
 
 import com.dezdeqness.downloads.data.db.DownloadEpisodeDao
 import com.dezdeqness.downloads.data.db.SyncDownloadEpisodeDao
+import com.dezdeqness.downloads.data.manager.DownloadFileManager
 import com.dezdeqness.downloads.data.mapper.DownloadMapper
 import com.dezdeqness.downloads.contract.model.DownloadEntity
 import com.dezdeqness.downloads.contract.model.DownloadStatus
@@ -13,6 +14,7 @@ class DownloadEpisodeRepositoryImpl(
     private val downloadEpisodeDao: DownloadEpisodeDao,
     private val syncDownloadEpisodeDao: SyncDownloadEpisodeDao,
     private val downloadMapper: DownloadMapper,
+    private val fileManager: DownloadFileManager,
 ) : DownloadEpisodeRepository {
 
     override fun getAllDownloadsAsFlow(): Flow<List<DownloadEntity>> {
@@ -54,6 +56,11 @@ class DownloadEpisodeRepositoryImpl(
 
     override suspend fun getCompletedByReleaseId(releaseId: Long): List<DownloadEntity> {
         return downloadEpisodeDao.getCompletedByReleaseId(releaseId).map(downloadMapper::toEntity)
+    }
+
+    override suspend fun getAvailableCompletedByReleaseId(releaseId: Long): List<DownloadEntity> {
+        return getCompletedByReleaseId(releaseId)
+            .filter { fileManager.isFileAvailable(it.filePath) }
     }
 
     override fun getCompletedByReleaseIdAsFlow(releaseId: Long): Flow<List<DownloadEntity>> {

@@ -6,4 +6,5 @@ data class ReleaseGroup(
     val previewUrl: String,
     val episodes: List<DownloadUiModel>,
     val totalSize: Int,
+    val availableCount: Int = totalSize,
 )
