@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.dezdeqness.kmp.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -27,6 +28,15 @@ kotlin {
 
         desktopMain.dependencies {
             implementation(compose.desktop.currentOs)
+        }
+
+        val desktopTest by getting
+
+        desktopTest.dependencies {
+            implementation(libs.roborazzi.compose.desktop)
+            implementation(libs.compose.ui.test)
+            implementation(compose.desktop.currentOs)
+            implementation(kotlin("test"))
         }
     }
 

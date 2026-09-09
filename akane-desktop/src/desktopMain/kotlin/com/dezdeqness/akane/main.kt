@@ -5,6 +5,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.dezdeqness.designsystem.DarkDesktopTheme
 import com.dezdeqness.downloads.notification.DownloadNotificationActions
 import com.dezdeqness.shared.App
 import com.dezdeqness.shared.di.KoinModules
@@ -32,7 +33,7 @@ object Akane {
                     }
                 }
             }
-            App()
+            App(theme = DarkDesktopTheme)
         }
     }
 }

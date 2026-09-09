@@ -13,7 +13,11 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import com.dezdeqness.analytics.core.AkaneAnalytics
 import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
+import androidx.compose.foundation.isSystemInDarkTheme
 import com.dezdeqness.designsystem.AkaneTheme
+import com.dezdeqness.designsystem.AkaneThemeSpec
+import com.dezdeqness.designsystem.DarkMobileTheme
+import com.dezdeqness.designsystem.LightTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.details.navigation.detailsEntries
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
@@ -29,14 +33,16 @@ import org.koin.compose.koinInject
 data object RootShellKey : NavKey
 
 @Composable
-fun App() {
+fun App(
+    theme: AkaneThemeSpec = if (isSystemInDarkTheme()) DarkMobileTheme else LightTheme,
+) {
     val controller = remember { videoController() }
     val analytics: AkaneAnalytics = koinInject()
 
     CompositionLocalProvider(
         LocalAstImageLoader provides getImageLoader()
     ) {
-        AkaneTheme {
+        AkaneTheme(theme = theme) {
             val rootBackStack = rememberNavBackStack(navSavedStateConfiguration(), RootShellKey)
 
             NavDisplay(
