@@ -68,6 +68,7 @@ include(":common:designsystem")
 include(":common:foundation")
 include(":common:analytics")
 include(":common:cache")
+include(":common:screenshot-testing")
 
 include(":contract:release")
 include(":contract:downloads")

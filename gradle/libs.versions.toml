@@ -47,8 +47,10 @@ jna = "5.14.0"
 
 compottie = "2.0.2"
 okio = "3.9.1"
+roborazzi = "1.74.0"
 
 [libraries]
+roborazzi-compose-desktop = { module = "io.github.takahirom.roborazzi:roborazzi-compose-desktop", version.ref = "roborazzi" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 kermit = { module = "co.touchlab:kermit", version.ref = "kermit" }
@@ -148,6 +150,7 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 ktorfit = { id = "de.jensklingenberg.ktorfit", version.ref = "ktorfit" }
 jetbrains-kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "jetbrainsKotlinJvm" }
 androidx-room = { id = "androidx.room", version.ref = "room" }
+roborazzi = { id = "io.github.takahirom.roborazzi", version.ref = "roborazzi" }
 
 dezdeqness-kmp-library = { id = "com.dezdeqness.kmp.library", version = "unspecified"}
 dezdeqness-cmp-feature = { id = "com.dezdeqness.cmp.feature", version = "unspecified"}
