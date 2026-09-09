@@ -17,12 +17,11 @@ kotlin {
             implementation(project(":common:designsystem"))
             implementation(project(":shared:catalog-ui"))
             implementation(compose.desktop.currentOs)
-            implementation(compose.material3)
+            implementation(libs.compose.material3)
             implementation(libs.coil.kt)
 
             implementation(libs.roborazzi.compose.desktop)
-            @OptIn(org.jetbrains.compose.ExperimentalComposeLibrary::class)
-            implementation(compose.uiTest)
+            implementation(libs.compose.ui.test)
         }
     }
 }
