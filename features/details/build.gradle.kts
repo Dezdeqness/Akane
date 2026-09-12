@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.dezdeqness.cmp.feature)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -31,6 +32,15 @@ kotlin {
             implementation(libs.kotlinx.coroutines.swing)
         }
 
+        val desktopTest by getting
+
+        desktopTest.dependencies {
+            implementation(project(":common:screenshot-testing"))
+            implementation(libs.roborazzi.compose.desktop)
+            implementation(libs.compose.ui.test)
+            implementation(compose.desktop.currentOs)
+            implementation(kotlin("test"))
+        }
     }
 
 }

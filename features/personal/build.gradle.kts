@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.dezdeqness.cmp.feature)
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -20,6 +21,16 @@ kotlin {
             api(project(":contract:personal"))
             implementation(libs.androidx.room.runtime)
             implementation(libs.androidx.sqlite.bundled)
+        }
+
+        val desktopTest by getting
+
+        desktopTest.dependencies {
+            implementation(project(":common:screenshot-testing"))
+            implementation(libs.roborazzi.compose.desktop)
+            implementation(libs.compose.ui.test)
+            implementation(compose.desktop.currentOs)
+            implementation(kotlin("test"))
         }
     }
 
