@@ -19,6 +19,8 @@ kotlin {
             implementation(compose.desktop.currentOs)
             implementation(libs.compose.material3)
             implementation(libs.coil.kt)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.test)
 
             implementation(libs.roborazzi.compose.desktop)
             implementation(libs.compose.ui.test)
