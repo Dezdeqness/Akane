@@ -3,6 +3,7 @@ plugins {
     alias(libs.plugins.ksp)
     alias(libs.plugins.androidx.room)
     alias(libs.plugins.ktorfit)
+    alias(libs.plugins.roborazzi)
 }
 
 android {
@@ -33,6 +34,16 @@ kotlin {
             implementation(libs.media3.database)
             implementation(libs.media3.datasource)
             implementation(libs.media3.datasource.okhttp)
+        }
+
+        val desktopTest by getting
+
+        desktopTest.dependencies {
+            implementation(project(":common:screenshot-testing"))
+            implementation(libs.roborazzi.compose.desktop)
+            implementation(libs.compose.ui.test)
+            implementation(compose.desktop.currentOs)
+            implementation(kotlin("test"))
         }
     }
 }
