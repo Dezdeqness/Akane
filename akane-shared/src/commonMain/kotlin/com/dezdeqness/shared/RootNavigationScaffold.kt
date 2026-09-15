@@ -1,16 +1,22 @@
 package com.dezdeqness.shared
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationRail
-import androidx.compose.material3.NavigationRailItem
+import androidx.compose.material3.NavigationDrawerItem
+import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,6 +26,7 @@ import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.core.ui.theme.AppTheme
 
 private val WideDeviceWidthFactor = 840.dp
+private val SideNavigationWidth = 240.dp
 
 @Composable
 fun RootNavigationScaffold(
@@ -62,29 +69,11 @@ fun RootNavigationScaffold(
         ) { padding ->
             if (useRailNavigation) {
                 Row(modifier = Modifier.fillMaxSize()) {
-                    NavigationRail(
-                        containerColor = AppTheme.colors.background,
-                        modifier = Modifier.padding(start = 8.dp, top = 12.dp, bottom = 12.dp),
-                    ) {
-                        RootNavigationItems(
-                            activeTab = activeTab,
-                        ) { item, isSelected ->
-                            NavigationRailItem(
-                                selected = isSelected,
-                                onClick = { onTabSelected(item.key) },
-                                icon = {
-                                    AkaneNavigationItemIcon(
-                                        item = item,
-                                        isSelected = isSelected,
-                                        activeDownloadsCount = activeDownloadsCount,
-                                    )
-                                },
-                                label = {
-                                    Text(item.label)
-                                },
-                            )
-                        }
-                    }
+                    SideNavigation(
+                        activeTab = activeTab,
+                        activeDownloadsCount = activeDownloadsCount,
+                        onTabSelected = onTabSelected,
+                    )
                     content(Modifier.fillMaxSize().weight(1f), true)
                 }
             } else {
@@ -94,6 +83,51 @@ fun RootNavigationScaffold(
     }
 }
 
+
+@Composable
+private fun SideNavigation(
+    activeTab: NavKey?,
+    activeDownloadsCount: Int,
+    onTabSelected: (NavKey) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxHeight()
+            .width(SideNavigationWidth)
+            .verticalScroll(rememberScrollState())
+            .padding(horizontal = 12.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(4.dp),
+    ) {
+        RootNavigationItems(
+            activeTab = activeTab,
+        ) { item, isSelected ->
+            val showBadge = item == AkaneBottomTabModel.DOWNLOADS &&
+                    !isSelected &&
+                    activeDownloadsCount > 0
+
+            NavigationDrawerItem(
+                selected = isSelected,
+                onClick = { onTabSelected(item.key) },
+                icon = {
+                    Icon(
+                        imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
+                        contentDescription = item.label,
+                    )
+                },
+                label = { Text(item.label) },
+                badge = if (showBadge) {
+                    { Badge { Text(activeDownloadsCount.toString()) } }
+                } else {
+                    null
+                },
+                colors = NavigationDrawerItemDefaults.colors(
+                    unselectedContainerColor = AppTheme.colors.background,
+                ),
+            )
+        }
+    }
+}
 
 @Composable
 private fun RootNavigationItems(

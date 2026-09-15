@@ -45,6 +45,8 @@ private val ActiveTrackHeight = 6.dp
 private val DefaultThumbSize = 10.dp
 private val ActiveThumbSize = 14.dp
 
+private val SliderTouchTargetHeight = 48.dp
+
 data class ProgressSliderState(
     val position: Long,
     val duration: Long,
@@ -164,7 +166,7 @@ private fun SliderContent(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(44.dp)
+            .height(SliderTouchTargetHeight)
     ) {
         SliderTrackWithThumb(
             localPosition = localPosition,
@@ -176,6 +178,7 @@ private fun SliderContent(
             trackHeight = trackHeight,
             thumbSize = thumbSize,
             onTrackWidthMeasured = onTrackWidthMeasured,
+            modifier = Modifier.align(Alignment.Center),
         )
 
         if (isUserSliding && trackWidthPx > 0) {
@@ -276,13 +279,13 @@ private fun SliderGestureLayer(
         valueRange = 0f..duration.toFloat(),
         modifier = modifier.fillMaxWidth(),
         thumb = {
-            Box(modifier = Modifier.size(24.dp).offset(y = (-6).dp))
+            Box(modifier = Modifier.size(width = 24.dp, height = SliderTouchTargetHeight))
         },
         track = {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(20.dp)
+                    .height(SliderTouchTargetHeight)
             )
         },
         colors = SliderDefaults.colors(
