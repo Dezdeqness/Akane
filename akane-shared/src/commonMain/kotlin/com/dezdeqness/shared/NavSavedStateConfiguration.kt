@@ -2,8 +2,10 @@ package com.dezdeqness.shared
 
 import androidx.navigation3.runtime.NavKey
 import androidx.savedstate.serialization.SavedStateConfiguration
+import com.dezdeqness.auth.navigation.ForgotPasswordRoute
 import com.dezdeqness.auth.navigation.LoginRoute
 import com.dezdeqness.auth.navigation.RegisterRoute
+import com.dezdeqness.auth.navigation.ResetPasswordRoute
 import com.dezdeqness.details.navigation.DetailsRoute
 import com.dezdeqness.downloads.navigation.ActiveDownloadsRoute
 import com.dezdeqness.downloads.navigation.DownloadsRoute
@@ -32,6 +34,8 @@ val navKeysSerializersModule = SerializersModule {
         subclass(ProfileRoute::class, serializer<ProfileRoute>())
         subclass(LoginRoute::class, serializer<LoginRoute>())
         subclass(RegisterRoute::class, serializer<RegisterRoute>())
+        subclass(ForgotPasswordRoute::class, serializer<ForgotPasswordRoute>())
+        subclass(ResetPasswordRoute::class, serializer<ResetPasswordRoute>())
         subclass(DetailsRoute::class, serializer<DetailsRoute>())
         subclass(VideoPlayerRoute::class, serializer<VideoPlayerRoute>())
         subclass(DownloadedPlaylistRoute::class, serializer<DownloadedPlaylistRoute>())

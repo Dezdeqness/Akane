@@ -8,6 +8,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun LoginStandalonePage(
     modifier: Modifier = Modifier,
+    onForgotPasswordClicked: () -> Unit = {},
     viewModel: LoginViewModel = koinViewModel(),
 ) {
     val actions = remember(viewModel) {
@@ -23,5 +24,6 @@ fun LoginStandalonePage(
         modifier = modifier,
         stateFlow = viewModel.state,
         actions = actions,
+        onForgotPasswordClicked = onForgotPasswordClicked,
     )
 }

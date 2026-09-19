@@ -18,6 +18,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.dezdeqness.auth.ui.composables.AuthLinkText
 import com.dezdeqness.auth.ui.login.LoginActions
 import com.dezdeqness.auth.ui.login.LoginForm
 import com.dezdeqness.auth.ui.login.LoginState
@@ -30,6 +31,7 @@ fun LoginFormSection(
     state: LoginState,
     actions: LoginActions,
     showHeading: Boolean,
+    onForgotPasswordClicked: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -69,6 +71,11 @@ fun LoginFormSection(
                     .padding(horizontal = 4.dp),
             )
         }
+
+        AuthLinkText(
+            text = "Забыли пароль?",
+            onClick = onForgotPasswordClicked,
+        )
 
         RegisterPrompt()
     }

@@ -46,6 +46,7 @@ fun LoginPage(
     modifier: Modifier = Modifier,
     stateFlow: StateFlow<LoginState>,
     actions: LoginActions,
+    onForgotPasswordClicked: () -> Unit = {},
 ) {
     val state by stateFlow.collectAsStateOnLifecycle()
 
@@ -55,12 +56,18 @@ fun LoginPage(
     ) {
         AdaptiveLayout {
             when (LocalLayoutType.current) {
-                LayoutType.Mobile -> LoginPageMobile(state = state, actions = actions)
+                LayoutType.Mobile -> LoginPageMobile(
+                    state = state,
+                    actions = actions,
+                    onForgotPasswordClicked = onForgotPasswordClicked,
+                )
+
                 LayoutType.Tablet -> LoginPageWide(
                     state = state,
                     actions = actions,
                     showStats = false,
                     formMaxWidth = 460.dp,
+                    onForgotPasswordClicked = onForgotPasswordClicked,
                 )
 
                 LayoutType.Desktop -> LoginPageWide(
@@ -68,6 +75,7 @@ fun LoginPage(
                     actions = actions,
                     showStats = true,
                     formMaxWidth = 520.dp,
+                    onForgotPasswordClicked = onForgotPasswordClicked,
                 )
             }
         }
@@ -78,6 +86,7 @@ fun LoginPage(
 private fun LoginPageMobile(
     state: LoginState,
     actions: LoginActions,
+    onForgotPasswordClicked: () -> Unit,
 ) {
     Column(
         modifier = Modifier
@@ -91,6 +100,7 @@ private fun LoginPageMobile(
             state = state,
             actions = actions,
             showHeading = false,
+            onForgotPasswordClicked = onForgotPasswordClicked,
         )
     }
 }
@@ -101,6 +111,7 @@ private fun LoginPageWide(
     actions: LoginActions,
     showStats: Boolean,
     formMaxWidth: Dp,
+    onForgotPasswordClicked: () -> Unit,
 ) {
     Row(modifier = Modifier.fillMaxSize()) {
         AuthBrandPanel(
@@ -127,6 +138,7 @@ private fun LoginPageWide(
                     state = state,
                     actions = actions,
                     showHeading = true,
+                    onForgotPasswordClicked = onForgotPasswordClicked,
                 )
             }
         }
