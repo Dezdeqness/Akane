@@ -57,14 +57,21 @@ fun AuthFormScaffold(
             }
         },
     ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.TopCenter,
-        ) {
-            AdaptiveLayout {
-                when (LocalLayoutType.current) {
+        AdaptiveLayout {
+            val layoutType = LocalLayoutType.current
+
+            val alignment = if (layoutType == LayoutType.Mobile) {
+                Alignment.TopCenter
+            } else {
+                Alignment.Center
+            }
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = alignment,
+            ) {
+                when (layoutType) {
                     LayoutType.Mobile -> AuthFormBody(content = content)
                     LayoutType.Tablet -> AuthFormBody(formMaxWidth = 460.dp, content = content)
                     LayoutType.Desktop -> AuthFormBody(formMaxWidth = 520.dp, content = content)

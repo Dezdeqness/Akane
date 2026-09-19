@@ -71,6 +71,7 @@ fun ForgotPasswordPage(
         AppPrimaryButton(
             title = if (state.isLoading) "Отправка..." else "Восстановить пароль",
             onClick = actions::onSubmitClicked,
+            enabled = !state.isLoading,
             modifier = Modifier.fillMaxWidth(),
         )
 

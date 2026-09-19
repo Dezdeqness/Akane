@@ -108,6 +108,7 @@ fun ResetPasswordPage(
         AppPrimaryButton(
             title = if (state.isLoading) "Сохранение..." else "Сохранить новый пароль",
             onClick = actions::onSubmitClicked,
+            enabled = !state.isLoading,
             modifier = Modifier.fillMaxWidth(),
         )
 
