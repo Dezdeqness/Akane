@@ -8,11 +8,13 @@ import com.dezdeqness.videoplayer.core.player.feature.ui.QualityFeature
 import com.dezdeqness.videoplayer.core.player.feature.ui.ScreenLockFeature
 import com.dezdeqness.videoplayer.core.player.feature.ui.SkipFeature
 import com.dezdeqness.videoplayer.core.player.feature.ui.SpeedFeature
+import com.dezdeqness.videoplayer.core.player.feature.ui.VolumeMixerFeature
 
 actual fun VideoPlayerManager.installPlatformFeatures() {
     installFeatures(
         AutoHideFeature(),
         KeyboardShortcutsFeature(),
+        VolumeMixerFeature(),
         SpeedFeature(),
         QualityFeature(),
         PlaylistFeature(),
