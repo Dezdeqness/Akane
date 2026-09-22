@@ -22,6 +22,7 @@ import com.dezdeqness.core.ui.views.image.LocalAstImageLoader
 import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.videoplayer.core.SystemBarsVisibility
+import com.dezdeqness.videoplayer.core.player.feature.gesture.PlayerWindowHolder
 import com.dezdeqness.videoplayer.core.rememberFullScreenState
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
@@ -78,6 +79,16 @@ class VideoPlayerActivity : ComponentActivity() {
 
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        PlayerWindowHolder.attach(window)
+    }
+
+    override fun onPause() {
+        PlayerWindowHolder.detach()
+        super.onPause()
     }
 
     override fun dispatchTouchEvent(ev: MotionEvent?): Boolean {

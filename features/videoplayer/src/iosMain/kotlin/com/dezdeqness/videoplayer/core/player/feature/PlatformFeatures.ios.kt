@@ -1,6 +1,8 @@
 package com.dezdeqness.videoplayer.core.player.feature
 
 import com.dezdeqness.videoplayer.core.player.VideoPlayerManager
+import com.dezdeqness.videoplayer.core.player.feature.gesture.GestureFeature
+import com.dezdeqness.videoplayer.core.player.feature.gesture.IosBrightnessController
 import com.dezdeqness.videoplayer.core.player.feature.raw.AutoHideFeature
 import com.dezdeqness.videoplayer.core.player.feature.ui.PlaylistFeature
 import com.dezdeqness.videoplayer.core.player.feature.ui.QualityFeature
@@ -12,6 +14,7 @@ import com.dezdeqness.videoplayer.core.player.feature.ui.SpeedFeature
 actual fun VideoPlayerManager.installPlatformFeatures() {
     installFeatures(
         AutoHideFeature(),
+        GestureFeature(IosBrightnessController()),
         SpeedFeature(),
         QualityFeature(),
         PlaylistFeature(),
