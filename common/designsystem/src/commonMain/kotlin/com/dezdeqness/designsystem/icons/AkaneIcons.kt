@@ -4,6 +4,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
+import androidx.compose.material.icons.filled.BrightnessHigh
+import androidx.compose.material.icons.filled.BrightnessLow
+import androidx.compose.material.icons.filled.BrightnessMedium
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -50,4 +53,7 @@ object AkaneIcons {
     val LibraryBorder = Icons.Outlined.VideoLibrary
     val VolumeUp = Icons.AutoMirrored.Filled.VolumeUp
     val VolumeOff = Icons.AutoMirrored.Filled.VolumeOff
+    val Brightness = Icons.Filled.BrightnessHigh
+    val BrightnessMedium = Icons.Filled.BrightnessMedium
+    val BrightnessLow = Icons.Filled.BrightnessLow
 }
