@@ -70,4 +70,5 @@ private fun desktopDarkMaterialScheme(): ColorScheme = akaneMaterialScheme(
 val DarkDesktopTheme: AkaneThemeSpec = AkaneThemeSpec(
     colors = akaneDesktopDarkColors(),
     scheme = desktopDarkMaterialScheme(),
+    isDark = true,
 )

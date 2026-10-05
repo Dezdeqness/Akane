@@ -5,6 +5,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import com.dezdeqness.designsystem.SystemBarIcons
 import com.dezdeqness.videoplayer.VideoPlayerScreen
 import com.dezdeqness.videoplayer.core.player.PlayerWindowEffect
 
@@ -15,6 +16,7 @@ fun VideoPlayerPage(
     onBackPressed: () -> Unit,
 ) {
     PlayerWindowEffect()
+    SystemBarIcons(lightIcons = true)
 
     Scaffold(
         modifier = modifier.fillMaxSize(),

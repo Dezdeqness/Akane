@@ -3,6 +3,7 @@ package com.dezdeqness.shared
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -17,6 +18,9 @@ import com.dezdeqness.designsystem.AkaneTheme
 import com.dezdeqness.designsystem.AkaneThemeSpec
 import com.dezdeqness.designsystem.DarkMobileTheme
 import com.dezdeqness.designsystem.LightTheme
+import com.dezdeqness.designsystem.LocalSystemBarIconsStack
+import com.dezdeqness.designsystem.SystemBarIcons
+import com.dezdeqness.designsystem.SystemBarIconsStack
 import com.dezdeqness.designsystem.imageloader.getImageLoader
 import com.dezdeqness.details.navigation.detailsEntries
 import com.dezdeqness.details.navigation.navigateToDetailsScreen
@@ -39,9 +43,12 @@ fun App(
     val analytics: AkaneAnalytics = koinInject()
 
     CompositionLocalProvider(
-        LocalAstImageLoader provides getImageLoader()
+        LocalAstImageLoader provides getImageLoader(),
+        LocalSystemBarIconsStack provides remember { SystemBarIconsStack() },
     ) {
         AkaneTheme(theme = theme) {
+            SystemBarIcons(lightIcons = theme.isDark)
+
             val rootBackStack = rememberNavBackStack(navSavedStateConfiguration(), RootShellKey)
 
             NavDisplay(
