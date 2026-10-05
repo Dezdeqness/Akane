@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,7 @@ fun RootNavigationScaffold(
         val useRailNavigation = maxWidth >= WideDeviceWidthFactor
 
         Scaffold(
+            containerColor = AppTheme.colors.background,
             bottomBar = {
                 if (useRailNavigation.not()) {
                     NavigationBar(
@@ -67,8 +69,9 @@ fun RootNavigationScaffold(
                 }
             },
         ) { padding ->
+            val insetsModifier = Modifier.padding(padding).consumeWindowInsets(padding)
             if (useRailNavigation) {
-                Row(modifier = Modifier.fillMaxSize()) {
+                Row(modifier = Modifier.fillMaxSize().then(insetsModifier)) {
                     SideNavigation(
                         activeTab = activeTab,
                         activeDownloadsCount = activeDownloadsCount,
@@ -77,7 +80,7 @@ fun RootNavigationScaffold(
                     content(Modifier.fillMaxSize().weight(1f), true)
                 }
             } else {
-                content(Modifier.fillMaxSize().padding(padding), false)
+                content(Modifier.fillMaxSize().then(insetsModifier), false)
             }
         }
     }

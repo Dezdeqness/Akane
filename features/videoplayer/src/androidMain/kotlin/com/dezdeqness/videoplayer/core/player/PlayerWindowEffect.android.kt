@@ -16,8 +16,6 @@ actual fun PlayerWindowEffect() {
 
     DisposableEffect(window) {
         val insetsController = WindowCompat.getInsetsController(window, window.decorView)
-        val previousLightStatusBars = insetsController.isAppearanceLightStatusBars
-        val previousLightNavigationBars = insetsController.isAppearanceLightNavigationBars
         val previousBarsBehavior = insetsController.systemBarsBehavior
 
         val previousBrightness = window.attributes.screenBrightness
@@ -28,8 +26,6 @@ actual fun PlayerWindowEffect() {
         }
 
         insetsController.apply {
-            isAppearanceLightStatusBars = false
-            isAppearanceLightNavigationBars = false
             systemBarsBehavior = WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
             hide(WindowInsetsCompat.Type.systemBars())
         }
@@ -45,8 +41,6 @@ actual fun PlayerWindowEffect() {
             insetsController.apply {
                 show(WindowInsetsCompat.Type.systemBars())
                 systemBarsBehavior = previousBarsBehavior
-                isAppearanceLightStatusBars = previousLightStatusBars
-                isAppearanceLightNavigationBars = previousLightNavigationBars
             }
             window.attributes = window.attributes.apply {
                 screenBrightness = previousBrightness

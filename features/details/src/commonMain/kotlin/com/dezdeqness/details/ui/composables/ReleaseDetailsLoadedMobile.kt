@@ -7,9 +7,14 @@ import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -141,6 +146,9 @@ fun ReleaseDetailsLoadedMobile(
                             .fillMaxSize()
                             .weight(weight = 1f)
                             .background(color = AppTheme.colors.background),
+                        contentPadding = WindowInsets.navigationBars
+                            .only(WindowInsetsSides.Bottom)
+                            .asPaddingValues(),
                     ) {
                         when (val item = tabs[selectedTabIndex]) {
                             is DetailsTab.InfoTab -> {
