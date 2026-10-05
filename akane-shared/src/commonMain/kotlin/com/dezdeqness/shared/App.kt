@@ -3,7 +3,6 @@ package com.dezdeqness.shared
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.navigation3.rememberViewModelStoreNavEntryDecorator
 import androidx.navigation3.runtime.NavKey
@@ -24,7 +23,8 @@ import com.dezdeqness.details.navigation.navigateToDetailsScreen
 import com.dezdeqness.downloads.navigation.activeDownloadsEntries
 import com.dezdeqness.downloads.navigation.releaseEpisodesEntries
 import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
-import com.dezdeqness.videoplayer.navigation.videoController
+import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
+import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
 import com.dezdeqness.videoplayer.navigation.videoPlayerEntries
 import kotlinx.serialization.Serializable
 import org.koin.compose.koinInject
@@ -36,7 +36,6 @@ data object RootShellKey : NavKey
 fun App(
     theme: AkaneThemeSpec = if (isSystemInDarkTheme()) DarkMobileTheme else LightTheme,
 ) {
-    val controller = remember { videoController() }
     val analytics: AkaneAnalytics = koinInject()
 
     CompositionLocalProvider(
@@ -55,15 +54,12 @@ fun App(
                 ),
                 entryProvider = entryProvider {
                     entry<RootShellKey> {
-                        RootScreen(
-                            rootBackStack = rootBackStack,
-                            videoPlayerController = controller,
-                        )
+                        RootScreen(rootBackStack = rootBackStack)
                     }
                     detailsEntries(
                         onBackPressed = { rootBackStack.removeLastOrNull() },
                         onEpisodeClick = { id, episodeId ->
-                            controller.navigateToPlayer(rootBackStack, id, episodeId)
+                            rootBackStack.navigateToVideoPlayerScreen(id, episodeId)
                         },
                         onReleaseClicked = { id, title ->
                             analytics.trackDetailsOpened(animeId = id, title = title)
@@ -75,11 +71,7 @@ fun App(
                     releaseEpisodesEntries(
                         onBackPressed = { rootBackStack.removeLastOrNull() },
                         onPlayClicked = { releaseId, episodeId ->
-                            controller.navigateToDownloadedPlaylist(
-                                backStack = rootBackStack,
-                                releaseId = releaseId,
-                                startEpisodeId = episodeId,
-                            )
+                            rootBackStack.navigateToDownloadedPlaylist(releaseId, episodeId)
                         },
                     )
                     activeDownloadsEntries(onBackPressed = { rootBackStack.removeLastOrNull() })

@@ -28,18 +28,14 @@ import com.dezdeqness.feed.navigation.FeedRoute
 import com.dezdeqness.home.navigation.HomeRoute
 import com.dezdeqness.personal.navigation.PersonalRoute
 import com.dezdeqness.profile.navigation.ProfileRoute
-import com.dezdeqness.videoplayer.navigation.VideoPlayerNavigationController
-import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
 import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
-import com.dezdeqness.videoplayer.navigation.videoPlayerEntries
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun RootScreen(
     rootBackStack: NavBackStack<NavKey>,
-    videoPlayerController: VideoPlayerNavigationController,
 ) {
     val analytics: AkaneAnalytics = koinInject()
 
@@ -129,15 +125,7 @@ fun RootScreen(
                 }
             },
             onNavigateToContinueWatching = { releaseId, episodeId ->
-                if (isWideLayout) {
-                    currentTabStack.navigateToDownloadedPlaylist(releaseId, episodeId)
-                } else {
-                    videoPlayerController.navigateToDownloadedPlaylist(
-                        backStack = rootBackStack,
-                        releaseId = releaseId,
-                        startEpisodeId = episodeId,
-                    )
-                }
+                rootBackStack.navigateToDownloadedPlaylist(releaseId, episodeId)
             },
             onNavigateToActiveDownloads = {
                 if (isWideLayout) {
@@ -150,10 +138,10 @@ fun RootScreen(
                 tabFullScreenEntriesForWideLayout(
                     currentTabStack = currentTabStack,
                     onEpisodeClick = { id, episodeId ->
-                        currentTabStack.navigateToVideoPlayerScreen(id, episodeId)
+                        rootBackStack.navigateToVideoPlayerScreen(id, episodeId)
                     },
                     onPlayDownloadedClicked = { releaseId, episodeId ->
-                        currentTabStack.navigateToDownloadedPlaylist(releaseId, episodeId)
+                        rootBackStack.navigateToDownloadedPlaylist(releaseId, episodeId)
                     },
                     onReleaseClicked = { id, title ->
                         analytics.trackDetailsOpened(animeId = id, title = title)
@@ -185,12 +173,6 @@ private fun EntryProviderScope<NavKey>.tabFullScreenEntriesForWideLayout(
         onPlayClicked = onPlayDownloadedClicked,
     )
     activeDownloadsEntries(
-        onBackPressed = { currentTabStack.removeLastOrNull() },
-    )
-    videoPlayerEntries(
-        onBackPressed = { currentTabStack.removeLastOrNull() },
-    )
-    downloadedPlaylistEntries(
         onBackPressed = { currentTabStack.removeLastOrNull() },
     )
 }

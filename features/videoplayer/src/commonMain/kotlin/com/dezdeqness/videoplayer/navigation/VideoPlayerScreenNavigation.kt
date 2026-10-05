@@ -5,7 +5,6 @@ import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.videoplayer.ui.VideoPlayerPage
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
-import io.ktor.http.encodeURLParameter
 import kotlinx.serialization.Serializable
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
@@ -39,15 +38,5 @@ fun NavBackStack<NavKey>.navigateToVideoPlayerScreen(id: Long, episodeId: String
 }
 
 fun NavBackStack<NavKey>.navigateToDownloadedPlaylist(releaseId: Long, startEpisodeId: String) {
-    add(DownloadedPlaylistRoute(downloadReleaseId = releaseId, downloadStartEpisodeId = startEpisodeId.encodeURLParameter()))
-}
-
-class VideoPlayerNavigationControllerImpl : VideoPlayerNavigationController {
-    override fun navigateToPlayer(backStack: NavBackStack<NavKey>, id: Long, episodeId: String) {
-        backStack.navigateToVideoPlayerScreen(id = id, episodeId = episodeId)
-    }
-
-    override fun navigateToDownloadedPlaylist(backStack: NavBackStack<NavKey>, releaseId: Long, startEpisodeId: String) {
-        backStack.navigateToDownloadedPlaylist(releaseId = releaseId, startEpisodeId = startEpisodeId)
-    }
+    add(DownloadedPlaylistRoute(downloadReleaseId = releaseId, downloadStartEpisodeId = startEpisodeId))
 }

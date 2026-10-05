@@ -6,6 +6,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dezdeqness.videoplayer.VideoPlayerScreen
+import com.dezdeqness.videoplayer.core.player.PlayerWindowEffect
 
 @Composable
 fun VideoPlayerPage(
@@ -13,6 +14,8 @@ fun VideoPlayerPage(
     modifier: Modifier = Modifier,
     onBackPressed: () -> Unit,
 ) {
+    PlayerWindowEffect()
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.primaryContainer,

@@ -20,8 +20,8 @@ actual fun VideoSurface(engine: VideoPlayerManager, modifier: Modifier) {
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
             when (event) {
-                Lifecycle.Event.ON_RESUME -> if (engine.playerState.value.isPlaying) exoPlayer.play()
-                Lifecycle.Event.ON_PAUSE -> exoPlayer.pause()
+                Lifecycle.Event.ON_START -> if (engine.playerState.value.isPlaying) exoPlayer.play()
+                Lifecycle.Event.ON_STOP -> exoPlayer.pause()
                 else -> {}
             }
         }
