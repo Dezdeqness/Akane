@@ -3,6 +3,7 @@ package com.dezdeqness.videoplayer.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.dezdeqness.designsystem.layouts.AkaneScene
 import com.dezdeqness.videoplayer.ui.VideoPlayerPage
 import com.dezdeqness.videoplayer.ui.VideoPlayerViewModel
 import kotlinx.serialization.Serializable
@@ -16,7 +17,7 @@ data class VideoPlayerRoute(val id: Long, val episodeId: String) : NavKey
 data class DownloadedPlaylistRoute(val downloadReleaseId: Long, val downloadStartEpisodeId: String) : NavKey
 
 fun EntryProviderScope<NavKey>.videoPlayerEntries(onBackPressed: () -> Unit) {
-    entry<VideoPlayerRoute> { key ->
+    entry<VideoPlayerRoute>(metadata = AkaneScene.fullScreen()) { key ->
         val viewModel: VideoPlayerViewModel = koinViewModel {
             parametersOf(key.id, key.episodeId, -1L, "")
         }
@@ -25,7 +26,7 @@ fun EntryProviderScope<NavKey>.videoPlayerEntries(onBackPressed: () -> Unit) {
 }
 
 fun EntryProviderScope<NavKey>.downloadedPlaylistEntries(onBackPressed: () -> Unit) {
-    entry<DownloadedPlaylistRoute> { key ->
+    entry<DownloadedPlaylistRoute>(metadata = AkaneScene.fullScreen()) { key ->
         val viewModel: VideoPlayerViewModel = koinViewModel {
             parametersOf(-1L, "", key.downloadReleaseId, key.downloadStartEpisodeId)
         }

@@ -1,9 +1,16 @@
 package com.dezdeqness.shared
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.consumeWindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,31 +28,43 @@ import androidx.compose.material3.NavigationDrawerItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.navigation3.runtime.NavKey
 import com.dezdeqness.core.ui.theme.AppTheme
+import com.dezdeqness.designsystem.layouts.AkaneScene
 
 private val WideDeviceWidthFactor = 840.dp
 private val SideNavigationWidth = 240.dp
 
 @Composable
 fun RootNavigationScaffold(
-    activeTab: NavKey?,
+    activeTab: AppTab,
+    navigationBars: AkaneScene.NavigationBars,
     activeDownloadsCount: Int,
-    onTabSelected: (NavKey) -> Unit,
+    onTabSelected: (AppTab) -> Unit,
     modifier: Modifier = Modifier,
-    content: @Composable (modifier: Modifier, isWideLayout: Boolean) -> Unit,
+    content: @Composable (modifier: Modifier) -> Unit,
 ) {
     BoxWithConstraints(
         modifier = modifier.fillMaxSize(),
     ) {
         val useRailNavigation = maxWidth >= WideDeviceWidthFactor
+        val showBottomBar = !useRailNavigation && navigationBars == AkaneScene.NavigationBars.Visible
+        val showRail = useRailNavigation && navigationBars != AkaneScene.NavigationBars.Hidden
 
         Scaffold(
             containerColor = AppTheme.colors.background,
             bottomBar = {
-                if (useRailNavigation.not()) {
+                AnimatedVisibility(
+                    visible = showBottomBar,
+                    enter = expandVertically(expandFrom = Alignment.Top),
+                    exit = shrinkVertically(shrinkTowards = Alignment.Top),
+                ) {
                     NavigationBar(
                         containerColor = AppTheme.colors.background,
                         tonalElevation = 0.dp,
@@ -55,7 +74,7 @@ fun RootNavigationScaffold(
                         ) { item, isSelected ->
                             NavigationBarItem(
                                 selected = isSelected,
-                                onClick = { onTabSelected(item.key) },
+                                onClick = { onTabSelected(item) },
                                 icon = {
                                     AkaneNavigationItemIcon(
                                         item = item,
@@ -69,29 +88,76 @@ fun RootNavigationScaffold(
                 }
             },
         ) { padding ->
-            val insetsModifier = Modifier.padding(padding).consumeWindowInsets(padding)
-            if (useRailNavigation) {
-                Row(modifier = Modifier.fillMaxSize().then(insetsModifier)) {
+            val layoutDirection = LocalLayoutDirection.current
+            val horizontal = if (navigationBars == AkaneScene.NavigationBars.Hidden) {
+                PaddingValues()
+            } else {
+                PaddingValues(
+                    start = padding.calculateStartPadding(layoutDirection),
+                    end = padding.calculateEndPadding(layoutDirection),
+                )
+            }
+            val vertical = PaddingValues(
+                top = padding.calculateTopPadding(),
+                bottom = padding.calculateBottomPadding(),
+            )
+
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal)
+                    .consumeWindowInsets(horizontal),
+            ) {
+                AnimatedVisibility(visible = showRail) {
                     SideNavigation(
                         activeTab = activeTab,
                         activeDownloadsCount = activeDownloadsCount,
                         onTabSelected = onTabSelected,
+                        modifier = Modifier.padding(vertical),
                     )
-                    content(Modifier.fillMaxSize().weight(1f), true)
                 }
-            } else {
-                content(Modifier.fillMaxSize().then(insetsModifier), false)
+                CompositionLocalProvider(
+                    LocalShellInsets provides ShellInsets(padding = vertical, compact = !useRailNavigation),
+                ) {
+                    content(Modifier.weight(1f).fillMaxHeight())
+                }
             }
         }
     }
 }
 
+@Immutable
+private class ShellInsets(val padding: PaddingValues, val compact: Boolean)
+
+private val LocalShellInsets = compositionLocalOf { ShellInsets(PaddingValues(), compact = true) }
+
+@Composable
+fun ShellEntryContent(
+    navigationBars: AkaneScene.NavigationBars,
+    content: @Composable () -> Unit,
+) {
+    val insets = LocalShellInsets.current
+    val padded = when (navigationBars) {
+        AkaneScene.NavigationBars.Visible -> true
+        AkaneScene.NavigationBars.HideBottomBar -> !insets.compact
+        AkaneScene.NavigationBars.Hidden -> false
+    }
+    val modifier = if (padded) {
+        Modifier.padding(insets.padding).consumeWindowInsets(insets.padding)
+    } else {
+        Modifier
+    }
+
+    Box(modifier = modifier.fillMaxSize()) {
+        content()
+    }
+}
 
 @Composable
 private fun SideNavigation(
-    activeTab: NavKey?,
+    activeTab: AppTab,
     activeDownloadsCount: Int,
-    onTabSelected: (NavKey) -> Unit,
+    onTabSelected: (AppTab) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(
@@ -105,13 +171,13 @@ private fun SideNavigation(
         RootNavigationItems(
             activeTab = activeTab,
         ) { item, isSelected ->
-            val showBadge = item == AkaneBottomTabModel.DOWNLOADS &&
+            val showBadge = item == AppTab.DOWNLOADS &&
                     !isSelected &&
                     activeDownloadsCount > 0
 
             NavigationDrawerItem(
                 selected = isSelected,
-                onClick = { onTabSelected(item.key) },
+                onClick = { onTabSelected(item) },
                 icon = {
                     Icon(
                         imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
@@ -134,23 +200,23 @@ private fun SideNavigation(
 
 @Composable
 private fun RootNavigationItems(
-    activeTab: NavKey?,
-    itemContent: @Composable (item: AkaneBottomTabModel, isSelected: Boolean) -> Unit,
+    activeTab: AppTab,
+    itemContent: @Composable (item: AppTab, isSelected: Boolean) -> Unit,
 ) {
-    AkaneBottomTabModel.entries.forEach { item ->
-        val isSelected = activeTab == item.key
+    AppTab.entries.forEach { item ->
+        val isSelected = activeTab == item
         itemContent(item, isSelected)
     }
 }
 
 @Composable
 private fun AkaneNavigationItemIcon(
-    item: AkaneBottomTabModel,
+    item: AppTab,
     isSelected: Boolean,
     activeDownloadsCount: Int,
 ) {
     val icon = if (isSelected) item.selectedIcon else item.unselectedIcon
-    val showBadge = item == AkaneBottomTabModel.DOWNLOADS &&
+    val showBadge = item == AppTab.DOWNLOADS &&
             !isSelected &&
             activeDownloadsCount > 0
 

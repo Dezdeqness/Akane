@@ -26,7 +26,6 @@ import kotlinx.serialization.modules.polymorphic
 
 val navKeysSerializersModule = SerializersModule {
     polymorphic(NavKey::class) {
-        subclass(RootShellKey::class, serializer<RootShellKey>())
         subclass(HomeRoute::class, serializer<HomeRoute>())
         subclass(FeedRoute::class, serializer<FeedRoute>())
         subclass(PersonalRoute::class, serializer<PersonalRoute>())

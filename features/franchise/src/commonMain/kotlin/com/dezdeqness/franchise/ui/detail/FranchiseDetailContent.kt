@@ -3,7 +3,12 @@ package com.dezdeqness.franchise.ui.detail
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.safeDrawing
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.dezdeqness.core.ui.theme.AppTheme
@@ -26,7 +31,8 @@ fun FranchiseDetailContent(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(AppTheme.colors.background),
+            .background(AppTheme.colors.background)
+            .windowInsetsPadding(WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal)),
     ) {
         when (state.status) {
             FranchiseDetailStatus.Loading -> {

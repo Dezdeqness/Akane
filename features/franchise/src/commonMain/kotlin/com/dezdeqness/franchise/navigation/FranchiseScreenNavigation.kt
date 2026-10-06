@@ -3,6 +3,7 @@ package com.dezdeqness.franchise.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.dezdeqness.designsystem.layouts.AkaneScene
 import com.dezdeqness.franchise.ui.all.AllFranchisesPage
 import com.dezdeqness.franchise.ui.detail.FranchiseDetailPage
 import com.dezdeqness.franchise.ui.detail.FranchiseDetailViewModel
@@ -24,13 +25,13 @@ fun EntryProviderScope<NavKey>.franchiseEntries(
     onFranchiseClicked: (franchiseId: String, franchiseName: String) -> Unit,
     onReleaseClicked: (releaseId: Long, title: String) -> Unit,
 ) {
-    entry<FranchisesRoute> {
+    entry<FranchisesRoute>(metadata = AkaneScene.hideBottomBar()) {
         AllFranchisesPage(
             onBackPressed = onBackPressed,
             onFranchiseClicked = onFranchiseClicked,
         )
     }
-    entry<FranchiseDetailRoute> { key ->
+    entry<FranchiseDetailRoute>(metadata = AkaneScene.hideBottomBar()) { key ->
         val viewModel: FranchiseDetailViewModel = koinViewModel { parametersOf(key.franchiseId) }
         FranchiseDetailPage(
             franchiseName = key.franchiseName,

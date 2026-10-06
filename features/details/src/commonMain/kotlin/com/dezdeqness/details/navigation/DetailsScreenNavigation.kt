@@ -3,6 +3,7 @@ package com.dezdeqness.details.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.dezdeqness.designsystem.layouts.AkaneScene
 import com.dezdeqness.details.ui.DetailsPage
 import com.dezdeqness.details.ui.ReleaseDetailsViewModel
 import kotlinx.serialization.Serializable
@@ -17,7 +18,7 @@ fun EntryProviderScope<NavKey>.detailsEntries(
     onEpisodeClick: (Long, String) -> Unit,
     onReleaseClicked: (Long, String) -> Unit,
 ) {
-    entry<DetailsRoute> { key ->
+    entry<DetailsRoute>(metadata = AkaneScene.hideBottomBar()) { key ->
         val viewModel: ReleaseDetailsViewModel = koinViewModel { parametersOf(key.releaseId) }
         DetailsPage(
             viewModel = viewModel,

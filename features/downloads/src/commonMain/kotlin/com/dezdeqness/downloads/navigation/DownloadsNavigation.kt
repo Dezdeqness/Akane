@@ -3,6 +3,7 @@ package com.dezdeqness.downloads.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.dezdeqness.designsystem.layouts.AkaneScene
 import com.dezdeqness.downloads.ui.activedownloads.ActiveDownloadsPage
 import com.dezdeqness.downloads.ui.episodes.ReleaseEpisodesPage
 import com.dezdeqness.downloads.ui.episodes.ReleaseEpisodesViewModel
@@ -40,7 +41,7 @@ fun EntryProviderScope<NavKey>.releaseEpisodesEntries(
     onBackPressed: () -> Unit,
     onPlayClicked: (releaseId: Long, episodeId: String) -> Unit,
 ) {
-    entry<ReleaseEpisodesRoute> { key ->
+    entry<ReleaseEpisodesRoute>(metadata = AkaneScene.hideBottomBar()) { key ->
         val viewModel: ReleaseEpisodesViewModel = koinViewModel { parametersOf(key.releaseId) }
         ReleaseEpisodesPage(
             viewModel = viewModel,
@@ -53,7 +54,7 @@ fun EntryProviderScope<NavKey>.releaseEpisodesEntries(
 fun EntryProviderScope<NavKey>.activeDownloadsEntries(
     onBackPressed: () -> Unit,
 ) {
-    entry<ActiveDownloadsRoute> {
+    entry<ActiveDownloadsRoute>(metadata = AkaneScene.hideBottomBar()) {
         ActiveDownloadsPage(onBackPressed = onBackPressed)
     }
 }

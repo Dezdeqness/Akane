@@ -3,6 +3,7 @@ package com.dezdeqness.genre.navigation
 import androidx.navigation3.runtime.EntryProviderScope
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
+import com.dezdeqness.designsystem.layouts.AkaneScene
 import com.dezdeqness.genre.ui.all.AllGenresPage
 import com.dezdeqness.genre.ui.releases.GenreReleasesPage
 import com.dezdeqness.genre.ui.releases.GenreReleasesViewModel
@@ -24,13 +25,13 @@ fun EntryProviderScope<NavKey>.genreEntries(
     onGenreClicked: (genreId: Int, genreName: String) -> Unit,
     onReleaseClicked: (releaseId: Long, title: String) -> Unit,
 ) {
-    entry<GenresRoute> {
+    entry<GenresRoute>(metadata = AkaneScene.hideBottomBar()) {
         AllGenresPage(
             onBackPressed = onBackPressed,
             onGenreClicked = onGenreClicked,
         )
     }
-    entry<GenreReleasesRoute> { key ->
+    entry<GenreReleasesRoute>(metadata = AkaneScene.hideBottomBar()) { key ->
         val viewModel: GenreReleasesViewModel = koinViewModel { parametersOf(key.genreId) }
         GenreReleasesPage(
             genreName = key.genreName,

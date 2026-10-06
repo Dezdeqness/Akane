@@ -7,8 +7,11 @@ import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
@@ -92,7 +95,12 @@ fun FranchiseDetailMobile(
                             hasNextPage = false,
                             isPageLoading = false,
                             columnCount = 3,
-                            contentPadding = PaddingValues(8.dp),
+                            contentPadding = PaddingValues(
+                                start = 8.dp,
+                                top = 8.dp,
+                                end = 8.dp,
+                                bottom = 8.dp + WindowInsets.navigationBars.asPaddingValues().calculateBottomPadding(),
+                            ),
                             onLoadMore = {},
                             onReleaseClicked = onReleaseClicked,
                         )
