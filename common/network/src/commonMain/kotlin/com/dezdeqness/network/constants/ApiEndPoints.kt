@@ -18,6 +18,7 @@ object ApiEndPoints {
     const val FRANCHISES_RANDOM = "${ANIME}franchises/random"
     const val FRANCHISE_BY_ID = "${ANIME}franchises/{id}"
     const val SCHEDULE_NOW = "${ANIME}schedule/now"
+    const val SCHEDULE_WEEK = "${ANIME}schedule/week"
     const val GENRES = "${ANIME}genres"
     const val GENRES_RANDOM = "${ANIME}genres/random"
     const val GENRE_RELEASES = "${ANIME}genres/{id}/releases"
