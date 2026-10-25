@@ -82,6 +82,7 @@ include(":contract:catalog")
 include(":contract:promo")
 include(":contract:franchise")
 include(":contract:views")
+include(":contract:stories")
 
 include(":shared:catalog-ui")
 
