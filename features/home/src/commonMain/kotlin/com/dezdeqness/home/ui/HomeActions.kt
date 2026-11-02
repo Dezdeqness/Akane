@@ -4,6 +4,7 @@ import com.dezdeqness.home.ui.model.ContinueWatchingUiModel
 import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
+import com.dezdeqness.home.ui.model.StoryCollectionPreviewUiModel
 
 interface HomeActions {
     fun onItemClicked(details: HomeUiModel)
@@ -13,5 +14,6 @@ interface HomeActions {
     fun onPromoReleaseClicked(releaseId: Long, title: String)
     fun onFranchiseClicked(franchise: FranchisePanelUiModel)
     fun onAllFranchisesClicked()
+    fun onStoriesClicked(collection: StoryCollectionPreviewUiModel)
     fun onRetryClicked()
 }

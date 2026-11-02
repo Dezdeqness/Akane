@@ -38,6 +38,7 @@ kotlin {
             implementation(projects.features.franchise)
             implementation(projects.features.promo)
             implementation(projects.features.views)
+            implementation(projects.features.stories)
 
             implementation(compose.runtime)
             implementation(compose.material3)

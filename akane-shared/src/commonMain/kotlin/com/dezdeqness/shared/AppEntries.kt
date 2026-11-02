@@ -21,6 +21,8 @@ import com.dezdeqness.genre.navigation.navigateToGenres
 import com.dezdeqness.home.navigation.homeEntries
 import com.dezdeqness.personal.navigation.personalEntries
 import com.dezdeqness.profile.navigation.profileEntries
+import com.dezdeqness.stories.navigation.navigateToStories
+import com.dezdeqness.stories.navigation.storiesEntries
 import com.dezdeqness.videoplayer.navigation.downloadedPlaylistEntries
 import com.dezdeqness.videoplayer.navigation.navigateToDownloadedPlaylist
 import com.dezdeqness.videoplayer.navigation.navigateToVideoPlayerScreen
@@ -46,6 +48,12 @@ fun appEntryProvider(
                 stack().navigateToFranchiseDetail(franchiseId, franchiseName)
             },
             onAllFranchisesClicked = { stack().navigateToFranchises() },
+            onStoriesClicked = { collectionIndex -> stack().navigateToStories(collectionIndex) },
+        )
+        storiesEntries(
+            onBackPressed = back,
+            onEpisodeClicked = { releaseId, episodeId -> stack().navigateToVideoPlayerScreen(releaseId, episodeId) },
+            onDetailsClicked = openDetails,
         )
         genreEntries(
             onBackPressed = back,

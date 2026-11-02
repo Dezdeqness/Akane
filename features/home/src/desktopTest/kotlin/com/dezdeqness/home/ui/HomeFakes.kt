@@ -5,6 +5,7 @@ import com.dezdeqness.home.ui.model.ContinueWatchingUiModel
 import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
+import com.dezdeqness.home.ui.model.StoryCollectionPreviewUiModel
 import com.dezdeqness.home.ui.model.PromoPanelUiModel
 import com.dezdeqness.promo.contract.model.PromoTarget
 
@@ -67,5 +68,6 @@ object NoOpHomeActions : HomeActions {
     override fun onPromoReleaseClicked(releaseId: Long, title: String) = Unit
     override fun onFranchiseClicked(franchise: FranchisePanelUiModel) = Unit
     override fun onAllFranchisesClicked() = Unit
+    override fun onStoriesClicked(collection: StoryCollectionPreviewUiModel) = Unit
     override fun onRetryClicked() = Unit
 }

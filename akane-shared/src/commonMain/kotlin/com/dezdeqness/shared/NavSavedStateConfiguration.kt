@@ -20,6 +20,7 @@ import com.dezdeqness.personal.navigation.PersonalRoute
 import com.dezdeqness.profile.navigation.ProfileRoute
 import com.dezdeqness.videoplayer.navigation.DownloadedPlaylistRoute
 import com.dezdeqness.videoplayer.navigation.VideoPlayerRoute
+import com.dezdeqness.stories.navigation.StoriesRoute
 import kotlinx.serialization.serializer
 import kotlinx.serialization.modules.SerializersModule
 import kotlinx.serialization.modules.polymorphic
@@ -44,6 +45,7 @@ val navKeysSerializersModule = SerializersModule {
         subclass(GenreReleasesRoute::class, serializer<GenreReleasesRoute>())
         subclass(FranchisesRoute::class, serializer<FranchisesRoute>())
         subclass(FranchiseDetailRoute::class, serializer<FranchiseDetailRoute>())
+        subclass(StoriesRoute::class, serializer<StoriesRoute>())
     }
 }
 

@@ -7,6 +7,7 @@ import com.dezdeqness.home.ui.model.ContinueWatchingUiModel
 import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
+import com.dezdeqness.home.ui.model.StoryCollectionPreviewUiModel
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -19,6 +20,7 @@ fun HomePageStandalone(
     onAllGenresClicked: () -> Unit,
     onFranchiseClicked: (String, String) -> Unit,
     onAllFranchisesClicked: () -> Unit,
+    onStoriesClicked: (Int) -> Unit,
 ) {
     val actions = remember {
         object : HomeActions {
@@ -48,6 +50,10 @@ fun HomePageStandalone(
 
             override fun onAllFranchisesClicked() {
                 onAllFranchisesClicked()
+            }
+
+            override fun onStoriesClicked(collection: StoryCollectionPreviewUiModel) {
+                onStoriesClicked(collection.index)
             }
 
             override fun onRetryClicked() {

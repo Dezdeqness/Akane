@@ -15,6 +15,7 @@ fun EntryProviderScope<NavKey>.homeEntries(
     onAllGenresClicked: () -> Unit,
     onFranchiseClicked: (String, String) -> Unit,
     onAllFranchisesClicked: () -> Unit,
+    onStoriesClicked: (Int) -> Unit,
 ) {
     entry<HomeRoute> {
         HomePageStandalone(
@@ -24,6 +25,7 @@ fun EntryProviderScope<NavKey>.homeEntries(
             onAllGenresClicked = onAllGenresClicked,
             onFranchiseClicked = onFranchiseClicked,
             onAllFranchisesClicked = onAllFranchisesClicked,
+            onStoriesClicked = onStoriesClicked,
         )
     }
 }
