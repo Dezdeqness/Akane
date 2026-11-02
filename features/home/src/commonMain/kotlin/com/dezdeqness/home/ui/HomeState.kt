@@ -6,9 +6,11 @@ import com.dezdeqness.home.ui.model.FranchisePanelUiModel
 import com.dezdeqness.home.ui.model.GenrePanelUiModel
 import com.dezdeqness.home.ui.model.HomeUiModel
 import com.dezdeqness.home.ui.model.PromoPanelUiModel
+import com.dezdeqness.home.ui.model.StoryCollectionPreviewUiModel
 
 @Immutable
 data class HomeState(
+    val stories: List<StoryCollectionPreviewUiModel> = listOf(),
     val promos: List<PromoPanelUiModel> = listOf(),
     val freshUpdates: List<HomeUiModel> = listOf(),
     val continueWatching: ContinueWatchingUiModel? = null,

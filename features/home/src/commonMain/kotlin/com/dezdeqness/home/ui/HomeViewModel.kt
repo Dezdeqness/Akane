@@ -36,7 +36,6 @@ class HomeViewModel(
                     reduce(state, stage)
                 }
         }
-        // Entity -> UI mapping in reduce() must not run on the main thread.
         .flowOn(coroutineDispatcherProvider.io())
         .catch { throwable ->
             captureError(throwable)
@@ -87,6 +86,14 @@ class HomeViewModel(
             is HomeFeedStage.Genres -> stage.result.fold(
                 onSuccess = { loaded(state.copy(genres = it.value.map(homeUiMapper::toGenrePanel))) },
                 onFailure = { onSectionError(state, it) },
+            )
+
+            is HomeFeedStage.Stories -> stage.result.fold(
+                onSuccess = { state.copy(stories = it.value.mapIndexed(homeUiMapper::toStoryCollectionPreview)) },
+                onFailure = {
+                    captureError(it)
+                    state
+                },
             )
 
             is HomeFeedStage.ContinueWatching ->

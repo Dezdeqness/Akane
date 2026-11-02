@@ -5,5 +5,5 @@ import com.dezdeqness.stories.contract.model.StoryCollectionEntity
 import kotlinx.coroutines.flow.Flow
 
 interface StoriesRepository {
-    suspend fun getStories(): Flow<Result<CachedResult<List<StoryCollectionEntity>>>>
+    fun getStories(): Flow<Result<CachedResult<List<StoryCollectionEntity>>>>
 }

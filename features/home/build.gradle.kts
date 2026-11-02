@@ -24,6 +24,7 @@ kotlin {
             implementation(project(":contract:franchise"))
             implementation(project(":contract:downloads"))
             implementation(project(":contract:views"))
+            implementation(project(":contract:stories"))
 
             implementation(libs.compottie)
             implementation(libs.compottie.dot)

@@ -6,6 +6,7 @@ import com.dezdeqness.feed.contract.repository.FeedRepository
 import com.dezdeqness.franchise.contract.repository.FranchiseRepository
 import com.dezdeqness.genre.contract.repository.GenreRepository
 import com.dezdeqness.promo.contract.repository.PromoRepository
+import com.dezdeqness.stories.contract.repository.StoriesRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
@@ -17,12 +18,14 @@ class LoadHomeFeedUseCase(
     private val feedRepository: FeedRepository,
     private val franchiseRepository: FranchiseRepository,
     private val genreRepository: GenreRepository,
+    private val storiesRepository: StoriesRepository,
     private val loadContinueWatchingUseCase: LoadContinueWatchingUseCase,
     private val coroutineDispatcherProvider: CoroutineDispatcherProvider,
 ) {
 
     operator fun invoke(): Flow<HomeFeedStage> = merge(
         promoRepository.getPromotions().map(HomeFeedStage::Promos),
+        storiesRepository.getStories().map(HomeFeedStage::Stories),
         calendarRepository.getScheduleNow().map(HomeFeedStage::Schedule),
         feedRepository.getFeedOngoing().map(HomeFeedStage::OnGoing),
         franchiseRepository.getRandomFranchises().map(HomeFeedStage::Franchises),

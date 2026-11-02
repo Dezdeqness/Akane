@@ -23,6 +23,7 @@ val homeModule = module {
             feedRepository = get(),
             franchiseRepository = get(),
             genreRepository = get(),
+            storiesRepository = get(),
             loadContinueWatchingUseCase = get(),
             coroutineDispatcherProvider = get(),
         )

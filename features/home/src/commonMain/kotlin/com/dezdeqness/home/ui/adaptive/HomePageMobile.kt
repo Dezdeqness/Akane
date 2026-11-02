@@ -15,6 +15,7 @@ import com.dezdeqness.home.ui.composables.freshupdates.FreshUpdatesSection
 import com.dezdeqness.home.ui.composables.franchise.FranchisesSection
 import com.dezdeqness.home.ui.composables.genres.GenresSection
 import com.dezdeqness.home.ui.composables.promo.PromoSection
+import com.dezdeqness.home.ui.composables.stories.StoriesRail
 
 @Composable
 fun HomePageMobile(
@@ -27,6 +28,14 @@ fun HomePageMobile(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         contentPadding = PaddingValues(vertical = 16.dp),
     ) {
+        if (state.stories.isNotEmpty()) {
+            item {
+                StoriesRail(
+                    items = state.stories,
+                    onItemClicked = actions::onStoriesClicked,
+                )
+            }
+        }
         item {
             PromoSection(
                 promos = state.promos,

@@ -20,6 +20,7 @@ import com.dezdeqness.home.ui.composables.rememberHomeWideSectionLayout
 import com.dezdeqness.home.ui.composables.franchise.FranchisesWideSection
 import com.dezdeqness.home.ui.composables.genres.GenresWideSection
 import com.dezdeqness.home.ui.composables.promo.PromoWideSection
+import com.dezdeqness.home.ui.composables.stories.StoriesRail
 
 @Composable
 fun HomePageWide(
@@ -32,6 +33,16 @@ fun HomePageWide(
         verticalArrangement = Arrangement.spacedBy(32.dp),
         contentPadding = PaddingValues(horizontal = 28.dp, vertical = 28.dp),
     ) {
+        if (state.stories.isNotEmpty()) {
+            item {
+                StoriesRail(
+                    items = state.stories,
+                    onItemClicked = actions::onStoriesClicked,
+                    contentPadding = PaddingValues(0.dp),
+                    circleSize = 76.dp,
+                )
+            }
+        }
         item {
             PromoWideSection(
                 promos = state.promos,

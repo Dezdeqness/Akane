@@ -6,6 +6,7 @@ import com.dezdeqness.catalog.contract.model.ReleaseEntity
 import com.dezdeqness.franchise.contract.model.FranchiseEntity
 import com.dezdeqness.genre.contract.model.GenreEntity
 import com.dezdeqness.promo.contract.model.PromoEntity
+import com.dezdeqness.stories.contract.model.StoryCollectionEntity
 
 sealed interface HomeFeedStage {
     data class Promos(val result: Result<CachedResult<List<PromoEntity>>>) : HomeFeedStage
@@ -15,5 +16,6 @@ sealed interface HomeFeedStage {
     data class Released(val result: Result<CachedResult<List<ReleaseEntity>>>) : HomeFeedStage
     data class BestRated(val result: Result<CachedResult<List<ReleaseEntity>>>) : HomeFeedStage
     data class Genres(val result: Result<CachedResult<List<GenreEntity>>>) : HomeFeedStage
+    data class Stories(val result: Result<CachedResult<List<StoryCollectionEntity>>>) : HomeFeedStage
     data class ContinueWatching(val item: ContinueWatchingEntity?) : HomeFeedStage
 }
