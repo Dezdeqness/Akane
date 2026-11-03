@@ -4,4 +4,5 @@ import com.dezdeqness.videoplayer.core.player.api.VideoPlayer
 
 expect class VideoPlayerProvider {
     fun create(): VideoPlayer
+    fun createPreview(): VideoPlayer
 }

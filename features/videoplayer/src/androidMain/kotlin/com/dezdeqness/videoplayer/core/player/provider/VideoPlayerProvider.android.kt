@@ -13,4 +13,7 @@ actual class VideoPlayerProvider(
 ) {
     @OptIn(UnstableApi::class)
     actual fun create(): VideoPlayer = AndroidVideoPlayer(context, downloadCache)
+
+    @OptIn(UnstableApi::class)
+    actual fun createPreview(): VideoPlayer = AndroidVideoPlayer(context)
 }
