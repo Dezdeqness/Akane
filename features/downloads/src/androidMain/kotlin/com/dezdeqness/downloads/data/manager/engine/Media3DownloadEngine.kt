@@ -22,6 +22,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import androidx.media3.exoplayer.offline.DownloadManager as Media3DownloadManager
 import androidx.core.net.toUri
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
 
 @UnstableApi
 class Media3DownloadEngine(
@@ -262,7 +263,7 @@ class Media3DownloadEngine(
     }
 
     private fun notificationData(download: DownloadEntity): ByteArray =
-        "${download.releaseTitle}\nСерия ${download.episodeOrdinal}".encodeToByteArray()
+        "${download.releaseTitle}\nСерия ${download.episodeOrdinal.toEpisodeOrdinalString()}".encodeToByteArray()
 
     private fun contentId(downloadId: Long): String = "$CONTENT_ID_PREFIX$downloadId"
 

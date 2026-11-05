@@ -30,6 +30,7 @@ import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
 import androidx.compose.material3.Text
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
 
 @Composable
 fun EpisodeDownloadItemMobile(
@@ -66,7 +67,7 @@ fun EpisodeDownloadItemMobile(
                 .padding(horizontal = 12.dp),
         ) {
             Text(
-                text = "${episode.episodeOrdinal} эпизод — ${episode.episodeName}",
+                text = "${episode.episodeOrdinal.toEpisodeOrdinalString()} эпизод — ${episode.episodeName}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = AppTheme.colors.textPrimary,
@@ -189,7 +190,7 @@ fun EpisodeDownloadItemWide(
             )
 
             Text(
-                text = "${episode.episodeOrdinal} эпизод",
+                text = "${episode.episodeOrdinal.toEpisodeOrdinalString()} эпизод",
                 fontSize = 12.sp,
                 color = AppTheme.colors.textSecondary,
             )

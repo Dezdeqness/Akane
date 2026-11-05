@@ -1,5 +1,7 @@
 package com.dezdeqness.downloads.notification
 
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
+
 object DownloadNotificationTexts {
 
     const val CHANNEL_NAME = "Загрузки"
@@ -9,11 +11,11 @@ object DownloadNotificationTexts {
     fun title(info: DownloadNotificationInfo): String = info.releaseTitle
 
     fun progressText(info: DownloadNotificationInfo, percent: Int): String =
-        "Серия ${info.episodeOrdinal} — $percent%"
+        "Серия ${info.episodeOrdinal.toEpisodeOrdinalString()} — $percent%"
 
     fun completedText(info: DownloadNotificationInfo): String =
-        "Серия ${info.episodeOrdinal} загружена"
+        "Серия ${info.episodeOrdinal.toEpisodeOrdinalString()} загружена"
 
     fun failedText(info: DownloadNotificationInfo): String =
-        "Не удалось загрузить серию ${info.episodeOrdinal}"
+        "Не удалось загрузить серию ${info.episodeOrdinal.toEpisodeOrdinalString()}"
 }

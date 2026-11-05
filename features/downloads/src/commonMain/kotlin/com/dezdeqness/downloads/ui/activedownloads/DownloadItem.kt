@@ -35,6 +35,7 @@ import com.dezdeqness.core.ui.theme.AppTheme
 import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.downloads.contract.model.DownloadStatus
 import com.dezdeqness.downloads.ui.model.DownloadUiModel
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
 
 @Composable
 internal fun DownloadItem(
@@ -74,7 +75,7 @@ internal fun DownloadItem(
                 .padding(horizontal = 12.dp),
         ) {
             Text(
-                text = "Эпизод ${download.episodeOrdinal} — ${download.episodeName}",
+                text = "Эпизод ${download.episodeOrdinal.toEpisodeOrdinalString()} — ${download.episodeName}",
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Medium,
                 color = AppTheme.colors.textPrimary,

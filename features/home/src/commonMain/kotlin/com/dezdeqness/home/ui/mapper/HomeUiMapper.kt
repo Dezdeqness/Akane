@@ -2,6 +2,7 @@ package com.dezdeqness.home.ui.mapper
 
 import com.dezdeqness.calendar.contract.model.ScheduleItemEntity
 import com.dezdeqness.catalog.contract.model.ReleaseEntity
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
 import com.dezdeqness.franchise.contract.model.FranchiseEntity
 import com.dezdeqness.genre.contract.model.GenreEntity
 import com.dezdeqness.home.domain.ContinueWatchingEntity
@@ -75,7 +76,7 @@ class HomeUiMapper {
             releaseId = entity.releaseId,
             episodeId = entity.episodeId,
             title = entity.releaseTitle,
-            episodeTitle = entity.episodeName.ifBlank { "Серия ${entity.episodeOrdinal}" },
+            episodeTitle = entity.episodeName.ifBlank { "Серия ${entity.episodeOrdinal.toEpisodeOrdinalString()}" },
             imagePath = entity.previewUrl,
         )
 

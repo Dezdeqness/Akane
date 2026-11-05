@@ -42,6 +42,7 @@ import com.dezdeqness.core.ui.views.buttons.AppIconButton
 import com.dezdeqness.core.ui.views.image.AppImage
 import com.dezdeqness.details.ui.model.DownloadStatusUi
 import com.dezdeqness.details.ui.model.EpisodesUiModel
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
 
 @Composable
 fun EpisodeItem(
@@ -87,7 +88,7 @@ fun EpisodeItem(
                 )
 
                 Text(
-                    "${episode.ordinal} эпизод",
+                    "${episode.ordinal.toEpisodeOrdinalString()} эпизод",
                     fontSize = 18.sp,
                     modifier = Modifier.padding(
                         horizontal = 16.dp,
