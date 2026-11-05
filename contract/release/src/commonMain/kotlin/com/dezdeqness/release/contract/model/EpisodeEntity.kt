@@ -4,7 +4,7 @@ data class EpisodeEntity(
     val id: String,
     val name: String,
     val previewUrl: String,
-    val ordinal: Long,
+    val ordinal: Double,
     val episodeUrls: LinkedHashMap<VideoQuality, String>,
     val duration: Long,
     val updatedAt: String,

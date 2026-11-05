@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 data class Episode(
     val id: String,
     val name: String?,
-    val ordinal: Long,
+    val ordinal: Double,
     val opening: Timing,
     val ending: Timing,
     val preview: Preview,

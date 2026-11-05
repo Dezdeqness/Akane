@@ -6,7 +6,7 @@ import com.dezdeqness.release.contract.model.VideoQuality
 import com.dezdeqness.network.models.core.Episode
 import com.dezdeqness.network.models.core.Timing
 
-class EpisodesManager {
+class EpisodesMapper {
 
     fun map(response: Episode) =
         EpisodeEntity(

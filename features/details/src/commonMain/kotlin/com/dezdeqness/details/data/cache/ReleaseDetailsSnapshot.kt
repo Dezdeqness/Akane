@@ -30,7 +30,7 @@ data class EpisodeSnapshot(
     val id: String,
     val name: String,
     val previewUrl: String,
-    val ordinal: Long,
+    val ordinal: Double,
     val episodeUrls: Map<String, String>,
     val duration: Long,
     val updatedAt: String,

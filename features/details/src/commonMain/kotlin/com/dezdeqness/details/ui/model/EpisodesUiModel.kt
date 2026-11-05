@@ -4,7 +4,7 @@ data class EpisodesUiModel(
     val id: String,
     val name: String,
     val previewUrl: String,
-    val ordinal: Long,
+    val ordinal: Double,
     val episodeUrls: LinkedHashMap<String, String> = linkedMapOf(),
     val downloadStatus: DownloadStatusUi? = null,
     val progress: Float? = null,

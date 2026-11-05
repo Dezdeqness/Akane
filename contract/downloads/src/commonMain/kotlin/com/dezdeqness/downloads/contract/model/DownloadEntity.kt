@@ -6,7 +6,7 @@ data class DownloadEntity(
     val releaseTitle: String,
     val episodeId: String,
     val episodeName: String,
-    val episodeOrdinal: Long,
+    val episodeOrdinal: Double,
     val quality: String,
     val hlsUrl: String,
     val filePath: String? = null,

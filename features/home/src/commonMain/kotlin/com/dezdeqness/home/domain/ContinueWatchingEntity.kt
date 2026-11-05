@@ -5,6 +5,6 @@ data class ContinueWatchingEntity(
     val episodeId: String,
     val releaseTitle: String,
     val episodeName: String,
-    val episodeOrdinal: Long,
+    val episodeOrdinal: Double,
     val previewUrl: String,
 )

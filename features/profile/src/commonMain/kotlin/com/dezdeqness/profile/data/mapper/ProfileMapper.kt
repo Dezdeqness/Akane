@@ -15,7 +15,7 @@ class ProfileMapper {
         id = response.id,
         login = response.login.orEmpty(),
         email = response.email.orEmpty(),
-        nickname = response.nickname,
+        nickname = response.nickname.orEmpty(),
         avatar = response.avatar?.let(::mapAvatar),
         torrents = response.torrents?.let(::mapTorrents),
         isBanned = response.isBanned,

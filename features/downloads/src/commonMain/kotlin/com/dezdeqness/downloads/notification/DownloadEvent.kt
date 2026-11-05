@@ -33,7 +33,7 @@ data class DownloadNotificationInfo(
     val releaseId: Long,
     val releaseTitle: String,
     val episodeName: String,
-    val episodeOrdinal: Long,
+    val episodeOrdinal: Double,
 ) {
     companion object {
         fun from(download: DownloadEntity) = DownloadNotificationInfo(

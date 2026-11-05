@@ -8,7 +8,7 @@ data class ProfileResponse(
     val id: Long,
     val login: String? = null,
     val email: String? = null,
-    val nickname: String,
+    val nickname: String?,
     val avatar: AvatarResponse? = null,
     val torrents: ProfileTorrentsResponse? = null,
     @SerialName("is_banned")

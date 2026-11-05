@@ -7,7 +7,7 @@ data class DownloadUiModel(
     val releaseId: Long,
     val episodeId: String,
     val episodeName: String,
-    val episodeOrdinal: Long,
+    val episodeOrdinal: Double,
     val releaseTitle: String,
     val quality: String,
     val progress: Float,

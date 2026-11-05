@@ -5,7 +5,7 @@ import com.dezdeqness.network.constants.ImageUrlBuilder
 import com.dezdeqness.network.models.response.ReleaseResponse
 
 class ReleaseMapper(
-    private val episodesManager: EpisodesManager,
+    private val episodesMapper: EpisodesMapper,
     private val imageUrlBuilder: ImageUrlBuilder,
 ) {
 
@@ -19,7 +19,7 @@ class ReleaseMapper(
             episodesTotal = response.episodesTotal ?: 0,
             genres = response.genres?.map { it.name } ?: emptyList(),
             episodes = response.episodes
-                ?.map(episodesManager::map)
+                ?.map(episodesMapper::map)
                 ?.sortedByDescending { it.ordinal }
                 .orEmpty(),
             year = response.year,
