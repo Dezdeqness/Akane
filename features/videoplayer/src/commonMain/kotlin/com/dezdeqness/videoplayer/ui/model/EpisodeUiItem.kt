@@ -8,7 +8,7 @@ data class EpisodeUiItem(
     val id: String,
     val name: String,
     val previewUrl: String,
-    val ordinal: Long,
+    val ordinal: Double,
     val episodeUrls: LinkedHashMap<VideoQuality, String>,
     val nameEnglish: String?,
     val opening: TimingUiItem?,

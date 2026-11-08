@@ -1,18 +1,20 @@
 package com.dezdeqness.videoplayer.core.player.data
 
+import com.dezdeqness.foundation.utils.toEpisodeOrdinalString
+
 data class MediaItem(
     val id: String,
     val name: String,
-    val ordinal: Long,
+    val ordinal: Double,
     val source: MediaSource,
     val previewUrl: String = "",
     val opening: SkipRange? = null,
     val ending: SkipRange? = null,
 ) {
     val title = if (name.isBlank()) {
-        "$ordinal эпизод"
+        "${ordinal.toEpisodeOrdinalString()} эпизод"
     } else {
-        "$ordinal эпизод — $name"
+        "${ordinal.toEpisodeOrdinalString()} эпизод — $name"
     }
 }
 

@@ -27,7 +27,7 @@ class StoriesRepositoryImpl(
 
     private val clock: Clock = Clock.System
 
-    override suspend fun getStories(): Flow<Result<CachedResult<List<StoryCollectionEntity>>>> =
+    override fun getStories(): Flow<Result<CachedResult<List<StoryCollectionEntity>>>> =
         staleWhileRevalidate(
             read = {
                 jsonCacheStore

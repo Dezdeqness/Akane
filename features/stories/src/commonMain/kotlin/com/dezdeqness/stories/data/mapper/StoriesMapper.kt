@@ -45,7 +45,7 @@ class StoriesMapper(
             releaseName = item.release.name.main,
             poster = imageUrlBuilder.build(item.release.poster.optimized.src ?: item.release.poster.src),
             episodeId = episode.id,
-            episodeOrdinal = episode.ordinal.toLong(),
+            episodeOrdinal = episode.ordinal,
             episodeName = episode.name.orEmpty(),
             previewUrl = imageUrlBuilder.build(episode.preview.optimized.src ?: episode.preview.src),
             videoUrl = videoUrl,

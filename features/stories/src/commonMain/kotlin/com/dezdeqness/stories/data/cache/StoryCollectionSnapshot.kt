@@ -15,7 +15,7 @@ data class StorySnapshot(
     val releaseName: String,
     val poster: String,
     val episodeId: String,
-    val episodeOrdinal: Long,
+    val episodeOrdinal: Double,
     val episodeName: String,
     val previewUrl: String,
     val videoUrl: String,
